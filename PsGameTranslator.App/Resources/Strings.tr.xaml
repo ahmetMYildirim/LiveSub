@@ -1,0 +1,337 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="AppSubtitle">Gerçek zamanlı altyazı çevirisi</sys:String>
+    <sys:String x:Key="ProBadge">PRO</sys:String>
+
+    <sys:String x:Key="Start">Başlat</sys:String>
+    <sys:String x:Key="Stop">Durdur</sys:String>
+    <sys:String x:Key="SelectGame">Oyunu Seç</sys:String>
+    <sys:String x:Key="Running">Çalışıyor</sys:String>
+    <sys:String x:Key="Stopped">Durdu</sys:String>
+    <sys:String x:Key="NoGameSelected">Oyun seçilmedi</sys:String>
+    <sys:String x:Key="NoWindowSelected">Pencere seçilmedi</sys:String>
+    <sys:String x:Key="OcrRunning">OCR çalışıyor</sys:String>
+
+    <sys:String x:Key="LivePreview">CANLI ÖNİZLEME</sys:String>
+    <sys:String x:Key="OcrStatus">OCR Durumu</sys:String>
+    <sys:String x:Key="TranslationStatus">Çeviri Durumu</sys:String>
+    <sys:String x:Key="OverlayStatus">Overlay Durumu</sys:String>
+    <sys:String x:Key="Latency">Gecikme</sys:String>
+    <sys:String x:Key="QuickSettings">HIZLI AYARLAR</sys:String>
+    <sys:String x:Key="TranslationEngine">Çeviri Motoru</sys:String>
+    <sys:String x:Key="OcrEngine">OCR Motoru</sys:String>
+    <sys:String x:Key="OcrMode">OCR Modu</sys:String>
+    <sys:String x:Key="SourceLanguage">Kaynak Dil</sys:String>
+    <sys:String x:Key="TargetLanguage">Hedef Dil</sys:String>
+    <sys:String x:Key="TranslationMode">Çeviri Modu</sys:String>
+    <sys:String x:Key="MachineTranslation">Makine Çevirisi</sys:String>
+    <sys:String x:Key="OcrOnlyMode">Yalnızca OCR (Çeviri Kapalı)</sys:String>
+    <sys:String x:Key="SubtitleRegion">ALTYAZI BÖLGESİ</sys:String>
+    <sys:String x:Key="RunOneFrame">Tek Kare Çalıştır</sys:String>
+    <sys:String x:Key="OcrTest">OCR Testi</sys:String>
+    <sys:String x:Key="OverlayTest">Overlay Testi</sys:String>
+    <sys:String x:Key="LiveStats">CANLI İSTATİSTİKLER</sys:String>
+    <sys:String x:Key="OcrStarted">OCR Başlatılan</sys:String>
+    <sys:String x:Key="OcrCompleted">OCR Tamamlanan</sys:String>
+    <sys:String x:Key="SkippedNoChange">Atlanan (Değişiklik Yok)</sys:String>
+    <sys:String x:Key="ForcedOcr">Zorlanan OCR</sys:String>
+    <sys:String x:Key="TranslationQueued">Çeviri Kuyrukta</sys:String>
+    <sys:String x:Key="CaptureDuration">Yakalama Süresi</sys:String>
+    <sys:String x:Key="CropDuration">Kırpma Süresi</sys:String>
+    <sys:String x:Key="DifferenceDuration">Fark Analizi Süresi</sys:String>
+    <sys:String x:Key="LatestTranslations">SON ÇEVİRİLER</sys:String>
+
+    <sys:String x:Key="DeveloperMode">Geliştirici Modu</sys:String>
+    <sys:String x:Key="Theme">Tema</sys:String>
+    <sys:String x:Key="Dark">Karanlık</sys:String>
+    <sys:String x:Key="Light">Açık</sys:String>
+    <sys:String x:Key="Language">Dil</sys:String>
+    <sys:String x:Key="Turkish">Türkçe</sys:String>
+    <sys:String x:Key="English">İngilizce</sys:String>
+    <sys:String x:Key="Version">Sürüm 1.0.0</sys:String>
+
+    <sys:String x:Key="SettingsSubtitle">Çeviri deneyimini ihtiyacınıza göre düzenleyin.</sys:String>
+    <sys:String x:Key="AdvancedSettings">Gelişmiş ayarlar</sys:String>
+    <sys:String x:Key="ImportSettings">İçe aktar</sys:String>
+    <sys:String x:Key="ExportSettings">Dışa aktar</sys:String>
+    <sys:String x:Key="TabGeneral">Genel</sys:String>
+    <sys:String x:Key="Appearance">Görünüm</sys:String>
+    <sys:String x:Key="ThemeLiveHint">Tema anında uygulanır; yeniden başlatma gerekmez.</sys:String>
+    <sys:String x:Key="PresetProfile">Hazır ayar profili</sys:String>
+    <sys:String x:Key="PresetProfileHint">Hız, kalite ve kaynak kullanımını tek seçimle ayarlayın.</sys:String>
+    <sys:String x:Key="PresetFast">Hızlı — düşük gecikme</sys:String>
+    <sys:String x:Key="PresetBalanced">Dengeli — önerilen</sys:String>
+    <sys:String x:Key="PresetQuality">Kaliteli — daha iyi sonuç</sys:String>
+    <sys:String x:Key="ApplyPreset">Profili uygula</sys:String>
+    <sys:String x:Key="TabTranslationApi">Çeviri ve API</sys:String>
+    <sys:String x:Key="LanguageAndProvider">Dil ve sağlayıcı</sys:String>
+    <sys:String x:Key="TranslationProfile">Çeviri profili</sys:String>
+    <sys:String x:Key="ProfileBalanced">Dengeli</sys:String>
+    <sys:String x:Key="ProfileFast">Hızlı</sys:String>
+    <sys:String x:Key="ProfileQuality">Kaliteli</sys:String>
+    <sys:String x:Key="ProfileLocalFast">Yerel hızlı</sys:String>
+    <sys:String x:Key="ProfileCustom">Özel</sys:String>
+    <sys:String x:Key="CloudApiKeys">Bulut API anahtarları</sys:String>
+    <sys:String x:Key="ApiKeysHint">Anahtarlar varsayılan olarak gizlenir. Dışa aktarılan ayar dosyasına eklenmez.</sys:String>
+    <sys:String x:Key="GoogleTranslateOptional">Google Translate (isteğe bağlı)</sys:String>
+    <sys:String x:Key="TestProviders">Sağlayıcıları test et</sys:String>
+    <sys:String x:Key="TabOcrPerformance">OCR ve performans</sys:String>
+    <sys:String x:Key="Performance">Performans</sys:String>
+    <sys:String x:Key="CaptureIntervalMs">Yakalama aralığı (ms)</sys:String>
+    <sys:String x:Key="MinOcrIntervalMs">Minimum OCR aralığı (ms)</sys:String>
+    <sys:String x:Key="FastOcrMode">Hızlı OCR modu</sys:String>
+    <sys:String x:Key="PauseWhenBackground">Pencere arka plandayken duraklat</sys:String>
+    <sys:String x:Key="AdvancedOcr">Gelişmiş OCR</sys:String>
+    <sys:String x:Key="EnablePreprocessing">Ön işlemeyi etkinleştir</sys:String>
+    <sys:String x:Key="ConvertGrayscale">Gri tonlamaya çevir</sys:String>
+    <sys:String x:Key="IncreaseContrast">Kontrastı artır</sys:String>
+    <sys:String x:Key="SharpenImage">Görüntüyü keskinleştir</sys:String>
+    <sys:String x:Key="OcrTimeoutMs">OCR zaman aşımı (ms)</sys:String>
+    <sys:String x:Key="OverlayAppearance">Overlay görünümü</sys:String>
+    <sys:String x:Key="OverlayEnabled">Overlay etkin</sys:String>
+    <sys:String x:Key="FontSizeLabel">Metin boyutu</sys:String>
+    <sys:String x:Key="FontFamilyLabel">Yazı tipi</sys:String>
+    <sys:String x:Key="SubtitleAdvancedTitle">Altyazı değiştirme (gelişmiş)</sys:String>
+    <sys:String x:Key="ReplacementMaxLinesLabel">Maksimum satır sayısı</sys:String>
+    <sys:String x:Key="ReplacementMinFontSizeLabel">Minimum yazı boyutu</sys:String>
+    <sys:String x:Key="ReplacementAutoFit">Metni alana otomatik sığdır</sys:String>
+    <sys:String x:Key="SettingsManagement">Ayar yönetimi</sys:String>
+    <sys:String x:Key="ExportImportHint">Ayarlarınızı yedekleyin veya paylaşın. API anahtarları dışa aktarılan dosyaya eklenmez.</sys:String>
+    <sys:String x:Key="BackgroundOpacity">Arka plan saydamlığı</sys:String>
+    <sys:String x:Key="TestOverlayButton">Overlay'i test et</sys:String>
+    <sys:String x:Key="MonitorAndPosition">Monitör ve konum</sys:String>
+    <sys:String x:Key="TargetMonitor">Hedef monitör</sys:String>
+    <sys:String x:Key="MonitorPrimary">Ana monitör</sys:String>
+    <sys:String x:Key="MonitorSameAsGame">Oyunla aynı monitör</sys:String>
+    <sys:String x:Key="MonitorManual">Elle seç</sys:String>
+    <sys:String x:Key="CenterOnCurrentMonitor">Mevcut monitörde ortala</sys:String>
+    <sys:String x:Key="ResetPosition">Konumu sıfırla</sys:String>
+
+    <sys:String x:Key="NavHome" xml:space="preserve">Ana Sayfa</sys:String>
+    <sys:String x:Key="NavCapture" xml:space="preserve">Yakalama</sys:String>
+    <sys:String x:Key="NavTranslation" xml:space="preserve">Çeviri</sys:String>
+    <sys:String x:Key="NavSettings" xml:space="preserve">Ayarlar</sys:String>
+    <sys:String x:Key="NavModels" xml:space="preserve">Model Yönetici</sys:String>
+    <sys:String x:Key="NavGlossary" xml:space="preserve">Sözlük</sys:String>
+    <sys:String x:Key="NavShortcuts" xml:space="preserve">Kısayollar</sys:String>
+    <sys:String x:Key="NavLearning" xml:space="preserve">Öğrenme</sys:String>
+    <sys:String x:Key="NavTraining" xml:space="preserve">Eğitim</sys:String>
+    <sys:String x:Key="Reveal" xml:space="preserve">Göster</sys:String>
+    <sys:String x:Key="Refresh" xml:space="preserve">Yenile</sys:String>
+    <sys:String x:Key="Save" xml:space="preserve">Kaydet</sys:String>
+    <sys:String x:Key="Add" xml:space="preserve">Ekle</sys:String>
+    <sys:String x:Key="Delete" xml:space="preserve">Sil</sys:String>
+    <sys:String x:Key="Cancel" xml:space="preserve">İptal</sys:String>
+    <sys:String x:Key="Edit" xml:space="preserve">Düzenle</sys:String>
+    <sys:String x:Key="Accept" xml:space="preserve">Kabul Et</sys:String>
+    <sys:String x:Key="Reject" xml:space="preserve">Reddet</sys:String>
+    <sys:String x:Key="Ready" xml:space="preserve">Hazır</sys:String>
+    <sys:String x:Key="EngineOpusMt" xml:space="preserve">OPUS-MT (Yerel)</sys:String>
+    <sys:String x:Key="EngineOllama" xml:space="preserve">Ollama (Yerel)</sys:String>
+    <sys:String x:Key="EngineLmStudio" xml:space="preserve">LM Studio (Yerel)</sys:String>
+    <sys:String x:Key="OcrModeFast" xml:space="preserve">Hızlı (WindowsOCR, düşük gecikme)</sys:String>
+    <sys:String x:Key="OcrModeBalanced" xml:space="preserve">Dengeli (PaddleOCR, tek motor)</sys:String>
+    <sys:String x:Key="OcrModeHybrid" xml:space="preserve">Hibrit (birden fazla motor, en iyi sonuç)</sys:String>
+    <sys:String x:Key="OcrOnlyShort" xml:space="preserve">Sadece OCR</sys:String>
+    <sys:String x:Key="CapturableWindows" xml:space="preserve">Yakalanabilir Pencereler</sys:String>
+    <sys:String x:Key="ColTitle" xml:space="preserve">Başlık</sys:String>
+    <sys:String x:Key="ColProcess" xml:space="preserve">İşlem</sys:String>
+    <sys:String x:Key="ColSize" xml:space="preserve">Boyut</sys:String>
+    <sys:String x:Key="LivePreviewTitle" xml:space="preserve">Canlı Önizleme</sys:String>
+    <sys:String x:Key="TakeScreenshot" xml:space="preserve">Ekran Görüntüsü Al</sys:String>
+    <sys:String x:Key="DetectGameFromScreen" xml:space="preserve">Ekrandan Oyunu Tanı</sys:String>
+    <sys:String x:Key="ScreenshotLooksLike1" xml:space="preserve">Bu ekran görüntüsü </sys:String>
+    <sys:String x:Key="ScreenshotLooksLike2" xml:space="preserve"> gibi görünüyor.</sys:String>
+    <sys:String x:Key="VisionModelHint" xml:space="preserve">Görsel model kesin değil — doğruysa onaylayın, değilse reddedin.</sys:String>
+    <sys:String x:Key="YesLoad" xml:space="preserve">Evet, Yükle</sys:String>
+    <sys:String x:Key="No" xml:space="preserve">Hayır</sys:String>
+    <sys:String x:Key="SelectGameManually" xml:space="preserve">Oyunu El ile Seç</sys:String>
+    <sys:String x:Key="VisionModelManualHint" xml:space="preserve">Görsel model yanılırsa (küçük modeller benzer oyunları karıştırabilir) doğru oyunu buradan seçip sözlüğü direkt yükleyin.</sys:String>
+    <sys:String x:Key="LoadThisGlossary" xml:space="preserve">Bu Sözlüğü Yükle</sys:String>
+    <sys:String x:Key="SubtitleRegionSelection" xml:space="preserve">Altyazı Bölgesi Seçimi</sys:String>
+    <sys:String x:Key="SelectFullscreen" xml:space="preserve">Tam Ekranda Seç</sys:String>
+    <sys:String x:Key="LoadScreenshot" xml:space="preserve">Ekran Görüntüsü Yükle</sys:String>
+    <sys:String x:Key="NoScreenshotHint" xml:space="preserve">Ekran görüntüsü yüklenmedi — 'Ekran Görüntüsü Yükle'ye basın (önce Yakalama listesinden bir pencere seçmelisiniz).</sys:String>
+    <sys:String x:Key="SelectedRegion" xml:space="preserve">Seçili Bölge</sys:String>
+    <sys:String x:Key="WidthLabel" xml:space="preserve">Genişlik</sys:String>
+    <sys:String x:Key="HeightLabel" xml:space="preserve">Yükseklik</sys:String>
+    <sys:String x:Key="SaveRegion" xml:space="preserve">Bölgeyi Kaydet</sys:String>
+    <sys:String x:Key="CropSelectedRegion" xml:space="preserve">Seçili Bölgeyi Kırp (Önizle)</sys:String>
+    <sys:String x:Key="CroppedPreview" xml:space="preserve">Kırpılan Önizleme</sys:String>
+    <sys:String x:Key="SecondaryOcrRegions" xml:space="preserve">İkincil OCR Bölgeleri</sys:String>
+    <sys:String x:Key="AddRegion" xml:space="preserve">+ Bölge Ekle</sys:String>
+    <sys:String x:Key="SecondaryRegionsHint" xml:space="preserve">Birden fazla altyazı bölgesini eş zamanlı yakalamak için ek bölgeler ekleyin. Koordinatlar ekranın yüzdesi olarak girilir (0.0–1.0).</sys:String>
+    <sys:String x:Key="LabelField" xml:space="preserve">Etiket</sys:String>
+    <sys:String x:Key="WidthPct" xml:space="preserve">Gen %</sys:String>
+    <sys:String x:Key="HeightPct" xml:space="preserve">Yük %</sys:String>
+    <sys:String x:Key="EnableTranslation" xml:space="preserve">Çeviriyi etkinleştir</sys:String>
+    <sys:String x:Key="UseCache" xml:space="preserve">Önbellek kullan</sys:String>
+    <sys:String x:Key="ShowOcrOnFailure" xml:space="preserve">Başarısızsa OCR metnini göster</sys:String>
+    <sys:String x:Key="ActiveEngine" xml:space="preserve">Aktif Motor</sys:String>
+    <sys:String x:Key="LocalModelLabel" xml:space="preserve">Yerel Model (OPUS-MT / NLLB)</sys:String>
+    <sys:String x:Key="RefreshModels" xml:space="preserve">Modelleri Yenile</sys:String>
+    <sys:String x:Key="TypewriterWaitLabel" xml:space="preserve">Yavaş Açılan (Typewriter) Altyazı Bekleme Süresi (ms)</sys:String>
+    <sys:String x:Key="TypewriterWaitHint" xml:space="preserve">Altyazı harf harf/kelime kelime açılıyorsa bu değer düşük kaldığında yarım cümle çevrilip az sonra tam cümle tekrar çevrilir. Böyle bir sorun yaşıyorsanız bu değeri artırın (varsayılan 2500ms).</sys:String>
+    <sys:String x:Key="DebounceLabel" xml:space="preserve">Değişiklik Sonrası Bekleme (ms)</sys:String>
+    <sys:String x:Key="DebounceHint" xml:space="preserve">Asıl önemli değer budur (yukarıdaki 'bekleme süresi' sadece üst sınırı belirler). Her yeni okuma bu kadar bekleyip hemen çevriliyor; OCR turu bundan uzun sürerse (çoğu oyunda ~700-900ms) devam eden cümleyi yakalayamadan parça parça çevirir. Typewriter tarz altyazılı oyunlarda (örn. Dragon's Dogma 2) bunu 900-1200ms yapın; direkt/tam çıkan altyazılı oyunlarda (örn. AC Shadows) 150ms hızlı ve doğru çalışır.</sys:String>
+    <sys:String x:Key="ProviderTest" xml:space="preserve">Sağlayıcı Testi</sys:String>
+    <sys:String x:Key="PipelineHealthCheck" xml:space="preserve">İşlem Hattı Sağlık Kontrolü</sys:String>
+    <sys:String x:Key="LivePipelineTest" xml:space="preserve">Canlı İşlem Hattı Testi</sys:String>
+    <sys:String x:Key="TranslationTestDiagnostics" xml:space="preserve">Çeviri Testi ve Tanılama</sys:String>
+    <sys:String x:Key="Translate" xml:space="preserve">Çevir</sys:String>
+    <sys:String x:Key="ThemeRestartHint" xml:space="preserve">Tema seçiminin tam olarak uygulanması için uygulamanın yeniden başlatılması gerekir.</sys:String>
+    <sys:String x:Key="RestartNow" xml:space="preserve">Şimdi Yeniden Başlat</sys:String>
+    <sys:String x:Key="CloudApiKeysTitle" xml:space="preserve">Bulut Çeviri API Anahtarları</sys:String>
+    <sys:String x:Key="CloudApiKeysHint" xml:space="preserve">Boş bırakılan servisler devre dışı kalır; Google Translate anahtarsız da ücretsiz modda çalışır.</sys:String>
+    <sys:String x:Key="GoogleApiKeyLabel" xml:space="preserve">Google Translate API Anahtarı (isteğe bağlı)</sys:String>
+    <sys:String x:Key="DeepLApiKeyLabel" xml:space="preserve">DeepL API Anahtarı</sys:String>
+    <sys:String x:Key="GeminiApiKeyLabel" xml:space="preserve">Gemini API Anahtarı</sys:String>
+    <sys:String x:Key="GroqApiKeyLabel" xml:space="preserve">Groq API Anahtarı</sys:String>
+    <sys:String x:Key="MonitorTitle" xml:space="preserve">Monitör</sys:String>
+    <sys:String x:Key="RefreshMonitors" xml:space="preserve">Monitörleri Yenile</sys:String>
+    <sys:String x:Key="OverlayTargetMonitor" xml:space="preserve">Overlay Hedef Monitörü</sys:String>
+    <sys:String x:Key="PrimaryMonitor" xml:space="preserve">Ana Monitör</sys:String>
+    <sys:String x:Key="SameAsCapturedWindow" xml:space="preserve">Yakalanan Pencereyle Aynı</sys:String>
+    <sys:String x:Key="ManualMonitor" xml:space="preserve">Manuel Monitör</sys:String>
+    <sys:String x:Key="ConnectedMonitors" xml:space="preserve">Bağlı Monitörler</sys:String>
+    <sys:String x:Key="CapturedWindowMonitor" xml:space="preserve">Yakalanan Pencerenin Monitörü</sys:String>
+    <sys:String x:Key="OverlayCurrentLocation" xml:space="preserve">Overlay Şu An Nerede</sys:String>
+    <sys:String x:Key="OverlayPosition" xml:space="preserve">Overlay Konumu</sys:String>
+    <sys:String x:Key="MoveToPrimary" xml:space="preserve">Ana Monitöre Taşı</sys:String>
+    <sys:String x:Key="MoveToGameMonitor" xml:space="preserve">Oyun Penceresinin Monitörüne Taşı</sys:String>
+    <sys:String x:Key="CenterOnCurrent" xml:space="preserve">Mevcut Monitörde Ortala</sys:String>
+    <sys:String x:Key="ResetPositionLabel" xml:space="preserve">Konumu Sıfırla</sys:String>
+    <sys:String x:Key="CaptureIntervalLabel" xml:space="preserve">Yakalama Aralığı</sys:String>
+    <sys:String x:Key="MinOcrIntervalLabel" xml:space="preserve">Min. OCR Aralığı</sys:String>
+    <sys:String x:Key="OcrRequestTimeout" xml:space="preserve">OCR İstek Zaman Aşımı (ms)</sys:String>
+    <sys:String x:Key="OcrTimeoutHint" xml:space="preserve">Büyük yakalama bölgelerinde OCR sunucusu yanıt veremeden zaman aşımına uğrayabilir; bu değer çok düşükse hiç metin/çeviri gelmez.</sys:String>
+    <sys:String x:Key="OcrDevice" xml:space="preserve">OCR İşlemcisi</sys:String>
+    <sys:String x:Key="DeviceAuto" xml:space="preserve">Otomatik (GPU varsa kullan)</sys:String>
+    <sys:String x:Key="DeviceGpu" xml:space="preserve">GPU (NVIDIA/CUDA)</sys:String>
+    <sys:String x:Key="GpuHint" xml:space="preserve">GPU seçimi PaddleOCR'i NVIDIA ekran kartınızda çalıştırır (paddlepaddle-gpu kurulu olmalı) — değiştirmek OCR sunucusunu yeniden başlatır.</sys:String>
+    <sys:String x:Key="SaveDebugFrames" xml:space="preserve">Hata ayıklama karelerini kaydet</sys:String>
+    <sys:String x:Key="PauseWhenInactive" xml:space="preserve">Pencere arka planda olunca duraklat</sys:String>
+    <sys:String x:Key="PauseHint" xml:space="preserve">Etkin olduğunda oyun penceresi öne geçene kadar OCR döngüsü duraklar — gereksiz CPU/GPU kullanımını önler.</sys:String>
+    <sys:String x:Key="OcrPreprocessing" xml:space="preserve">OCR Ön İşleme</sys:String>
+    <sys:String x:Key="ConvertGrayscaleShort" xml:space="preserve">Gri tonlara çevir</sys:String>
+    <sys:String x:Key="ThresholdMode" xml:space="preserve">Eşik Modu</sys:String>
+    <sys:String x:Key="ThresholdNone" xml:space="preserve">Yok</sys:String>
+    <sys:String x:Key="ThresholdFixed" xml:space="preserve">Sabit</sys:String>
+    <sys:String x:Key="ThresholdHint" xml:space="preserve">Eşik işlemi metin-arka plan ayrımını güçlendirir; oynayarak en iyi sonucu bulun.</sys:String>
+    <sys:String x:Key="CharacterFilter" xml:space="preserve">Karakter Filtresi</sys:String>
+    <sys:String x:Key="LatinOnly" xml:space="preserve">Yalnızca Latin harfleri kabul et</sys:String>
+    <sys:String x:Key="LatinOnlyHint" xml:space="preserve">Etkin olduğunda OCR çıktısındaki Latin alfabesi dışı karakterler (örn. Japonca glif gürültüsü) temizlenir.</sys:String>
+    <sys:String x:Key="OverlayActive" xml:space="preserve">Overlay aktif</sys:String>
+    <sys:String x:Key="ReplacementMaskActive" xml:space="preserve">Değiştirme maskesi aktif</sys:String>
+    <sys:String x:Key="ManualReplacementRegion" xml:space="preserve">Manuel değiştirme bölgesi</sys:String>
+    <sys:String x:Key="ShowPendingMask" xml:space="preserve">Bekleyen maskeyi göster</sys:String>
+    <sys:String x:Key="TextSizeLabel" xml:space="preserve">Metin Boyutu</sys:String>
+    <sys:String x:Key="BackgroundOpacityLabel" xml:space="preserve">Arka Plan Saydamlığı</sys:String>
+    <sys:String x:Key="TextColor" xml:space="preserve">Metin Rengi</sys:String>
+    <sys:String x:Key="ColorWhite" xml:space="preserve">Beyaz</sys:String>
+    <sys:String x:Key="ColorYellow" xml:space="preserve">Sarı</sys:String>
+    <sys:String x:Key="ColorCyan" xml:space="preserve">Camgöbeği</sys:String>
+    <sys:String x:Key="ColorGreen" xml:space="preserve">Yeşil</sys:String>
+    <sys:String x:Key="ColorOrange" xml:space="preserve">Turuncu</sys:String>
+    <sys:String x:Key="ColorPink" xml:space="preserve">Pembe</sys:String>
+    <sys:String x:Key="OverlayPreviewHint" xml:space="preserve">Önizlemek için 'Altyazı Test' butonunu kullanın.</sys:String>
+    <sys:String x:Key="ReplacementMaskPreview" xml:space="preserve">Değiştirme Maskesi Önizleme</sys:String>
+    <sys:String x:Key="SaveSettings" xml:space="preserve">Ayarları Kaydet</sys:String>
+    <sys:String x:Key="AdvancedTranslation" xml:space="preserve">Gelişmiş Çeviri</sys:String>
+    <sys:String x:Key="UseTranslationCache" xml:space="preserve">Çeviri önbelleği kullan</sys:String>
+    <sys:String x:Key="DiscardOldTranslations" xml:space="preserve">Eski çevirileri at</sys:String>
+    <sys:String x:Key="ShowOcrWhenFailed" xml:space="preserve">Çeviri başarısız olunca OCR metnini göster</sys:String>
+    <sys:String x:Key="EnableFallbackChain" xml:space="preserve">Yedek sağlayıcı zincirini etkinleştir</sys:String>
+    <sys:String x:Key="FallbackChainHint" xml:space="preserve">Etkin olduğunda birincil sağlayıcı başarısız olursa Fallback Zinciri'ndeki sağlayıcılar sırayla denenir.</sys:String>
+    <sys:String x:Key="FallbackChainOrder" xml:space="preserve">Fallback Zinciri Sıralaması</sys:String>
+    <sys:String x:Key="FallbackChainOrderHint" xml:space="preserve">Birincil sağlayıcı başarısız olursa bu sırayla denenir. Yukarı/aşağı oklar ile sırayı değiştirin.</sys:String>
+    <sys:String x:Key="ResetToDefault" xml:space="preserve">Varsayılana Sıfırla</sys:String>
+    <sys:String x:Key="SystemRequirements" xml:space="preserve">Sistem Gereksinimleri</sys:String>
+    <sys:String x:Key="SystemRequirementsHint" xml:space="preserve">Bu bilgisayarın PsGameTranslator için yeterli olup olmadığı otomatik tespit edilir.</sys:String>
+    <sys:String x:Key="RequiredLabel" xml:space="preserve">Gereken: </sys:String>
+    <sys:String x:Key="YouHaveLabel" xml:space="preserve">Sizde: </sys:String>
+    <sys:String x:Key="NewTerm" xml:space="preserve">Yeni Terim</sys:String>
+    <sys:String x:Key="Source" xml:space="preserve">Kaynak</sys:String>
+    <sys:String x:Key="Target" xml:space="preserve">Hedef</sys:String>
+    <sys:String x:Key="Category" xml:space="preserve">Kategori</sys:String>
+    <sys:String x:Key="BulkAdd" xml:space="preserve">Toplu Ekleme</sys:String>
+    <sys:String x:Key="BulkAddHint" xml:space="preserve">Her satır: kaynak|hedef|kategoriler|öncelik|eşleşme|not  (# ile başlayan satırlar yok sayılır)</sys:String>
+    <sys:String x:Key="UpdateExistingTerms" xml:space="preserve">Var olan terimleri güncelle</sys:String>
+    <sys:String x:Key="Preview" xml:space="preserve">Önizle</sys:String>
+    <sys:String x:Key="ImportBulk" xml:space="preserve">İçe Aktar</sys:String>
+    <sys:String x:Key="ImportFromJson" xml:space="preserve">JSON Dosyasından İçe Aktar</sys:String>
+    <sys:String x:Key="GameGlossaries" xml:space="preserve">Oyun Sözlükleri</sys:String>
+    <sys:String x:Key="GameGlossariesHint" xml:space="preserve">Hazır karakter/terim sözlüğü — seçili oyunu Oyuna Özel katmana yükler.</sys:String>
+    <sys:String x:Key="LoadGlossary" xml:space="preserve">Sözlüğü Yükle</sys:String>
+    <sys:String x:Key="LearningTitle" xml:space="preserve">Öğrenme / Kendi Veri Setin</sys:String>
+    <sys:String x:Key="AddSelectedToDataset" xml:space="preserve">Seçilenleri Veri Setine Ekle</sys:String>
+    <sys:String x:Key="ExportJsonl" xml:space="preserve">JSONL Dışa Aktar</sys:String>
+    <sys:String x:Key="ExportTsv" xml:space="preserve">TSV Dışa Aktar</sys:String>
+    <sys:String x:Key="OpenFolder" xml:space="preserve">Klasörü Aç</sys:String>
+    <sys:String x:Key="ColSelect" xml:space="preserve">Seç</sys:String>
+    <sys:String x:Key="ColTranslation" xml:space="preserve">Çeviri</sys:String>
+    <sys:String x:Key="ColStatus" xml:space="preserve">Durum</sys:String>
+    <sys:String x:Key="ColTime" xml:space="preserve">Saat</sys:String>
+    <sys:String x:Key="SelectedRecord" xml:space="preserve">Seçili Kayıt</sys:String>
+    <sys:String x:Key="TrainingLocked" xml:space="preserve">Eğitim Bölümü Kilitli</sys:String>
+    <sys:String x:Key="EnterPinToContinue" xml:space="preserve">Devam etmek için PIN girin.</sys:String>
+    <sys:String x:Key="Unlock" xml:space="preserve">Kilidi Aç</sys:String>
+    <sys:String x:Key="TrainingTitle" xml:space="preserve">Eğitim (OPUS-MT Fine-Tuning)</sys:String>
+    <sys:String x:Key="ReviewedRecords" xml:space="preserve">İncelenen Kayıtlar</sys:String>
+    <sys:String x:Key="AcceptedLabel" xml:space="preserve">Kabul edildi</sys:String>
+    <sys:String x:Key="EditedLabel" xml:space="preserve">Düzenlendi</sys:String>
+    <sys:String x:Key="RejectedLabel" xml:space="preserve">Reddedildi</sys:String>
+    <sys:String x:Key="ExportableLabel" xml:space="preserve">Aktarılabilir</sys:String>
+    <sys:String x:Key="Dataset" xml:space="preserve">Veri Seti</sys:String>
+    <sys:String x:Key="TrainingParameters" xml:space="preserve">Eğitim Parametreleri</sys:String>
+    <sys:String x:Key="ValidationSplit" xml:space="preserve">Doğrulama Ayırma (%)</sys:String>
+    <sys:String x:Key="CalculateVram" xml:space="preserve">VRAM Tahminini Hesapla</sys:String>
+    <sys:String x:Key="StartTraining" xml:space="preserve">Eğitimi Başlat</sys:String>
+    <sys:String x:Key="TotalSuffix" xml:space="preserve"> toplam</sys:String>
+    <sys:String x:Key="LossLabel" xml:space="preserve">Kayıp (Loss)</sys:String>
+    <sys:String x:Key="TestSet" xml:space="preserve">TEST SETİ</sys:String>
+    <sys:String x:Key="PairsSuffix" xml:space="preserve"> çift)</sys:String>
+    <sys:String x:Key="NeverSeenInTraining" xml:space="preserve">Eğitim sırasında hiç görülmedi</sys:String>
+    <sys:String x:Key="VramLabel" xml:space="preserve">VRAM (tahmini / anlık)</sys:String>
+    <sys:String x:Key="MbEstimated" xml:space="preserve"> MB tahmini</sys:String>
+    <sys:String x:Key="MbInUse" xml:space="preserve"> MB kullanımda</sys:String>
+    <sys:String x:Key="ModelComparison" xml:space="preserve">Model Karşılaştırma</sys:String>
+    <sys:String x:Key="SourceText" xml:space="preserve">Kaynak metin</sys:String>
+    <sys:String x:Key="Compare" xml:space="preserve">Karşılaştır</sys:String>
+    <sys:String x:Key="WidgetStatusCards" xml:space="preserve">Durum kartları</sys:String>
+    <sys:String x:Key="WidgetPerformance" xml:space="preserve">Performans grafikleri</sys:String>
+    <sys:String x:Key="WidgetHistory" xml:space="preserve">Son çeviriler</sys:String>
+    <sys:String x:Key="WidgetControls" xml:space="preserve">Hızlı kontroller</sys:String>
+    <sys:String x:Key="WidgetStatistics" xml:space="preserve">İstatistikler</sys:String>
+    <sys:String x:Key="WidgetHealth" xml:space="preserve">Sağlık</sys:String>
+    <sys:String x:Key="WidgetLog" xml:space="preserve">Canlı günlük</sys:String>
+    <sys:String x:Key="WidgetGlossary" xml:space="preserve">Hızlı sözlük</sys:String>
+    <sys:String x:Key="CompactView" xml:space="preserve">Kompakt görünüm</sys:String>
+    <sys:String x:Key="EditLayout" xml:space="preserve">Yerleşimi düzenle</sys:String>
+    <sys:String x:Key="ShowInStatsCard" xml:space="preserve">İstatistik kartında göster</sys:String>
+    <sys:String x:Key="CustomizeDashboard" xml:space="preserve">Dashboard'u özelleştir</sys:String>
+    <sys:String x:Key="EditWidgetLayout" xml:space="preserve">Widget yerleşimini düzenle</sys:String>
+    <sys:String x:Key="EditWidgetLayoutHint" xml:space="preserve">Başlık çubuğundan sürükleyin veya × ile gizleyin; konumlar otomatik kaydedilir.</sys:String>
+    <sys:String x:Key="ResetToDefaults" xml:space="preserve">Varsayılana dön</sys:String>
+    <sys:String x:Key="GameSelectShort" xml:space="preserve">Oyun seç</sys:String>
+    <sys:String x:Key="LatencyShort" xml:space="preserve">Gecikme</sys:String>
+    <sys:String x:Key="NoTranslationsYet" xml:space="preserve">Henüz çeviri yok</sys:String>
+    <sys:String x:Key="NoTranslationsHint" xml:space="preserve">Bir oyun seçip çeviriyi başlattığınızda sonuçlar burada görünür.</sys:String>
+    <sys:String x:Key="TranslationEngineShort" xml:space="preserve">Çeviri motoru</sys:String>
+    <sys:String x:Key="OcrEngineShort" xml:space="preserve">OCR motoru</sys:String>
+    <sys:String x:Key="OcrModeShort" xml:space="preserve">OCR modu</sys:String>
+    <sys:String x:Key="TranslationModeShort" xml:space="preserve">Çeviri modu</sys:String>
+    <sys:String x:Key="MachineTranslationShort" xml:space="preserve">Makine çevirisi</sys:String>
+    <sys:String x:Key="RunFullHealthCheck" xml:space="preserve">Tam sağlık kontrolü çalıştır</sys:String>
+    <sys:String x:Key="SourceTerm" xml:space="preserve">Kaynak terim</sys:String>
+    <sys:String x:Key="TargetTerm" xml:space="preserve">Hedef terim</sys:String>
+    <sys:String x:Key="AddToGlossary" xml:space="preserve">Sözlüğe ekle</sys:String>
+    <sys:String x:Key="CaptureFpsLabel" xml:space="preserve">Yakalama FPS</sys:String>
+    <sys:String x:Key="OcrDurationLabel" xml:space="preserve">OCR Süresi</sys:String>
+    <sys:String x:Key="TranslationDurationLabel" xml:space="preserve">Çeviri Süresi</sys:String>
+    <sys:String x:Key="ColActions">İşlemler</sys:String>
+    <sys:String x:Key="DownloadShort">İndir</sys:String>
+    <sys:String x:Key="UseShort">Kullan</sys:String>
+    <sys:String x:Key="VerifyShort">Doğrula</sys:String>
+</ResourceDictionary>

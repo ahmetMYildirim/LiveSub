@@ -1,0 +1,108 @@
+<Window x:Class="PsGameTranslator.App.Views.SetupWizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PsGameTranslator — İlk Kurulum"
+        Width="620" Height="460"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding TitleText}"
+                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16" />
+
+        <Grid Grid.Row="1">
+            <!-- Step 1: choose OCR engine -->
+            <StackPanel Visibility="{Binding IsStep1, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Oyun altyazılarını ekrandan okuyacak OCR motorunu seçin.
+                    Bunu daha sonra OCR sekmesinden değiştirebilirsiniz.
+                </TextBlock>
+                <ComboBox Padding="8,6" SelectedIndex="{Binding OcrEngineIndex}"
+                          ItemsSource="{Binding OcrEngineOptions}" />
+            </StackPanel>
+
+            <!-- Step 2: install OCR engine -->
+            <StackPanel Visibility="{Binding IsStep2, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Seçilen OCR motorunu kurun ve sunucusunu başlatın.
+                    Her şey otomatik indirilir — terminale gerek yok.
+                </TextBlock>
+                <Button Padding="14,8" HorizontalAlignment="Left"
+                        Command="{Binding InstallOcrEngineCommand}"
+                        Content="Kur ve Başlat" />
+            </StackPanel>
+
+            <!-- Step 3: choose translation engine -->
+            <StackPanel Visibility="{Binding IsStep3, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Çeviri motorunu seçin. OPUS-MT bilgisayarınızda tamamen çevrimdışı çalışır
+                    ve canlı altyazılar için önerilen varsayılandır.
+                </TextBlock>
+                <ComboBox Padding="8,6" SelectedIndex="{Binding TranslationEngineIndex}"
+                          ItemsSource="{Binding TranslationEngineOptions}" />
+            </StackPanel>
+
+            <!-- Step 4: download translation model -->
+            <StackPanel Visibility="{Binding IsStep4, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Çeviri modelini indirin ve çeviri sunucusunu başlatın.
+                    OPUS-MT modeli yaklaşık 1 GB'dır ve yalnızca bir kez indirilir.
+                </TextBlock>
+                <Button Padding="14,8" HorizontalAlignment="Left"
+                        Command="{Binding InstallTranslationModelCommand}"
+                        Content="İndir ve Başlat" />
+            </StackPanel>
+
+            <!-- Step 5: overlay test -->
+            <StackPanel Visibility="{Binding IsStep5, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Ekranda bir test overlay'i gösterin. Türkçe test metnini okuyabiliyorsanız
+                    overlay çalışıyor demektir. Konum ve stil Overlay sekmesinden ayarlanabilir.
+                </TextBlock>
+                <Button Padding="14,8" HorizontalAlignment="Left"
+                        Command="{Binding TestOverlayCommand}"
+                        Content="Test Overlay'ini Göster" />
+            </StackPanel>
+
+            <!-- Step 6: finish -->
+            <StackPanel Visibility="{Binding IsStep6, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    Kurulum tamamlandı. Uygulama içindeki sonraki adımlar:
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Foreground="#444444">
+                    1. Yakalama sekmesi — oyun penceresini seçin.&#10;
+                    2. Bölge Seçimi sekmesi — altyazı bölgesini çizin.&#10;
+                    3. Overlay sekmesi — değiştirme maskesi bölgesini seçin.&#10;
+                    4. İzleme sekmesi — İzlemeyi Başlatın. Bir sorun olursa Pipeline Doctor'ı kullanın.
+                </TextBlock>
+                <Button Padding="14,8" Margin="0,16,0,0" HorizontalAlignment="Left"
+                        Command="{Binding FinishCommand}"
+                        Content="Bitir" FontWeight="SemiBold" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Grid.Row="2" Text="{Binding StepStatusText}"
+                   TextWrapping="Wrap" FontFamily="Consolas" FontSize="12"
+                   Foreground="#33557A" MinHeight="40" Margin="0,12,0,8" />
+
+        <Grid Grid.Row="3">
+            <Button Padding="12,6" HorizontalAlignment="Left"
+                    Command="{Binding SkipCommand}"
+                    Content="Kurulumu Atla" Foreground="#777777" BorderThickness="0" Background="Transparent" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Width="90" Padding="12,6" Command="{Binding BackCommand}" Content="← Geri" />
+                <Button Width="90" Padding="12,6" Margin="8,0,0,0"
+                        Command="{Binding NextCommand}" Content="İleri →" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

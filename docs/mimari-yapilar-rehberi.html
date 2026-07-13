@@ -1,0 +1,990 @@
+<meta charset="utf-8">
+<title>Yazılım Mimarisi El Kitabı — Tüm Mimari Yapılar</title>
+<style>
+  :root {
+    --bg: #F5F4EF;
+    --surface: #FFFFFF;
+    --surface-2: #FAF9F4;
+    --text: #1E1D19;
+    --text-muted: #6C6659;
+    --border: #E2DED2;
+    --code-bg: #EEEAE0;
+    --code-text: #38352D;
+    --c-foundation: #3D5A99;
+    --c-data: #7A4FA0;
+    --c-integration: #1F7A72;
+    --c-infra: #B85A20;
+    --c-design: #9C3D52;
+    --good: #2E7D5B;
+    --bad: #B5432E;
+    --shadow: 0 1px 2px rgba(30,29,25,0.06), 0 4px 18px rgba(30,29,25,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17151A; --surface: #1E1C22; --surface-2: #211F26; --text: #EDE9E1;
+      --text-muted: #9C948A; --border: #332F38; --code-bg: #221F27; --code-text: #E7E2D8;
+      --c-foundation: #86A3EE; --c-data: #C29CE6; --c-integration: #5FCABE;
+      --c-infra: #F0925A; --c-design: #E38AA0; --good: #6FCBA4; --bad: #E88A73;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17151A; --surface: #1E1C22; --surface-2: #211F26; --text: #EDE9E1;
+    --text-muted: #9C948A; --border: #332F38; --code-bg: #221F27; --code-text: #E7E2D8;
+    --c-foundation: #86A3EE; --c-data: #C29CE6; --c-integration: #5FCABE;
+    --c-infra: #F0925A; --c-design: #E38AA0; --good: #6FCBA4; --bad: #E88A73;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F5F4EF; --surface: #FFFFFF; --surface-2: #FAF9F4; --text: #1E1D19;
+    --text-muted: #6C6659; --border: #E2DED2; --code-bg: #EEEAE0; --code-text: #38352D;
+    --c-foundation: #3D5A99; --c-data: #7A4FA0; --c-integration: #1F7A72;
+    --c-infra: #B85A20; --c-design: #9C3D52; --good: #2E7D5B; --bad: #B5432E;
+    --shadow: 0 1px 2px rgba(30,29,25,0.06), 0 4px 18px rgba(30,29,25,0.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15.5px; line-height: 1.63; -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono { font-family: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", monospace; }
+
+  .shell { display: flex; max-width: 1240px; margin: 0 auto; align-items: flex-start; }
+
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; width: 260px; flex: none;
+    padding: 32px 18px 32px 26px; overflow-y: auto; border-right: 1px solid var(--border);
+  }
+  .sidebar-title { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 18px 0 10px; }
+  .sidebar-title:first-child { margin-top: 0; }
+  .toc { display: flex; flex-direction: column; gap: 1px; }
+  .toc a {
+    color: var(--text-muted); text-decoration: none; font-size: 13px;
+    padding: 5px 8px; border-radius: 6px; display: flex; gap: 8px; align-items: baseline;
+  }
+  .toc a .n { font-family: "Cascadia Code", monospace; font-size: 11px; opacity: .65; flex: none; width: 16px; }
+  .toc a:hover { color: var(--text); background: var(--surface-2); }
+  .toc-group { border-left: 2px solid var(--border); padding-left: 2px; margin-left: 2px; }
+
+  main { flex: 1; min-width: 0; padding: 56px 48px 130px; max-width: 900px; }
+
+  header.intro { margin-bottom: 46px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--c-infra); font-weight: 600; margin: 0 0 10px; }
+  h1 { font-size: 31px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px; text-wrap: balance; }
+  .lede { font-size: 16px; color: var(--text-muted); max-width: 68ch; margin: 0 0 22px; }
+
+  .legend-strip { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; }
+  .legend-strip span { display: flex; align-items: center; gap: 7px; color: var(--text-muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  section.group { margin: 70px 0 0; }
+  .group-head { margin-bottom: 8px; padding-bottom: 14px; border-bottom: 2px solid var(--border); display: flex; align-items: baseline; gap: 12px; }
+  .group-num {
+    font-family: "Cascadia Code", monospace; font-size: 13px; font-weight: 700;
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: #fff; flex: none;
+  }
+  .group-head h2 { font-size: 24px; margin: 0; letter-spacing: -0.01em; }
+  .group-deck { color: var(--text-muted); font-size: 14.5px; max-width: 68ch; margin: 10px 0 0; }
+
+  article.pattern {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px 26px 26px; margin: 24px 0; box-shadow: var(--shadow);
+    border-left: 4px solid var(--border);
+  }
+  .pattern-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+  .pattern-head h3 { font-size: 19px; margin: 0; }
+  .pattern-num { font-family: "Cascadia Code", monospace; font-size: 12.5px; color: var(--text-muted); font-weight: 400; }
+
+  .pattern p.def { color: var(--text); font-size: 14.6px; margin: 10px 0 14px; }
+
+  .diagram {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px;
+    padding: 16px 18px; margin: 14px 0; font-size: 12.5px;
+  }
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 10px; font-family: "Cascadia Code", monospace; font-size: 12px; row-gap: 8px; }
+  /* Clearly larger than the 7-8px gap used *within* a wrapped row, so a row
+     that wraps to two lines still reads as visually separate from the next
+     diagram row instead of blending into it. */
+  .flow + .flow { margin-top: 16px; }
+  .node {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 11px; color: var(--text); white-space: nowrap;
+  }
+  .node.hl { color: #fff; border-color: transparent; font-weight: 600; }
+  .arrow { color: var(--text-muted); }
+  .diagram .cap { color: var(--text-muted); margin-top: 10px; font-family: "Segoe UI", sans-serif; font-size: 12.5px; }
+
+  h4.subhead { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 18px 0 8px; }
+
+  ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  /* A list item whose content mixes plain text with inline <strong>/<code> gets
+     split into multiple grid/flex items (one per contiguous text run), which
+     with a 22px first column pushed the trailing text into that 22px column
+     and wrapped every single word onto its own line. Absolute-positioning the
+     counter instead keeps the <li> a normal flow element, so mixed inline
+     content wraps exactly like any other paragraph regardless of how many
+     <strong>/<code> tags it contains. */
+  ol.steps li { counter-increment: step; position: relative; padding-left: 30px; font-size: 14px; }
+  ol.steps li::before {
+    content: counter(step); position: absolute; left: 0; top: 0;
+    font-family: "Cascadia Code", monospace; font-weight: 700; font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .tradeoffs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 6px; }
+  .to-col .to-title { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 6px; }
+  .to-col.good .to-title { color: var(--good); }
+  .to-col.bad .to-title { color: var(--bad); }
+  .to-col ul { margin: 0; padding-left: 16px; font-size: 13.3px; color: var(--text-muted); }
+  .to-col li { margin: 3px 0; }
+
+  .usecase {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; margin-top: 14px; font-size: 13.3px; color: var(--text-muted);
+  }
+  .usecase strong { color: var(--text); }
+
+  pre {
+    background: var(--code-bg); color: var(--code-text); padding: 12px 15px; border-radius: 8px;
+    overflow-x: auto; font-size: 12.3px; line-height: 1.5; margin: 10px 0; border: 1px solid var(--border);
+  }
+  pre code { background: none; padding: 0; }
+  p code, li code { background: var(--code-bg); color: var(--code-text); padding: 1px 6px; border-radius: 4px; font-size: 0.87em; }
+
+  /* Branching diagram row: a source node with several targets stacked under it —
+     replaces the old visibility:hidden spacer trick, which let rows crowd too
+     close together since the hidden placeholder didn't reserve the same visual
+     rhythm as the real row above it. */
+  .branch-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 9px; }
+  .branch-row .arrow { padding-top: 6px; }
+  .branch-targets { display: flex; flex-direction: column; gap: 7px; }
+
+  /* Decision list: question above, answer below — avoids cramming a long
+     question + arrow + answer onto one flex-wrap row, which crowded the next
+     row when the text wrapped to two lines at normal column width. */
+  .decision-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .decision {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+    padding: 12px 16px; box-shadow: var(--shadow);
+  }
+  .decision .q { font-family: "Cascadia Code", monospace; font-size: 12.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .decision .a { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .decision .a .arrow { font-family: "Cascadia Code", monospace; font-size: 12px; color: var(--text-muted); }
+
+  footer.doc-footer { margin-top: 68px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .shell { flex-direction: column; }
+    .sidebar { position: relative; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px; }
+    main { padding: 32px 20px 90px; max-width: 100%; }
+    .tradeoffs { grid-template-columns: 1fr; }
+  }
+
+  a { color: var(--c-integration); }
+  ::selection { background: color-mix(in srgb, var(--c-infra) 30%, transparent); }
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <p class="sidebar-title">Gruplar</p>
+    <div class="legend-strip" style="flex-direction:column; gap:8px;">
+      <span><span class="dot" style="background:var(--c-foundation)"></span> Temel mimari stilleri</span>
+      <span><span class="dot" style="background:var(--c-data)"></span> Veri &amp; durum yönetimi</span>
+      <span><span class="dot" style="background:var(--c-integration)"></span> İletişim &amp; entegrasyon</span>
+      <span><span class="dot" style="background:var(--c-infra)"></span> Dağıtım &amp; altyapı</span>
+      <span><span class="dot" style="background:var(--c-design)"></span> Tasarım yaklaşımı &amp; göç</span>
+    </div>
+
+    <p class="sidebar-title">İçindekiler</p>
+    <div class="toc">
+      <a href="#giris"><span class="n"></span>Giriş</a>
+    </div>
+    <div class="toc toc-group" style="border-color:var(--c-foundation)">
+      <a href="#p1"><span class="n">1</span>Katmanlı (N-Tier)</a>
+      <a href="#p2"><span class="n">2</span>Monolitik / Modüler Monolit</a>
+      <a href="#p3"><span class="n">3</span>Mikroservis</a>
+      <a href="#p4"><span class="n">4</span>Hexagonal / Clean</a>
+    </div>
+    <div class="toc toc-group" style="border-color:var(--c-data)">
+      <a href="#p5"><span class="n">5</span>CQRS</a>
+      <a href="#p6"><span class="n">6</span>Event Sourcing</a>
+      <a href="#p7"><span class="n">7</span>Saga Deseni</a>
+    </div>
+    <div class="toc toc-group" style="border-color:var(--c-integration)">
+      <a href="#p8"><span class="n">8</span>Olay-Güdümlü Mimari</a>
+      <a href="#p9"><span class="n">9</span>Mesaj Broker</a>
+      <a href="#p10"><span class="n">10</span>API Gateway &amp; BFF</a>
+      <a href="#p11"><span class="n">11</span>Pipe-and-Filter</a>
+    </div>
+    <div class="toc toc-group" style="border-color:var(--c-infra)">
+      <a href="#p12"><span class="n">12</span>Serverless</a>
+      <a href="#p13"><span class="n">13</span>Sidecar &amp; Service Mesh</a>
+      <a href="#p14"><span class="n">14</span>Space-Based</a>
+    </div>
+    <div class="toc toc-group" style="border-color:var(--c-design)">
+      <a href="#p15"><span class="n">15</span>Domain-Driven Design</a>
+      <a href="#p16"><span class="n">16</span>Strangler Fig (göç)</a>
+    </div>
+    <div class="toc">
+      <a href="#secim"><span class="n"></span>Nasıl seçilir?</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="intro" id="giris">
+      <p class="eyebrow">Yazılım Mimarisi El Kitabı</p>
+      <h1>Tüm Mimari Yapılar: Ne Olduğu, Nasıl İnşa Edildiği</h1>
+      <p class="lede">
+        16 mimari desen — her biri dört sabit başlıkla anlatılıyor: <strong>tanım</strong>,
+        <strong>diyagram</strong>, <strong>nasıl inşa edilir</strong> (somut adımlar/bileşenler) ve
+        <strong>artı/eksi</strong>. Bu bir "hangisi en iyi" listesi değil — her deseni doğru bağlamda
+        tanıman ve gerektiğinde kurabilmen için bir başvuru kaynağı. Sondaki "Nasıl seçilir?" bölümü
+        hangi deseni ne zaman seçeceğine dair karar ağacı veriyor.
+      </p>
+    </header>
+
+    <!-- ═══════════════ GRUP I ═══════════════ -->
+    <section class="group" id="grup-1">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--c-foundation)">I</span>
+        <h2>Temel Mimari Stilleri</h2>
+      </div>
+      <p class="group-deck">Bir sistemin en üst seviyede nasıl bölümlendiğini belirleyen dört ana yaklaşım.</p>
+
+      <!-- P1 -->
+      <article class="pattern" style="border-left-color:var(--c-foundation)" id="p1">
+        <div class="pattern-head"><h3>1. Katmanlı Mimari <span class="pattern-num">(N-Tier)</span></h3></div>
+        <p class="def">
+          Sistemi yatay katmanlara böler — her katman sadece bir altındakine bağımlıdır, üstündekini
+          bilmez. En yaygın 3 katman: <strong>Sunum</strong> (UI/API) → <strong>İş mantığı</strong>
+          (servisler) → <strong>Veri erişimi</strong> (repository/DAO).
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node hl" style="background:var(--c-foundation)">Sunum (Controller/UI)</span>
+            <span class="arrow">↓</span>
+            <span class="node">İş Mantığı (Service)</span>
+            <span class="arrow">↓</span>
+            <span class="node">Veri Erişimi (Repository)</span>
+            <span class="arrow">↓</span>
+            <span class="node">Veritabanı</span>
+          </div>
+          <p class="cap">Her katman sadece hemen altındaki katmanı çağırır — Sunum katmanı doğrudan veritabanına erişemez.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Projeyi katman başına ayrı klasör/modül/proje olarak böl (<code>Controllers</code>, <code>Services</code>, <code>Repositories</code>).</li>
+          <li>Her katman için arayüz (interface) tanımla — üst katman somut sınıfa değil arayüze bağımlı olsun.</li>
+          <li>Bağımlılık enjeksiyonu (DI container) ile katmanları birbirine bağla — Spring'de <code>@Service</code>/<code>@Repository</code>, .NET'te <code>IServiceCollection</code>.</li>
+          <li>Katmanlar arası veri taşımak için DTO kullan — Entity'yi doğrudan sunum katmanına sızdırma.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Anlaşılması, öğrenmesi kolay</li>
+            <li>Sorumluluklar net ayrılmış</li>
+            <li>Küçük-orta ekipler için hızlı geliştirme</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Büyüyünce "her şey Service katmanında" (God Service) tuzağı</li>
+            <li>Katmanlar arası gereksiz veri taşıma (round-trip'ler)</li>
+            <li>Bağımsız ölçeklenemez — tek dağıtım birimi</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Küçük-orta ölçekli, tek ekip tarafından geliştirilen çoğu iş uygulaması. Varsayılan, "önce bunu dene" seçenek.</p>
+      </article>
+
+      <!-- P2 -->
+      <article class="pattern" style="border-left-color:var(--c-foundation)" id="p2">
+        <div class="pattern-head"><h3>2. Monolitik / Modüler Monolit</h3></div>
+        <p class="def">
+          Tüm uygulama tek bir dağıtım birimidir (tek WAR/JAR, tek .NET assembly seti). "Monolit" kötü
+          bir kelime değildir — <strong>modüler monolit</strong>, kod içinde net modül sınırları (paket/namespace
+          düzeyinde) tutarken tek işlem/tek dağıtım olarak kalır; mikroservise geçişin ara adımıdır.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node hl" style="background:var(--c-foundation)">Tek Süreç</span>
+            <span class="node">Sipariş Modülü</span>
+            <span class="node">Ödeme Modülü</span>
+            <span class="node">Stok Modülü</span>
+          </div>
+          <p class="cap">Modüller aynı süreçte, aynı bellekte çalışır ama birbirine sadece tanımlı arayüzlerle (iç API) erişir — doğrudan başka modülün veritabanı tablosuna erişim yasaktır.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>İş alanına göre modül sınırları çiz (Sipariş, Ödeme, Stok gibi) — her modül kendi paketinde/projesinde.</li>
+          <li>Modüller arası iletişimi sadece açık arayüzler (public API/event) üzerinden yap; iç sınıfları <code>internal</code>/package-private tut.</li>
+          <li>Her modüle kendi veritabanı şeması (aynı fiziksel DB içinde ayrı şema) ver — ileride mikroservise bölünmeyi kolaylaştırır.</li>
+          <li>Modüller arası senkron çağrı yerine mümkün olduğunca iç olay (in-process event/domain event) kullan.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Basit dağıtım, basit test, basit debug</li>
+            <li>Ağ gecikmesi/dağıtık sistem karmaşıklığı yok</li>
+            <li>Mikroservise geçiş için iyi bir ara durak</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Tüm sistem birlikte ölçeklenir (bir modül CPU-yoğunsa hepsi büyütülür)</li>
+            <li>Tek hatalı deploy tüm sistemi etkileyebilir</li>
+            <li>Disiplin olmadan modül sınırları zamanla erir</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Yeni bir ürün/startup — henüz hangi sınırların gerçek servis sınırı olacağı belli değilken modüler monolit en düşük riskli başlangıçtır.</p>
+      </article>
+
+      <!-- P3 -->
+      <article class="pattern" style="border-left-color:var(--c-foundation)" id="p3">
+        <div class="pattern-head"><h3>3. Mikroservis Mimarisi</h3></div>
+        <p class="def">
+          Sistemi bağımsız dağıtılabilen, kendi veritabanına sahip, iş yeteneğine göre (business capability)
+          bölünmüş küçük servislere ayırır. Her servis kendi ekibi tarafından, kendi teknoloji yığınıyla,
+          bağımsız olarak geliştirilip dağıtılabilir.
+        </p>
+        <div class="diagram">
+          <div class="branch-row">
+            <span class="node hl" style="background:var(--c-foundation)">API Gateway</span>
+            <span class="arrow">→</span>
+            <div class="branch-targets">
+              <span class="node">Sipariş Servisi + DB</span>
+              <span class="node">Ödeme Servisi + DB</span>
+              <span class="node">Stok Servisi + DB</span>
+            </div>
+          </div>
+          <p class="cap">Her servis kendi veritabanına sahiptir (veritabanı-per-servis) — başka servisin tablosuna doğrudan SQL ile erişim yasaktır, sadece API/olay üzerinden konuşulur.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Servis sınırlarını DDD bounded context'lerine göre çiz (bkz. Bölüm 15) — teknik katmana göre değil, iş yeteneğine göre böl.</li>
+          <li>Her servise kendi veritabanı/şema ver — paylaşılan veritabanı mikroservisin en yaygın anti-pattern'idir.</li>
+          <li>Servisler arası senkron iletişim için REST/gRPC, asenkron için mesaj broker (bkz. Bölüm 9) kullan.</li>
+          <li>Merkezi bir API Gateway koy (bkz. Bölüm 10) — istemciler tek noktadan girer, iç topolojiyi görmez.</li>
+          <li>Dağıtık izleme (distributed tracing — Jaeger/Zipkin/OpenTelemetry) baştan kur; tek servis debug etmek kolaydır, 20 servis arası bir isteği takip etmek değildir.</li>
+          <li>Her servisi bağımsız CI/CD hattına bağla.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Bağımsız ölçekleme (sadece yoğun servisi büyüt)</li>
+            <li>Bağımsız dağıtım — bir ekip diğerini bloklamaz</li>
+            <li>Servis başına farklı teknoloji seçimi mümkün</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Dağıtık sistem karmaşıklığı: ağ hataları, kısmi başarısızlık, tutarlılık</li>
+            <li>Operasyonel yük çok yüksek (izleme, günlükleme, dağıtım altyapısı)</li>
+            <li>Servisler arası veri tutarlılığı zor (bkz. Saga, Bölüm 7)</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Birden fazla bağımsız ekip, farklı ölçekleme ihtiyaçları olan net iş sınırları, ve bu karmaşıklığı yönetecek operasyonel olgunluk varsa. "Küçük ekip + belirsiz sınırlar" durumunda mikroservise erken geçiş genelde zarar verir.</p>
+      </article>
+
+      <!-- P4 -->
+      <article class="pattern" style="border-left-color:var(--c-foundation)" id="p4">
+        <div class="pattern-head"><h3>4. Hexagonal (Ports &amp; Adapters) / Clean Architecture</h3></div>
+        <p class="def">
+          İş mantığını (domain/core) dış dünyadan (veritabanı, UI, üçüncü parti API) tamamen izole eder.
+          Bağımlılık yönü her zaman <strong>dışarıdan içeriye</strong>dir — domain katmanı hiçbir framework'e,
+          veritabanına ya da HTTP'ye bağımlı değildir; sadece kendi arayüzlerini (port) tanımlar, dış dünya
+          onlara uyum sağlar (adapter).
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">HTTP Controller (adapter)</span>
+            <span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-foundation)">Domain / İş Mantığı (port'lar)</span>
+            <span class="arrow">←</span>
+            <span class="node">DB Repository (adapter)</span>
+          </div>
+          <p class="cap">Domain, "bir <code>OrderRepository</code> port'u ister" der — bunu PostgreSQL de, MongoDB de, hatta bellek-içi bir test double da karşılayabilir. Domain hiçbirini bilmez.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Domain katmanında sadece iş kuralları ve arayüzler (port) olsun — <code>using</code>/<code>import</code> listesinde framework/ORM/HTTP olmamalı.</li>
+          <li>Her dış bağımlılık için bir port (arayüz) tanımla: <code>interface OrderRepository { save(Order o); }</code></li>
+          <li>Gerçek implementasyonları (adapter) ayrı bir katmanda/pakette yaz: <code>JpaOrderRepository implements OrderRepository</code> / <code>EfOrderRepository : IOrderRepository</code>.</li>
+          <li>Uygulamanın giriş noktasında (composition root) DI ile hangi adapter'ın hangi port'u karşılayacağını bağla.</li>
+          <li>Test yazarken gerçek adapter yerine sahte (in-memory/fake) adapter enjekte et — domain testleri veritabanı olmadan, milisaniyeler içinde çalışır.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>İş mantığı framework/veritabanı değişikliğinden etkilenmez</li>
+            <li>Domain testleri hızlı ve izole (gerçek DB gerekmez)</li>
+            <li>Domain kodu okunması en temiz kod olur — teknik detay karışmaz</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Basit CRUD uygulamalarında gereksiz soyutlama/dosya çoğalması</li>
+            <li>Ekip alışkın değilse öğrenme eğrisi var</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> İş mantığı karmaşık/uzun ömürlü, teknoloji değişikliği (DB, framework) beklenen, veya yüksek test kalitesi kritikse. Basit bir CRUD API'de genelde aşırı mühendisliktir.</p>
+      </article>
+    </section>
+
+    <!-- ═══════════════ GRUP II ═══════════════ -->
+    <section class="group" id="grup-2">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--c-data)">II</span>
+        <h2>Veri &amp; Durum Yönetimi</h2>
+      </div>
+      <p class="group-deck">Verinin nasıl saklandığı, okunduğu ve dağıtık sistemlerde tutarlı kalmasının nasıl sağlandığı.</p>
+
+      <!-- P5 -->
+      <article class="pattern" style="border-left-color:var(--c-data)" id="p5">
+        <div class="pattern-head"><h3>5. CQRS <span class="pattern-num">(Command Query Responsibility Segregation)</span></h3></div>
+        <p class="def">
+          Yazma (Command) ve okuma (Query) yollarını ayrı modellere, hatta ayrı veritabanlarına böler.
+          Yazma tarafı tutarlılık ve doğrulamaya, okuma tarafı hıza ve sorgu-dostu şekle optimize edilir.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Command</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-data)">Yazma Modeli (normalize)</span><span class="arrow">→</span>
+            <span class="node">Olay yayınla</span>
+          </div>
+          <div class="flow">
+            <span class="node">Olay</span><span class="arrow">→</span>
+            <span class="node">Okuma Modelini güncelle (denormalize)</span>
+          </div>
+          <div class="flow">
+            <span class="node">Query</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-data)">Okuma Modeli (hızlı, düz)</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Command handler'ları ve Query handler'ları ayrı sınıflarda tut — aynı servis metodunu ikisi için kullanma.</li>
+          <li>Yazma modelini (aggregate) iş kurallarına göre normalize tasarla.</li>
+          <li>Yazma sonrası bir olay yayınla (<code>OrderPlaced</code>), okuma modelini bu olayı dinleyen ayrı bir işleyici güncellesin.</li>
+          <li>Basit versiyon: aynı veritabanı, farklı sorgular/view'lar. İleri versiyon: farklı veritabanı motoru (yazma: PostgreSQL, okuma: Elasticsearch/Redis).</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Okuma ve yazma bağımsız ölçeklenir</li>
+            <li>Okuma modeli sorgulara özel optimize edilebilir</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Nihai tutarlılık (eventual consistency) — okuma modeli anlık güncel olmayabilir</li>
+            <li>İki model = iki kat bakım yükü</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Okuma yükü yazmadan çok daha büyükse ve okumalar farklı şekillerde sorgulanıyorsa (dashboard, arama, raporlama). Basit CRUD'da gereksizdir.</p>
+      </article>
+
+      <!-- P6 -->
+      <article class="pattern" style="border-left-color:var(--c-data)" id="p6">
+        <div class="pattern-head"><h3>6. Event Sourcing</h3></div>
+        <p class="def">
+          Nesnenin sadece <em>son halini</em> değil, <em>o hale nasıl gelindiğini</em> (her değişikliği bir
+          olay olarak) saklar. Mevcut durum, tüm olayların baştan yeniden oynatılmasıyla (replay) elde
+          edilir — bir bakiye tutmak yerine "yatırıldı +100, çekildi -30" olaylarının toplamı.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">AccountOpened</span><span class="arrow">→</span>
+            <span class="node">MoneyDeposited(+100)</span><span class="arrow">→</span>
+            <span class="node">MoneyWithdrawn(-30)</span>
+          </div>
+          <p class="cap">Mevcut bakiye = olayları sırayla uygula: 0 → 100 → 70. Bu olay listesi <strong>tek gerçek kaynak</strong>tır (source of truth) — durum tablosu sadece bir önbellektir/projeksiyondur.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Her durum değişikliğini değişmez (immutable) bir olay olarak modelle: <code>MoneyDeposited { accountId, amount, timestamp }</code>.</li>
+          <li>Olayları ekle-sadece (append-only) bir "event store"a yaz — asla güncelleme/silme yapma.</li>
+          <li>Mevcut durumu almak için: son bilinen snapshot'tan sonraki olayları sırayla uygula (performans için periyodik snapshot al, her seferinde baştan oynatma).</li>
+          <li>Genelde CQRS ile birlikte kullanılır — okuma modeli, olayları dinleyip kendini güncelleyen bir projeksiyondur.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Tam denetim izi (audit log) bedava gelir</li>
+            <li>Geçmişteki herhangi bir ana "zaman yolculuğu" yapılabilir</li>
+            <li>Hata ayıklama: "bu duruma nasıl gelindi" sorusu her zaman cevaplanabilir</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Kavramsal karmaşıklık yüksek, ekip alışkın olmalı</li>
+            <li>Olay şeması zamanla değişirse (versiyonlama) eski olayları okumak zorlaşır</li>
+            <li>Sorgulama (mevcut durumu görmek için hep replay ya da güncel projeksiyon gerekir)</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Denetim izi yasal/iş gereksinimiyse (finans, sağlık), veya "bu değer nasıl bu hale geldi" sorusu sık soruluyorsa. Çoğu CRUD uygulaması için gereksizdir.</p>
+      </article>
+
+      <!-- P7 -->
+      <article class="pattern" style="border-left-color:var(--c-data)" id="p7">
+        <div class="pattern-head"><h3>7. Saga Deseni</h3></div>
+        <p class="def">
+          Mikroservislerde tek bir ACID transaction birden fazla servisi/veritabanını kapsayamaz. Saga,
+          uzun süren bir iş sürecini birbirini izleyen yerel transaction'lara böler; bir adım başarısız
+          olursa önceki adımları geri alan <strong>telafi edici işlemler</strong> (compensating actions)
+          çalıştırır.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node hl" style="background:var(--c-data)">Sipariş Oluştur</span><span class="arrow">→</span>
+            <span class="node">Ödeme Al</span><span class="arrow">→</span>
+            <span class="node">Stok Ayır</span><span class="arrow">→</span>
+            <span class="node">Kargo Planla</span>
+          </div>
+          <div class="flow">
+            <span class="node" style="border-color:var(--bad); color:var(--bad)">Stok Ayır BAŞARISIZ</span>
+            <span class="arrow">→ telafi et →</span>
+            <span class="node">Ödemeyi İade Et</span><span class="arrow">→</span>
+            <span class="node">Siparişi İptal Et</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li><strong>Koreografi (choreography):</strong> Her servis bir öncekinin olayını dinler, kendi işini yapar, kendi olayını yayınlar — merkezi kontrol yok, servisler birbirini olaylarla tetikler.</li>
+          <li><strong>Orkestrasyon (orchestration):</strong> Merkezi bir "saga orchestrator" her adımı sırayla çağırır ve hata durumunda telafi adımlarını tetikler — daha görünür, daha kolay debug edilir.</li>
+          <li>Her adım için karşılık gelen bir telafi işlemi tanımla (Ödeme Al ↔ Ödemeyi İade Et).</li>
+          <li>Her adımı idempotent yap — aynı mesaj iki kez işlenirse sistem bozulmamalı (ağ tekrar denemeleri kaçınılmazdır).</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Mikroservislerde dağıtık işlem tutarlılığını mümkün kılar</li>
+            <li>Her servis kendi veritabanı sınırında kalır (2PC gerekmez)</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Telafi mantığı yazmak ekstra iş ve test yükü</li>
+            <li>Ara durumlar geçici olarak tutarsız görünebilir (nihai tutarlılık)</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Mikroservis mimarisinde birden fazla servisi kapsayan iş süreçleri (sipariş → ödeme → stok → kargo gibi) için neredeyse zorunludur.</p>
+      </article>
+    </section>
+
+    <!-- ═══════════════ GRUP III ═══════════════ -->
+    <section class="group" id="grup-3">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--c-integration)">III</span>
+        <h2>İletişim &amp; Entegrasyon</h2>
+      </div>
+      <p class="group-deck">Bileşenlerin/servislerin birbiriyle nasıl konuştuğu ve istemcilerin sisteme nasıl eriştiği.</p>
+
+      <!-- P8 -->
+      <article class="pattern" style="border-left-color:var(--c-integration)" id="p8">
+        <div class="pattern-head"><h3>8. Olay-Güdümlü Mimari <span class="pattern-num">(Event-Driven Architecture)</span></h3></div>
+        <p class="def">
+          Servisler birbirini doğrudan çağırmak yerine olay yayınlar/dinler. Yayınlayan (producer), o olayı
+          kimin dinlediğini bilmez ve umursamaz — bu, servisler arası en gevşek bağı (loose coupling) sağlar.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Sipariş Servisi</span><span class="arrow">yayınlar →</span>
+            <span class="node hl" style="background:var(--c-integration)">OrderPlaced olayı</span>
+          </div>
+          <div class="branch-row">
+            <span class="arrow" style="padding-top:0">↓ dinleyenler</span>
+            <div class="branch-targets" style="flex-direction:row; flex-wrap:wrap">
+              <span class="node">Stok Servisi</span>
+              <span class="node">E-posta Servisi</span>
+              <span class="node">Analitik Servisi</span>
+            </div>
+          </div>
+          <p class="cap">Sipariş Servisi kimin dinlediğini bilmez — yarın yeni bir "Sadakat Puanı Servisi" eklense Sipariş Servisi'nde tek satır değişmez, sadece yeni dinleyici eklenir.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Domain olaylarını tanımla — geçmiş zamanda, gerçekleşmiş bir gerçeği ifade etmeli (<code>OrderPlaced</code>, <code>PaymentFailed</code>).</li>
+          <li>Bir olay broker'ı seç (Kafka: yüksek hacim + olay geçmişi saklama; RabbitMQ: klasik pub/sub + yönlendirme kuralları).</li>
+          <li>Olay şemasını versiyonlanabilir tasarla (yeni alan eklemek eski tüketicileri bozmamalı).</li>
+          <li>"En az bir kez teslim" (at-least-once delivery) varsayımıyla tüketicileri idempotent yaz.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Servisler arası en gevşek bağ — yeni tüketici eklemek yayınlayanı etkilemez</li>
+            <li>Doğal olarak asenkron, ölçeklenebilir</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Akışı takip etmek zor ("bu olayı kim dinliyor?" sorusu koda bakarak cevaplanamaz)</li>
+            <li>Nihai tutarlılık, sıra garantisi gibi konular ekstra dikkat ister</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Birden fazla bağımsız sistemin aynı iş gerçeğine tepki vermesi gerektiğinde (sipariş verildiğinde stok, e-posta, analitik hepsi tepki versin ama birbirinden habersiz olsun).</p>
+      </article>
+
+      <!-- P9 -->
+      <article class="pattern" style="border-left-color:var(--c-integration)" id="p9">
+        <div class="pattern-head"><h3>9. Mesaj Broker Mimarisi</h3></div>
+        <p class="def">
+          Olay-güdümlü mimarinin alt yapı katmanı — mesajları üreticiden tüketiciye güvenilir şekilde
+          taşıyan aracı sistem. İki temel model: <strong>Point-to-Point</strong> (kuyruk, bir mesajı bir
+          tüketici işler) ve <strong>Publish/Subscribe</strong> (konu/topic, mesajı tüm aboneler alır).
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Üretici</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Kuyruk (P2P)</span><span class="arrow">→</span>
+            <span class="node">Tek Tüketici (yarış — kim önce alırsa)</span>
+          </div>
+          <div class="flow">
+            <span class="node">Üretici</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Konu (Pub/Sub)</span>
+            <span class="arrow">→</span><span class="node">Tüketici A</span>
+            <span class="arrow">→</span><span class="node">Tüketici B</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>İş yüküne göre broker seç: <strong>Kafka</strong> (yüksek hacim, olay günlüğü/replay, stream processing), <strong>RabbitMQ</strong> (esnek yönlendirme, öncelik kuyrukları, klasik iş kuyruğu), <strong>Azure Service Bus/SQS</strong> (bulut-yönetilen, düşük operasyon yükü).</li>
+          <li>Ölü mektup kuyruğu (dead-letter queue) kur — işlenemeyen mesajlar sonsuz döngüye girmesin, ayrı bir kuyrukta incelensin.</li>
+          <li>Mesaj teslim garantisini netleştir: en fazla bir kez / en az bir kez / tam olarak bir kez — çoğu sistem "en az bir kez + idempotent tüketici" ile çalışır.</li>
+          <li>Geri basınç (backpressure) için tüketici tarafında eşzamanlılık sınırı koy — kuyruk aniden boşalınca sistemi boğmasın.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Üretici ve tüketici zamanda ayrışır (biri çökse mesaj kaybolmaz, kuyrukta bekler)</li>
+            <li>Doğal yük dengeleme (birden fazla tüketici aynı kuyruktan çeker)</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Ekstra altyapı bileşeni — kurulum, izleme, yüksek erişilebilirlik gerekir</li>
+            <li>Mesaj sırası garantisi (özellikle paralel tüketimde) dikkat ister</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Servisler arası asenkron iletişim gerektiğinde — bkz. Bölüm 7 (önceki dokümandaki "mesaj kuyruğuyla ayrıştırma").</p>
+      </article>
+
+      <!-- P10 -->
+      <article class="pattern" style="border-left-color:var(--c-integration)" id="p10">
+        <div class="pattern-head"><h3>10. API Gateway &amp; Backend for Frontend (BFF)</h3></div>
+        <p class="def">
+          API Gateway, tüm dış istekler için tek giriş noktasıdır — kimlik doğrulama, hız sınırlama,
+          yönlendirme, izleme burada merkezi olarak yapılır. BFF, her istemci türü (web, mobil, masaüstü)
+          için ayrı, o istemciye özel şekillendirilmiş bir gateway katmanıdır.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Web İstemcisi</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Web BFF</span>
+          </div>
+          <div class="flow">
+            <span class="node">Mobil İstemci</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Mobil BFF</span>
+          </div>
+          <div class="flow" style="margin-top:9px; padding-left:26px; opacity:.85">
+            <span class="arrow">↳</span>
+            <span class="node">İkisi de aynı arka uç mikroservislerine gider</span>
+          </div>
+          <p class="cap">Mobil BFF, mobil ekranın ihtiyacı olan minimal veriyi birden fazla servisten toplayıp tek yanıtta döner (aşırı veri/istek trafiğinden kaçınır); Web BFF farklı bir şekilde birleştirebilir.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Gateway'de ortak kaygıları (auth, rate limiting, TLS sonlandırma, günlükleme) merkezi olarak uygula — her mikroservise tekrar yazma.</li>
+          <li>Gateway'in kendisini iş mantığı içermeyen "aptal" (dumb) bir yönlendirici olarak tut — mantık backend servislerde kalmalı.</li>
+          <li>Birden fazla istemci türü varsa ve ihtiyaçları belirgin farklıysa, tek genel gateway yerine istemci-başına BFF ekle.</li>
+          <li>Kong, Spring Cloud Gateway, Azure API Management, YARP (.NET) gibi hazır gateway çözümlerinden birini kullan — sıfırdan yazma.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>İstemciler iç mikroservis topolojisini bilmez</li>
+            <li>Ortak kaygılar tek yerde yönetilir</li>
+            <li>BFF ile her istemci tam ihtiyacı kadar veri alır (over/under-fetching çözülür)</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Gateway tek hata noktası olabilir (yüksek erişilebilirlik şart)</li>
+            <li>BFF sayısı arttıkça bakım yükü artar</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Mikroservis mimarisinde neredeyse her zaman gateway gerekir; BFF özellikle web/mobil arayüz ihtiyaçları belirgin farklıysa eklenir.</p>
+      </article>
+
+      <!-- P11 -->
+      <article class="pattern" style="border-left-color:var(--c-integration)" id="p11">
+        <div class="pattern-head"><h3>11. Pipe-and-Filter (Pipeline Mimarisi)</h3></div>
+        <p class="def">
+          Veriyi birbirine bağlı bağımsız işleme adımlarından (filter) geçirir; adımlar arası veri
+          "boru"lardan (pipe) akar. Her filter girdisini okur, işler, çıktısını bir sonrakine verir — kendi
+          içinde ne olduğunu bilmeden.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Ham Veri</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Filter: Doğrula</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Filter: Dönüştür</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-integration)">Filter: Zenginleştir</span><span class="arrow">→</span>
+            <span class="node">Sonuç</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Her işleme adımını tek sorumluluğu olan, bağımsız test edilebilir bir birim (fonksiyon/sınıf) olarak yaz.</li>
+          <li>Adımlar arası ortak bir veri sözleşmesi (arayüz/DTO) tanımla — her filter aynı tip girdi alır, aynı tip çıktı verir.</li>
+          <li>Adımları bir kompozisyon/zincirleme mekanizmasıyla birleştir (Java Stream API, C# LINQ/<code>IEnumerable</code> zinciri, ya da açık bir <code>Pipeline</code> sınıfı).</li>
+          <li>Performans kritikse adımları paralel/asenkron çalıştırılabilir tasarla (bkz. önceki dokümandaki üretici-tüketici deseni).</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Her adım bağımsız test edilir, yeniden kullanılır</li>
+            <li>Yeni bir adım eklemek/çıkarmak diğerlerini etkilemez</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Adımlar arası veri dönüşümü ekstra maliyet getirebilir</li>
+            <li>Global durum/hata yönetimi zincir boyunca dikkat ister</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Veri işleme hatları (ETL, görüntü/video işleme, derleyiciler, log işleme) — sıralı, birbirinden bağımsız dönüşüm adımları olan her yerde.</p>
+      </article>
+    </section>
+
+    <!-- ═══════════════ GRUP IV ═══════════════ -->
+    <section class="group" id="grup-4">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--c-infra)">IV</span>
+        <h2>Dağıtım &amp; Altyapı Mimarisi</h2>
+      </div>
+      <p class="group-deck">Kodun nerede/nasıl çalıştığı ve altyapı kaygılarının iş mantığından nasıl ayrıldığı.</p>
+
+      <!-- P12 -->
+      <article class="pattern" style="border-left-color:var(--c-infra)" id="p12">
+        <div class="pattern-head"><h3>12. Serverless (FaaS) Mimarisi</h3></div>
+        <p class="def">
+          Sunucu yönetimini tamamen bulut sağlayıcısına devreder — kod sadece bir olay tetiklendiğinde
+          çalışır (Function-as-a-Service), boşta kaynak tüketmez, otomatik ölçeklenir. AWS Lambda,
+          Azure Functions, Google Cloud Functions tipik örnekler.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">HTTP isteği / kuyruk mesajı / zamanlayıcı</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-infra)">Fonksiyon tetiklenir</span><span class="arrow">→</span>
+            <span class="node">Çalışır, sonuç döner, kapanır</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Her fonksiyonu durumsuz (stateless) yaz — bir sonraki çağrının aynı bellek örneğinde çalışacağını varsayma.</li>
+          <li>Fonksiyonu tek bir tetikleyici türüne göre tasarla (HTTP, kuyruk mesajı, zamanlanmış olay).</li>
+          <li>"Soğuk başlangıç" (cold start) süresini azaltmak için bağımlılıkları minimal tut, mümkünse AOT/native derleme kullan (bkz. önceki dokümandaki GraalVM/.NET Native AOT).</li>
+          <li>Kalıcı durumu (state) her zaman dışarıda (veritabanı, dağıtık önbellek) tut.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Kullanılmayan zaman için ödeme yok (gerçek "sıfıra ölçekleme")</li>
+            <li>Sunucu/işletim sistemi yönetimi yok</li>
+            <li>Otomatik, anında yatay ölçekleme</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Soğuk başlangıç gecikmesi (özellikle JVM tabanlı fonksiyonlarda belirgin)</li>
+            <li>Uzun süren/durum gerektiren işler için uygun değil</li>
+            <li>Sağlayıcıya kilitlenme (vendor lock-in) riski</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Düzensiz/öngörülemeyen trafik, kısa süren olay-tepkili işler (webhook işleme, resim küçültme, zamanlanmış görevler).</p>
+      </article>
+
+      <!-- P13 -->
+      <article class="pattern" style="border-left-color:var(--c-infra)" id="p13">
+        <div class="pattern-head"><h3>13. Sidecar &amp; Service Mesh</h3></div>
+        <p class="def">
+          Altyapı kaygılarını (izleme, güvenlik/mTLS, yeniden deneme, devre kesici) uygulama kodundan
+          tamamen ayırıp, her servis örneğinin yanına (aynı pod içinde) bir yardımcı süreç (sidecar) olarak
+          koyar. Tüm sidecar'ların birleşimi bir "service mesh" oluşturur (Istio, Linkerd).
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">Servis Konteyneri</span>
+            <span class="node hl" style="background:var(--c-infra)">Sidecar Proxy (Envoy)</span>
+          </div>
+          <p class="cap">İki konteyner aynı pod'da birlikte yaşar. Tüm giden/gelen ağ trafiği sidecar'dan geçer — servis kodu bunun farkında bile değildir.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Bir service mesh çözümü seç (Istio, Linkerd, AWS App Mesh).</li>
+          <li>Her servis pod'una otomatik sidecar enjeksiyonu ayarla (Kubernetes'te bir annotation ile).</li>
+          <li>Yeniden deneme, zaman aşımı, devre kesici kurallarını uygulama kodunda değil, mesh konfigürasyonunda (YAML) tanımla.</li>
+          <li>mTLS'i mesh seviyesinde aç — servisler arası şifreleme uygulama koduna hiç dokunmadan gelir.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Dayanıklılık/güvenlik mantığı tüm servislerde tutarlı, kod tekrarı yok</li>
+            <li>Dil/framework'ten bağımsız — Java servisi de, .NET servisi de aynı mesh politikalarını alır</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Ek operasyonel karmaşıklık ve kaynak tüketimi (her pod'da ekstra konteyner)</li>
+            <li>Ağ gecikmesine küçük bir ek (proxy hop) gelir</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Onlarca+ mikroservisli, Kubernetes üzerinde çalışan sistemlerde — az sayıda serviste genelde gereksiz operasyonel yüktür.</p>
+      </article>
+
+      <!-- P14 -->
+      <article class="pattern" style="border-left-color:var(--c-infra)" id="p14">
+        <div class="pattern-head"><h3>14. Space-Based Mimari</h3></div>
+        <p class="def">
+          Aşırı yüksek eşzamanlılık için veritabanını darboğaz olmaktan çıkarır — veriyi ve işleme
+          mantığını, bellek-içi veri ızgarasına (in-memory data grid) sahip bağımsız "processing unit"lara
+          dağıtır. Veritabanı sadece arka planda, asenkron olarak senkronize edilir.
+        </p>
+        <div class="diagram">
+          <div class="branch-row">
+            <span class="node">Yük Dengeleyici</span>
+            <span class="arrow">→</span>
+            <div class="branch-targets">
+              <span class="node hl" style="background:var(--c-infra)">Processing Unit A (bellek-içi veri + mantık)</span>
+              <span class="node hl" style="background:var(--c-infra)">Processing Unit B (bellek-içi veri + mantık)</span>
+            </div>
+          </div>
+          <div class="flow" style="margin-top:9px; padding-left:26px; opacity:.85">
+            <span class="arrow">↳</span>
+            <span class="node">Veritabanı ← asenkron yaz-arkasında (write-behind)</span>
+          </div>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Bir bellek-içi veri ızgarası seç (Hazelcast, Apache Ignite, GigaSpaces).</li>
+          <li>Her "processing unit"a hem veriyi hem o veri üzerindeki iş mantığını birlikte yerleştir (veri ve hesaplama aynı yerde — ağ üzerinden veri taşıma minimuma iner).</li>
+          <li>Veritabanına yazmayı "write-behind" (asenkron, arka planda) yap — istek anında veritabanı beklenmez.</li>
+          <li>Yeni yük geldiğinde yeni processing unit'ları otomatik başlat (dinamik ölçekleme).</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Veritabanı darboğazını tamamen ortadan kaldırır — aşırı yüksek throughput</li>
+            <li>Doğrusal yatay ölçekleme</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Çok yüksek mimari karmaşıklık — az sistemde gerekçelendirilebilir</li>
+            <li>Veri kaybı riski (bellek-içi veri, veritabanına yazılmadan önce kaybolabilir)</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Black Friday tipi ani, aşırı yüksek eşzamanlı yük (bilet satışı, borsa, büyük ölçekli oyun sunucuları). Çoğu sistem asla bu ölçeğe ihtiyaç duymaz.</p>
+      </article>
+    </section>
+
+    <!-- ═══════════════ GRUP V ═══════════════ -->
+    <section class="group" id="grup-5">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--c-design)">V</span>
+        <h2>Tasarım Yaklaşımı &amp; Göç Stratejileri</h2>
+      </div>
+      <p class="group-deck">Bir mimariyi baştan nasıl tasarlayacağın ve mevcut bir sistemi nasıl güvenle dönüştüreceğin.</p>
+
+      <!-- P15 -->
+      <article class="pattern" style="border-left-color:var(--c-design)" id="p15">
+        <div class="pattern-head"><h3>15. Domain-Driven Design (DDD)</h3></div>
+        <p class="def">
+          Yazılım yapısını teknik kaygılara göre değil, iş alanının (domain) kendi diline ve sınırlarına
+          göre tasarlama yaklaşımı. Mikroservis sınırlarının (bkz. Bölüm 3) ve modüler monolit modüllerinin
+          (bkz. Bölüm 2) <em>nasıl belirleneceğinin</em> temel yöntemidir.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node hl" style="background:var(--c-design)">Bounded Context: Satış</span>
+            <span class="node hl" style="background:var(--c-design)">Bounded Context: Envanter</span>
+            <span class="node hl" style="background:var(--c-design)">Bounded Context: Kargo</span>
+          </div>
+          <p class="cap">Her bağlam içinde "Ürün" kavramı farklı anlam taşıyabilir (Satış'ta fiyat/promosyon önemli, Envanter'de stok/lokasyon önemli) — DDD bunu birleştirmeye zorlamaz, her bağlamın kendi modeline sahip olmasına izin verir.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li><strong>Ubiquitous language (ortak dil):</strong> İş uzmanlarıyla aynı terimleri kullan — kod, veritabanı, dokümantasyon hepsi aynı kelimeleri konuşsun.</li>
+          <li><strong>Bounded context</strong> belirle: bir terimin (örn. "Müşteri") anlamının değiştiği sınırları çiz — her bağlam kendi modeline sahip olur.</li>
+          <li><strong>Aggregate</strong> tasarla: birlikte tutarlı kalması gereken nesne kümesini bir "aggregate root" üzerinden dışarıya kapat — dışarıdan sadece root'a erişilir, iç nesnelere doğrudan değil.</li>
+          <li><strong>Entity vs Value Object</strong> ayrımı yap: kimliği olan (Sipariş #1234) entity'dir; sadece değeriyle var olan (Adres, Para) value object'tir — value object'ler değişmezdir (immutable).</li>
+          <li><strong>Domain event</strong> tanımla: aggregate içinde önemli bir şey olduğunda (<code>OrderConfirmed</code>) bunu bir olay olarak dışarı bildir (bkz. Bölüm 8).</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Kod, iş uzmanlarının konuştuğu dille birebir örtüşür</li>
+            <li>Mikroservis/modül sınırlarını rastgele değil, gerekçeli çizmeni sağlar</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Basit CRUD uygulamalarında gereksiz kavramsal yük</li>
+            <li>İş uzmanlarıyla sürekli, derin işbirliği gerektirir — tek başına geliştiriciyle yapılamaz</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> İş kuralları karmaşık, alan uzmanlığı derinse (bankacılık, sigorta, lojistik). Basit "veri girişi" uygulamalarında aşırıdır.</p>
+      </article>
+
+      <!-- P16 -->
+      <article class="pattern" style="border-left-color:var(--c-design)" id="p16">
+        <div class="pattern-head"><h3>16. Strangler Fig Deseni <span class="pattern-num">(kademeli göç)</span></h3></div>
+        <p class="def">
+          Eski bir monoliti tek seferde "büyük patlama" (big bang) ile yeniden yazmak yerine, yeni
+          fonksiyonaliteyi kademeli olarak yeni servislere taşır; eski sistem, tıpkı bir "sarmaşık incir"
+          ağacın etrafını sarıp yavaşça onun yerini alması gibi, parça parça devreden çıkarılır.
+        </p>
+        <div class="diagram">
+          <div class="flow">
+            <span class="node">İstemci</span><span class="arrow">→</span>
+            <span class="node hl" style="background:var(--c-design)">Yönlendirme Katmanı (proxy/gateway)</span>
+          </div>
+          <div class="branch-row">
+            <span class="arrow" style="padding-top:6px">↙ ↘</span>
+            <div class="branch-targets" style="flex-direction:row; flex-wrap:wrap; gap:10px">
+              <span class="node">Eski Monolit (küçülüyor)</span>
+              <span class="node">Yeni Servis (büyüyor)</span>
+            </div>
+          </div>
+          <p class="cap">Yönlendirme katmanı, hangi isteğin monolite hangi isteğin yeni servise gideceğine karar verir — zamanla ok yeni servise doğru kayar, monolit küçülür.</p>
+        </div>
+        <h4 class="subhead">Nasıl inşa edilir</h4>
+        <ol class="steps">
+          <li>Monolitin önüne bir yönlendirme katmanı (reverse proxy/API Gateway) koy — tüm trafik önce buradan geçsin.</li>
+          <li>Göç edilecek ilk iş yeteneğini seç: düşük risk, net sınırlar, yüksek değer (genelde en aktif geliştirilen ya da en çok acı veren modül).</li>
+          <li>O yeteneği yeni bir serviste yeniden yaz; veri senkronizasyonunu (çift yazma ya da olay tabanlı) geçiş süresince kur.</li>
+          <li>Yönlendirme katmanında o yeteneğin trafiğini yeni servise çevir; monolitteki eski kodu güvenle sil.</li>
+          <li>Bir sonraki modülle tekrar et — monolit yeteneği kalmayana kadar küçülür.</li>
+        </ol>
+        <div class="tradeoffs">
+          <div class="to-col good"><div class="to-title">Artılar</div><ul>
+            <li>Her adımda geri dönülebilir, düşük risk — "büyük patlama" göçünün felaket riskini taşımaz</li>
+            <li>Göç sırasında da sistem tamamen canlı, yeni özellik geliştirmeye devam edilir</li>
+          </ul></div>
+          <div class="to-col bad"><div class="to-title">Eksiler</div><ul>
+            <li>Geçiş süresince iki sistemi birden işletmek ekstra karmaşıklık/veri senkronizasyonu yükü getirir</li>
+            <li>Yavaş — tam göç aylar/yıllar sürebilir</li>
+          </ul></div>
+        </div>
+        <p class="usecase"><strong>Ne zaman:</strong> Büyük, kritik, "durdurup yeniden yazamayacağın" bir mevcut sistemi mikroservise/yeni mimariye taşırken — pratikte önerilen tek güvenli göç stratejisi budur.</p>
+      </article>
+    </section>
+
+    <!-- ═══════════════ SEÇİM ═══════════════ -->
+    <section class="group" id="secim">
+      <div class="group-head">
+        <span class="group-num" style="background:var(--text-muted)">?</span>
+        <h2>Nasıl seçilir?</h2>
+      </div>
+      <p class="group-deck">Bu 16 desen birbirinin yerine geçmez — çoğu zaman birlikte kullanılır. Basit bir karar sırası:</p>
+
+      <div class="decision-list">
+        <div class="decision">
+          <div class="q">1. Ekip küçük, sınırlar belirsiz mi?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-foundation)">Modüler Monolit (P2) + Katmanlı/Hexagonal (P1/P4)</span></div>
+        </div>
+        <div class="decision">
+          <div class="q">2. Bağımsız ölçekleme/dağıtım gerekiyor mu?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-foundation)">Mikroservis (P3), sınırları DDD (P15) ile çiz</span></div>
+        </div>
+        <div class="decision">
+          <div class="q">3. Servisler arası tutarlılık gerekiyor mu?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-data)">Saga (P7) + Olay-Güdümlü (P8)</span></div>
+        </div>
+        <div class="decision">
+          <div class="q">4. Okuma yükü yazmadan çok mu büyük?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-data)">CQRS (P5)</span></div>
+        </div>
+        <div class="decision">
+          <div class="q">5. Mevcut monolit mi göçüyorsun?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-design)">Strangler Fig (P16)</span></div>
+        </div>
+        <div class="decision">
+          <div class="q">6. Onlarca+ servis, tutarlı dayanıklılık kuralı mı lazım?</div>
+          <div class="a"><span class="arrow">→ evet →</span><span class="node hl" style="background:var(--c-infra)">Service Mesh (P13)</span></div>
+        </div>
+      </div>
+
+      <div class="usecase" style="margin-top:20px">
+        <strong>Genel ilke:</strong> Karmaşıklığı, ihtiyacın olduğunda ekle. Hiçbir sistem "gelecekte lazım
+        olur" diye Event Sourcing + CQRS + Saga + Service Mesh ile başlamamalı — bunların her biri gerçek
+        bir soruna cevap olarak, o sorun ortaya çıktığında eklenir. En deneyimli mimarlar en az deseni,
+        en doğru yerde kullananlardır.
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      Bu el kitabı yığından/dilden bağımsızdır — Java/Spring Boot ve C#/.NET karşılaştırmalı uygulama
+      detayları için "Kurumsal Backend Optimizasyonu" belgesine, PsGameTranslator'a özel öneriler için
+      "Kaynak Optimizasyon Rehberi"ne bakın.
+    </footer>
+  </main>
+</div>

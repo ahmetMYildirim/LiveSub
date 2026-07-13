@@ -1,0 +1,744 @@
+<meta charset="utf-8">
+<title>PsGameTranslator — Kaynak Optimizasyon Rehberi</title>
+<style>
+  :root {
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --surface-2: #FBFAF7;
+    --text: #211D19;
+    --text-muted: #6B6459;
+    --border: #E3DED4;
+    --code-bg: #F0ECE3;
+    --code-text: #3A342C;
+    --cpu: #3D5A99;
+    --ram: #7A4FA0;
+    --gpu: #B85A20;
+    --vram: #1F7A72;
+    --link: #B85A20;
+    --shadow: 0 1px 2px rgba(33,29,25,0.06), 0 4px 16px rgba(33,29,25,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17151A;
+      --surface: #1E1C22;
+      --surface-2: #211F26;
+      --text: #EDE9E1;
+      --text-muted: #9C948A;
+      --border: #332F38;
+      --code-bg: #221F27;
+      --code-text: #E7E2D8;
+      --cpu: #86A3EE;
+      --ram: #C29CE6;
+      --gpu: #F0925A;
+      --vram: #5FCABE;
+      --link: #F0925A;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17151A; --surface: #1E1C22; --surface-2: #211F26; --text: #EDE9E1;
+    --text-muted: #9C948A; --border: #332F38; --code-bg: #221F27; --code-text: #E7E2D8;
+    --cpu: #86A3EE; --ram: #C29CE6; --gpu: #F0925A; --vram: #5FCABE; --link: #F0925A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F6F4EF; --surface: #FFFFFF; --surface-2: #FBFAF7; --text: #211D19;
+    --text-muted: #6B6459; --border: #E3DED4; --code-bg: #F0ECE3; --code-text: #3A342C;
+    --cpu: #3D5A99; --ram: #7A4FA0; --gpu: #B85A20; --vram: #1F7A72; --link: #B85A20;
+    --shadow: 0 1px 2px rgba(33,29,25,0.06), 0 4px 16px rgba(33,29,25,0.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono, .num {
+    font-family: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell { display: flex; max-width: 1180px; margin: 0 auto; align-items: flex-start; }
+
+  /* ── Sidebar ─────────────────────────────────────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 248px;
+    flex: none;
+    padding: 32px 20px 32px 28px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+  }
+  .sidebar-title {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+  }
+  .legend { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .legend-item { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.cpu { background: var(--cpu); }
+  .dot.ram { background: var(--ram); }
+  .dot.gpu { background: var(--gpu); }
+  .dot.vram { background: var(--vram); }
+
+  .toc { display: flex; flex-direction: column; gap: 2px; }
+  .toc a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+  }
+  .toc a:hover { color: var(--text); background: var(--surface-2); }
+  .toc .sub { padding-left: 20px; font-size: 12.5px; }
+
+  /* ── Main ────────────────────────────────────────────────── */
+  main { flex: 1; min-width: 0; padding: 56px 48px 120px; max-width: 800px; }
+
+  header.intro { margin-bottom: 44px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--gpu); font-weight: 600; margin: 0 0 10px;
+  }
+  h1 {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .lede { font-size: 16.5px; color: var(--text-muted); max-width: 62ch; margin: 0 0 20px; }
+  .meta-row { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-muted); }
+  .meta-row span { display: flex; align-items: center; gap: 6px; }
+
+  section.resource { margin-bottom: 8px; }
+  .resource-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin: 64px 0 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .resource-head h2 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .resource-head .tag {
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px; color: var(--bg);
+  }
+  .resource-head p.deck { margin: 10px 0 0; color: var(--text-muted); font-size: 14.5px; max-width: 60ch; }
+
+  .tag.cpu, .accent-bar.cpu { background: var(--cpu); }
+  .tag.ram, .accent-bar.ram { background: var(--ram); }
+  .tag.gpu, .accent-bar.gpu { background: var(--gpu); }
+  .tag.vram, .accent-bar.vram { background: var(--vram); }
+
+  article.technique {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px 24px;
+    margin: 22px 0;
+    box-shadow: var(--shadow);
+    position: relative;
+    border-left: 3px solid var(--border);
+  }
+  article.technique.cpu { border-left-color: var(--cpu); }
+  article.technique.ram { border-left-color: var(--ram); }
+  article.technique.gpu { border-left-color: var(--gpu); }
+  article.technique.vram { border-left-color: var(--vram); }
+
+  .technique-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+  .technique-head h3 { font-size: 17px; margin: 0; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px;
+    background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .chip.impact-high { color: var(--vram); border-color: color-mix(in srgb, var(--vram) 40%, var(--border)); }
+  .chip.impact-med { color: var(--gpu); border-color: color-mix(in srgb, var(--gpu) 40%, var(--border)); }
+  .chip.risk { color: var(--ram); }
+
+  .technique p { margin: 10px 0; color: var(--text); }
+  .technique p.why { color: var(--text-muted); font-size: 14px; }
+  .file-path {
+    font-size: 12.5px; color: var(--text-muted); margin: 2px 0 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .file-path::before { content: "→"; color: var(--text-muted); }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12.8px;
+    line-height: 1.55;
+    margin: 12px 0;
+    border: 1px solid var(--border);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  p code, li code {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 1px 6px; border-radius: 4px; font-size: 0.88em;
+  }
+
+  .before-after {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0;
+  }
+  .ba-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .ba-box .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; }
+  .ba-box .value { font-size: 15px; font-weight: 600; }
+
+  ol.priority {
+    list-style: none; counter-reset: step; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  ol.priority li {
+    counter-increment: step;
+    display: grid; grid-template-columns: 34px 1fr; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; box-shadow: var(--shadow);
+  }
+  ol.priority li::before {
+    content: counter(step);
+    font-family: "Cascadia Code", monospace; font-weight: 700; font-size: 15px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gpu);
+  }
+  ol.priority strong { display: block; margin-bottom: 3px; }
+  ol.priority span.detail { color: var(--text-muted); font-size: 13.5px; }
+
+  table.compare { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  table.compare th, table.compare td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.compare th { color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.compare td.num { font-family: "Cascadia Code", monospace; }
+
+  .callout {
+    background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--gpu);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 13.8px; color: var(--text-muted);
+  }
+  .callout strong { color: var(--text); }
+
+  footer.doc-footer {
+    margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border);
+    font-size: 12.5px; color: var(--text-muted);
+  }
+
+  @media (max-width: 880px) {
+    .shell { flex-direction: column; }
+    .sidebar { position: relative; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px; }
+    main { padding: 32px 20px 80px; max-width: 100%; }
+    .before-after { grid-template-columns: 1fr; }
+  }
+
+  a { color: var(--link); }
+  ::selection { background: color-mix(in srgb, var(--gpu) 30%, transparent); }
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <p class="sidebar-title">Kaynak türleri</p>
+    <div class="legend">
+      <div class="legend-item"><span class="dot cpu"></span> CPU</div>
+      <div class="legend-item"><span class="dot ram"></span> RAM</div>
+      <div class="legend-item"><span class="dot gpu"></span> GPU işlem</div>
+      <div class="legend-item"><span class="dot vram"></span> VRAM</div>
+    </div>
+    <p class="sidebar-title">İçindekiler</p>
+    <div class="toc">
+      <a href="#giris">Giriş &amp; mevcut durum</a>
+      <a href="#gpu-vram">GPU / VRAM</a>
+      <a class="sub" href="#t-ctranslate2">CTranslate2'ye geçiş</a>
+      <a class="sub" href="#t-shared-cuda">Tek CUDA bağlamı</a>
+      <a class="sub" href="#t-batch-ocr">OCR isteklerini birleştirme</a>
+      <a class="sub" href="#t-resize">Görüntüyü küçültme</a>
+      <a href="#cpu">CPU</a>
+      <a class="sub" href="#t-jpeg">PNG yerine JPEG</a>
+      <a class="sub" href="#t-diff">Değişmeyen kareyi atlama</a>
+      <a class="sub" href="#t-mkldnn">oneDNN / MKLDNN</a>
+      <a href="#ram">RAM</a>
+      <a class="sub" href="#t-cache-lru">Çeviri önbelleğine sınır</a>
+      <a class="sub" href="#t-dispose">Bitmap/byte[] ömrü</a>
+      <a class="sub" href="#t-sqlite-vacuum">SQLite bakımı</a>
+      <a href="#pipeline">Pipeline optimizasyonu</a>
+      <a class="sub" href="#t-producer-consumer">Üretici-tüketici modeli</a>
+      <a class="sub" href="#t-backpressure">Backpressure / kuyruk sınırı</a>
+      <a class="sub" href="#t-warmup">Başlangıç ısınma isteği</a>
+      <a class="sub" href="#t-adaptive-interval">Uyarlanabilir tarama aralığı</a>
+      <a class="sub" href="#t-stabilization">Stabilizasyon-hız dengesi</a>
+      <a href="#oncelik">Uygulama sırası</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="intro" id="giris">
+      <p class="eyebrow">PsGameTranslator — Teknik Rehber</p>
+      <h1>Kaynak Kullanımını Düşürme: CPU, RAM, GPU, VRAM</h1>
+      <p class="lede">
+        Bu doküman uygulanmadı — sadece yöntemleri ve gerekçelerini anlatıyor. Her teknik gerçek dosya
+        yollarına ve şu anki koda referans veriyor, böylece istediğinde adım adım kendin uygulayabilirsin.
+        Zaten yaptığımız fp16 / greedy decoding / merge-and-unload gibi değişiklikler burada tekrar
+        anlatılmıyor; bunlar devreye girmiş durumda.
+      </p>
+      <div class="meta-row">
+        <span>🎯 Hedef: RTX 3060 Laptop (6 GB VRAM), tek makine, iki Python süreci</span>
+      </div>
+    </header>
+
+    <!-- ══════════════════ GPU / VRAM ══════════════════ -->
+    <section class="resource" id="gpu-vram">
+      <div class="resource-head">
+        <h2>GPU &amp; VRAM</h2>
+        <span class="tag gpu">GPU · VRAM</span>
+      </div>
+      <p class="deck">
+        Şu anda iki ayrı Python süreci (çeviri sunucusu + OCR sunucusu) aynı GPU'yu paylaşıyor, ikisi de
+        kendi CUDA bağlamını açıyor. En büyük kazanım burada.
+      </p>
+
+      <article class="technique gpu" id="t-ctranslate2">
+        <div class="technique-head">
+          <h3>1. OPUS-MT'yi CTranslate2 formatına dönüştür</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek</span><span class="chip">Zorluk: Orta</span></div>
+        </div>
+        <p class="why">
+          Şu an model transformers/PyTorch üzerinden çalışıyor — genel amaçlı bir çalışma zamanı, MarianMT
+          mimarisine özel optimize edilmemiş. <strong>CTranslate2</strong>, Helsinki-NLP/OPUS-MT ailesini
+          (senin fine-tune ettiğin model dahil) native olarak destekliyor; int8 quantization ile hem VRAM
+          hem de üretim (generate) süresini belirgin şekilde düşürüyor. Bu, PyTorch'un kendi fp16'sından
+          bağımsız, ayrı bir kazanım katmanı.
+        </p>
+        <div class="file-path">tools/translation/translation_server.py</div>
+        <pre><code># 1) Modeli bir kere dönüştür (kurulum anında, çalışma zamanında değil)
+# pip install ctranslate2
+ct2-transformers-converter \
+    --model "PsGameTranslator.App/bin/Debug/net8.0-windows10.0.19041.0/models/opus-mt-finetuned" \
+    --output_dir "models/opus-mt-finetuned-ct2" \
+    --quantization int8_float16   # GPU için: ağırlıklar int8, aktivasyonlar fp16
+
+# 2) Sunucuda yükleme ve çeviri (transformers yerine)
+import ctranslate2
+import sentencepiece as spm
+
+translator = ctranslate2.Translator("models/opus-mt-finetuned-ct2", device="cuda")
+sp_source = spm.SentencePieceProcessor(model_file=".../source.spm")
+sp_target = spm.SentencePieceProcessor(model_file=".../target.spm")
+
+def translate_ct2(text: str) -> str:
+    tokens = sp_source.encode(text, out_type=str)
+    result = translator.translate_batch([tokens], beam_size=1)
+    return sp_target.decode(result[0].hypotheses[0])</code></pre>
+        <div class="before-after">
+          <div class="ba-box"><div class="label">Şimdi (fp16, PyTorch)</div><div class="value">~460 MB model + ~700 MB sabit CUDA yükü</div></div>
+          <div class="ba-box"><div class="label">CTranslate2 int8</div><div class="value">~130-180 MB model, benzer sabit yük</div></div>
+        </div>
+        <p class="callout"><strong>Risk:</strong> int8 quantization çok nadiren 1-2 BLEU puanı kaybettirebilir —
+        fine-tune sonrası aldığın BLEU 34.4 gibi bir referans skorun varsa dönüştürmeden sonra tekrar ölçüp
+        karşılaştır.</p>
+      </article>
+
+      <article class="technique gpu" id="t-shared-cuda">
+        <div class="technique-head">
+          <h3>2. OCR ve çeviriyi tek Python sürecinde birleştir</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek</span><span class="chip">Zorluk: Orta-Yüksek</span></div>
+        </div>
+        <p class="why">
+          <code>ocr_server.py</code> (8765) ve <code>translation_server.py</code> (8770) iki ayrı process —
+          her biri kendi CUDA context'ini, kendi PyTorch/Paddle runtime'ını, kendi sabit VRAM yükünü taşıyor.
+          Aynı FastAPI uygulaması içinde iki ayrı route (<code>/ocr</code>, <code>/translate</code>) olarak
+          çalıştırılırlarsa tek CUDA context paylaşılır, sabit yük bir kez ödenir.
+        </p>
+        <div class="file-path">tools/ (yeni) unified_server.py — ocr_server.py + translation_server.py birleşimi</div>
+        <pre><code>from fastapi import FastAPI
+import ocr_server, translation_server   # her ikisi de kendi router'ını export etsin
+
+app = FastAPI()
+app.include_router(ocr_server.router, prefix="")
+app.include_router(translation_server.router, prefix="")
+
+# lifespan içinde iki modeli de AYNI CUDA context'te yükle:
+@app.on_event("startup")
+async def startup():
+    await ocr_server.load_model(device="cuda")
+    await translation_server.load_model(device="cuda")</code></pre>
+        <p class="callout"><strong>Not:</strong> Bu, WPF tarafında <code>MachineTranslationServerManager</code>
+        ve <code>OcrServerService</code>'in ikisinin de aynı port'a farklı path'lerle istek atması anlamına
+        gelir — <code>appsettings.json</code>'daki base URL'leri güncellemek gerekir. Orta zorlukta ama
+        tek seferlik bir refactor.</p>
+      </article>
+
+      <article class="technique gpu" id="t-batch-ocr">
+        <div class="technique-head">
+          <h3>3. Ana altyazı + konuşmacı kırpımını tek istekte birleştir</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          Loglardan görüldüğü gibi her karede <strong>iki ayrı</strong> <code>HTTP OCR request</code> atılıyor
+          (ana altyazı bölgesi + ikincil konuşmacı bölgesi), art arda, senkron. PaddleOCR bir seferde birden
+          fazla görüntüyü liste olarak kabul edebiliyor — tek istekte iki görüntü gönderip GPU'ya tek seferde
+          teslim etmek, round-trip ve Python fonksiyon çağrısı yükünü yarıya indirir.
+        </p>
+        <div class="file-path">tools/ocr/ocr_server.py</div>
+        <pre><code>@app.post("/ocr/batch")
+async def ocr_batch(images: list[UploadFile]):
+    decoded = [decode_image(await img.read()) for img in images]
+    results = engine.predict(decoded)          # tek predict() çağrısı, N görüntü
+    return {"results": [format_result(r) for r in results]}</code></pre>
+        <div class="file-path">PsGameTranslator.App/ViewModels/MonitoringViewModel.cs — iki ayrı RecognizeAsync çağrısı yerine</div>
+        <pre><code>var batchResult = await _ocrService.RecognizeBatchAsync(
+    [frame.ImageBytes, frame.SecondarySpeakerImageBytes], "paddle", ct);
+var mainResult = batchResult[0];
+var speakerResult = batchResult[1];</code></pre>
+      </article>
+
+      <article class="technique gpu vram" id="t-resize">
+        <div class="technique-head">
+          <h3>4. OCR'a gönderilen görüntüyü küçült</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          Loglarda kırpım boyutu <code>1920×162</code> gibi tam-genişlik değerler görülüyor. Altyazı metni
+          okunaklı kalacak şekilde (yükseklik ~120-150px yeterli) yatayda %60-70'e küçültmek, hem PaddleOCR'ın
+          işlem süresini hem VRAM'deki aktivasyon boyutunu düşürür — metin tanıma için 4K çözünürlük gereksiz.
+        </p>
+        <div class="file-path">PsGameTranslator.Capture/WindowCaptureService.cs (kırpım sonrası)</div>
+        <pre><code>using var resized = new Bitmap(cropped, new Size(
+    (int)(cropped.Width * 0.65),
+    (int)(cropped.Height * 0.65)));
+resized.Save(stream, ImageFormat.Png);</code></pre>
+        <p class="callout"><strong>Risk:</strong> Çok küçük fontlu oyunlarda agresif küçültme OCR doğruluğunu
+        düşürebilir — %65 makul bir başlangıç, test edip ayarla.</p>
+      </article>
+    </section>
+
+    <!-- ══════════════════ CPU ══════════════════ -->
+    <section class="resource" id="cpu">
+      <div class="resource-head">
+        <h2>CPU</h2>
+        <span class="tag cpu">CPU</span>
+      </div>
+      <p class="deck">Yakalama, kırpım ve görüntü kodlama tarafında düşük riskli, hızlı kazanımlar.</p>
+
+      <article class="technique cpu" id="t-jpeg">
+        <div class="technique-head">
+          <h3>5. PNG yerine JPEG kodlama</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          PNG kayıpsız sıkıştırma CPU-yoğun; metin/altyazı bölgeleri için JPEG kalite 85-90 görsel olarak
+          ayırt edilemez ama kodlama çok daha hızlı ve dosya küçük (HTTP transfer süresi de düşer).
+        </p>
+        <div class="file-path">PsGameTranslator.Capture/WindowCaptureService.cs:134 ve WgcFrameCapture.cs:296</div>
+        <pre><code>var jpegEncoder = ImageCodecInfo.GetImageEncoders()
+    .First(c => c.FormatID == ImageFormat.Jpeg.Guid);
+var encoderParams = new EncoderParameters(1);
+encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 88L);
+bitmap.Save(stream, jpegEncoder, encoderParams);   // ImageFormat.Png yerine</code></pre>
+        <table class="compare">
+          <tr><th></th><th>PNG (şimdi)</th><th>JPEG q88</th></tr>
+          <tr><td>Kodlama süresi</td><td class="num">~15-30 ms</td><td class="num">~4-8 ms</td></tr>
+          <tr><td>Dosya boyutu (1920×162 kırpım)</td><td class="num">80-150 KB</td><td class="num">15-30 KB</td></tr>
+        </table>
+      </article>
+
+      <article class="technique cpu" id="t-diff">
+        <div class="technique-head">
+          <h3>6. Değişmeyen kareyi tamamen atla</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek (boşta)</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          Loglarda zaten bir <code>diff_ms</code> alanı var — bu, kare farkını ölçüyor ama şu an sadece
+          gecikme diagnostiği için kullanılıyor, akışı durdurmuyor. Fark eşiğin altındaysa (ekran neredeyse
+          aynıysa — diyalog dışı sahne, duraklatılmış video, statik menü) OCR isteğini hiç atmadan bir
+          sonraki taramaya geçmek CPU/GPU'yu boşta bırakır.
+        </p>
+        <div class="file-path">PsGameTranslator.App/ViewModels/MonitoringViewModel.cs (capture döngüsü)</div>
+        <pre><code>var diffScore = ComputeFrameDiff(previousCrop, currentCrop);
+if (diffScore < settings.MinFrameDiffThreshold)
+{
+    _logger.LogDebug("capture_skipped_unchanged - diff={Diff}", diffScore);
+    return;   // OCR isteği hiç atılmaz, bir sonraki tarama zamanlayıcısını bekle
+}</code></pre>
+      </article>
+
+      <article class="technique cpu" id="t-mkldnn">
+        <div class="technique-head">
+          <h3>7. PaddleOCR için oneDNN (MKLDNN) aç</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta (CPU modunda)</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          Sadece OCR'ı CPU'da çalıştırman gereken bir senaryoda (GPU çeviri modeliyle meşgulken) devreye
+          girer — Paddle'ın Intel oneDNN backend'i CPU inference'ı belirgin hızlandırır. GPU modunda bu
+          ayarın etkisi yok, bu yüzden az önce geri aldığımız CPU-OCR denemesiyle ilişkili.
+        </p>
+        <div class="file-path">tools/ocr/ocr_server.py (PaddleOCR başlatma)</div>
+        <pre><code>engine = PaddleOCR(
+    device="cpu",
+    enable_mkldnn=True,
+    cpu_threads=6,          # laptop CPU çekirdek sayına göre ayarla
+)</code></pre>
+      </article>
+    </section>
+
+    <!-- ══════════════════ RAM ══════════════════ -->
+    <section class="resource" id="ram">
+      <div class="resource-head">
+        <h2>RAM</h2>
+        <span class="tag ram">RAM</span>
+      </div>
+      <p class="deck">Sınırsız büyüyen önbellekler ve elde tutulan görüntü buffer'ları asıl RAM artışının kaynağı.</p>
+
+      <article class="technique ram" id="t-cache-lru">
+        <div class="technique-head">
+          <h3>8. Çeviri önbelleğine üst sınır ve LRU tahliye</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta (uzun oturumlarda yüksek)</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          <code>translation_cache.json</code> şu an 3700+ kayıt taşıyor ve sınırsız büyüyor — her uzun
+          oynanış oturumu dosyayı ve bellekteki sözlüğü büyütmeye devam ediyor. Sabit boyutlu bir LRU
+          (en az kullanılanı at) yapısı bunu sınırlar.
+        </p>
+        <div class="file-path">PsGameTranslator.Infrastructure/Translation/TranslationCache.cs</div>
+        <pre><code>private const int MaxEntries = 8000;
+
+public void Set(string key, string value)
+{
+    if (_cache.Count >= MaxEntries && !_cache.ContainsKey(key))
+    {
+        var oldest = _accessOrder.First();   // LinkedList ile LRU sırası tutulur
+        _cache.Remove(oldest);
+        _accessOrder.RemoveFirst();
+    }
+    _cache[key] = value;
+    TouchAccessOrder(key);
+}</code></pre>
+      </article>
+
+      <article class="technique ram" id="t-dispose">
+        <div class="technique-head">
+          <h3>9. Bitmap ve byte[] buffer ömrünü kısalt</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          Her karede birden fazla <code>Bitmap</code>/<code>byte[]</code> üretiliyor (tam kare, ana kırpım,
+          ikincil kırpım). <code>using</code> bloklarıyla erken serbest bırakmak ve büyük array'leri
+          <code>ArrayPool&lt;byte&gt;</code> ile kiralamak GC baskısını ve peak RAM'i düşürür.
+        </p>
+        <div class="file-path">PsGameTranslator.Capture/WgcFrameCapture.cs</div>
+        <pre><code>var buffer = ArrayPool&lt;byte&gt;.Shared.Rent(estimatedSize);
+try
+{
+    var written = EncodeToBuffer(bitmap, buffer);
+    return buffer.AsSpan(0, written).ToArray();  // sadece gerçek boyut kopyalanır
+}
+finally
+{
+    ArrayPool&lt;byte&gt;.Shared.Return(buffer);
+}</code></pre>
+      </article>
+
+      <article class="technique ram" id="t-sqlite-vacuum">
+        <div class="technique-head">
+          <h3>10. SQLite periyodik VACUUM</h3>
+          <div class="chips"><span class="chip impact-low">Etki: Düşük-Orta</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          <code>translation_memory.db</code> silme/güncelleme işlemleriyle parçalanır (fragmentation),
+          disk ve sayfa önbelleği RAM kullanımı gereğinden büyük kalır. Uygulama kapanışında bir kez
+          <code>VACUUM</code> çalıştırmak dosyayı sıkıştırır.
+        </p>
+        <div class="file-path">PsGameTranslator.Infrastructure/Translation/SqliteTranslationMemoryService.cs (Dispose)</div>
+        <pre><code>public void Dispose()
+{
+    using var cmd = _connection.CreateCommand();
+    cmd.CommandText = "VACUUM;";
+    cmd.ExecuteNonQuery();
+    _connection.Dispose();
+}</code></pre>
+      </article>
+    </section>
+
+    <!-- ══════════════════ Pipeline ══════════════════ -->
+    <section class="resource" id="pipeline">
+      <div class="resource-head">
+        <h2>Pipeline optimizasyonu</h2>
+        <span class="tag gpu" style="background:var(--text-muted)">Genel</span>
+      </div>
+      <p class="deck">
+        Tek bir aşamayı hızlandırmak yerine aşamalar arasındaki bekleme ve gereksiz işi ortadan kaldırmak —
+        genelde tek bir optimizasyondan daha büyük toplam kazanç verir, çünkü darboğaz tek bir yerde değil,
+        aşamaların birbirini <em>senkron</em> beklemesinde.
+      </p>
+
+      <article class="technique" id="t-producer-consumer">
+        <div class="technique-head">
+          <h3>11. Aşamaları üretici-tüketici (producer-consumer) modeline taşı</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek</span><span class="chip">Zorluk: Orta-Yüksek</span></div>
+        </div>
+        <p class="why">
+          Şu anki akış büyük ölçüde <strong>sıralı</strong>: yakala → kırp → OCR bekle → sınıflandır →
+          çeviri kuyruğuna koy. Bir sonraki karenin yakalanması, mevcut karenin OCR'ı bitene kadar
+          büyük ölçüde bekliyor (loglarda <code>capture_to_ocr_done_ms</code>'un tek bir OCR isteğinden
+          çok daha yüksek çıkması bunun izi). Yakalama, OCR ve çeviriyi ayrı <code>Channel&lt;T&gt;</code>
+          kuyruklarıyla birbirinden ayrık task'lara bölmek, bir aşama meşgulken diğerinin boş beklemesini
+          engeller — GPU OCR ile meşgulken CPU zaten bir sonraki kareyi yakalayıp kırpmış olur.
+        </p>
+        <div class="file-path">PsGameTranslator.App/ViewModels/MonitoringViewModel.cs (yeniden yapılanma)</div>
+        <pre><code>private readonly Channel&lt;CapturedFrame&gt; _captureChannel =
+    Channel.CreateBounded&lt;CapturedFrame&gt;(new BoundedChannelOptions(2)
+    {
+        FullMode = BoundedChannelFullMode.DropOldest,   // bkz. #12 backpressure
+    });
+
+// Görev 1: sadece yakala + kırp, sonucu kanala yaz
+async Task CaptureLoopAsync(CancellationToken ct)
+{
+    while (!ct.IsCancellationRequested)
+    {
+        var frame = await CaptureAndCropAsync(ct);
+        await _captureChannel.Writer.WriteAsync(frame, ct);
+        await Task.Delay(CurrentIntervalMs, ct);
+    }
+}
+
+// Görev 2: kanaldan oku, OCR + sınıflandırma + çeviri kuyruğu — paralel çalışır
+async Task ProcessLoopAsync(CancellationToken ct)
+{
+    await foreach (var frame in _captureChannel.Reader.ReadAllAsync(ct))
+        await RunOcrAndDispatchAsync(frame, ct);
+}
+
+// Başlangıçta ikisini de bağımsız başlat:
+_ = Task.Run(() => CaptureLoopAsync(ct));
+_ = Task.Run(() => ProcessLoopAsync(ct));</code></pre>
+      </article>
+
+      <article class="technique" id="t-backpressure">
+        <div class="technique-head">
+          <h3>12. Backpressure: kuyruk sınırı ve en yeni kareyi tutma</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek (aşırı yük altında)</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          OCR'ı CPU'ya aldığımız denemede tam olarak gördüğümüz şey buydu: OCR süresi kare aralığından
+          uzun sürünce istekler kuyrukta birikti, gecikme 561ms'den 4900ms'ye kadar tırmandı. Sınırsız
+          bir kuyruk, geç kalan sistemi <em>daha da</em> geciktirir çünkü eski, artık alakasız kareleri
+          bile işlemeye devam eder. Sınırlı kapasiteli bir kanal + <code>DropOldest</code> politikası,
+          sistem yetişemediğinde en eski (zaten bayatlamış) kareyi atıp en güncel kareye odaklanır.
+        </p>
+        <div class="file-path">Yukarıdaki <code>BoundedChannelOptions(2)</code> — kapasite 2, dolunca en eskisini at</div>
+        <pre><code>// Sınırsız Queue&lt;T&gt; yerine:
+var options = new BoundedChannelOptions(capacity: 2)
+{
+    FullMode = BoundedChannelFullMode.DropOldest,
+    SingleReader = true,
+    SingleWriter = true,
+};</code></pre>
+        <p class="callout"><strong>Bu yaşadığımız gerçek bir olaydı:</strong> OCR'ı CPU'ya taşıdığımızda
+        arka arkaya biriken isteklerin gecikmesi katlanarak arttı — backpressure olsaydı sistem "yetişemiyorum"
+        deyip en son kareye atlardı, birikme yerine.</p>
+      </article>
+
+      <article class="technique" id="t-warmup">
+        <div class="technique-head">
+          <h3>13. Başlangıçta ısınma (warm-up) isteği at</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta (ilk istek gecikmesi)</span><span class="chip">Zorluk: Düşük</span></div>
+        </div>
+        <p class="why">
+          CUDA'nın ilk çekirdek derlemesi/yükü ("kernel warm-up") ilk isteği belirgin şekilde yavaşlatır —
+          bu oturumda ölçüm yaparken de her seferinde önce görünmez bir "warmup" isteği attık, tam da bu
+          yüzden. Sunucu açılışında gerçek bir çeviri/OCR isteğini sahte bir metinle bir kez tetiklemek,
+          kullanıcının göreceği <em>ilk gerçek</em> altyazının o soğuk-başlangıç gecikmesini yememesini
+          sağlar.
+        </p>
+        <div class="file-path">tools/translation/translation_server.py (lifespan, model yüklendikten hemen sonra)</div>
+        <pre><code>_model.eval()
+elapsed = (time.perf_counter() - t0) * 1000
+print(f"[translation_server] Model loaded in {elapsed:.0f} ms", flush=True)
+
+# Isınma: ilk gerçek isteğin CUDA kernel derleme maliyetini ödememesi için
+with torch.no_grad():
+    _ = _model.generate(**_tokenizer("warmup", return_tensors="pt").to(_device),
+                         max_new_tokens=4, num_beams=1)
+print("[translation_server] Warm-up complete.", flush=True)</code></pre>
+      </article>
+
+      <article class="technique" id="t-adaptive-interval">
+        <div class="technique-head">
+          <h3>14. Sahne durgunken tarama aralığını uzat</h3>
+          <div class="chips"><span class="chip impact-high">Etki: Yüksek (boşta senaryoda)</span><span class="chip">Zorluk: Orta</span></div>
+        </div>
+        <p class="why">
+          Şu an tarama aralığı sabit (~300-400ms), diyalog olsun olmasın. Art arda birkaç kare
+          "değişiklik yok / metin yok" dönerse aralığı kademeli arttırıp (örn. 400ms → 800ms → 1500ms),
+          yeni bir değişiklik algılanınca hemen 400ms'e dönmek — boşta CPU/GPU tüketimini büyük ölçüde
+          azaltır, diyalog başladığında tepki hızını korur.
+        </p>
+        <div class="file-path">PsGameTranslator.App/ViewModels/MonitoringViewModel.cs (tarama zamanlayıcısı)</div>
+        <pre><code>private int _consecutiveEmptyFrames;
+private int CurrentIntervalMs =>
+    _consecutiveEmptyFrames switch
+    {
+        &lt;= 2 => 400,
+        &lt;= 6 => 800,
+        _     => 1500,
+    };
+
+// her boş OCR sonucunda: _consecutiveEmptyFrames++;
+// her dolu sonuçta:      _consecutiveEmptyFrames = 0;</code></pre>
+      </article>
+
+      <article class="technique" id="t-stabilization">
+        <div class="technique-head">
+          <h3>15. Stabilizasyon süresini içerik uzunluğuna göre uyarlama</h3>
+          <div class="chips"><span class="chip impact-med">Etki: Orta</span><span class="chip">Zorluk: Orta</span></div>
+        </div>
+        <p class="why">
+          Şu anki 250ms sabit — kısa repliklerde ("Hayır.") gereksiz beklemeye, uzun diyalog daktilo
+          efektinde bazen yetersiz kalmaya sebep olabilir. Metin uzunluğuna göre orantılı bir bekleme
+          (kısa metne az, uzun metne biraz daha fazla) hem tepki hızını hem doğruluğu iyileştirebilir.
+        </p>
+        <div class="file-path">PsGameTranslator.Infrastructure/Translation/OrderedSubtitlePipeline.cs (HandleStabilization)</div>
+        <pre><code>var stabilizationMs = Math.Clamp(
+    150 + text.Length * 2,   // kısa metin ~150-200ms, uzun metin ~350-400ms
+    150, 400);</code></pre>
+        <p class="callout">Bu ayarı önceki oturumda bilerek sabit 250ms'de bıraktık (kullanıcı isteğiyle) —
+        burada sadece bir sonraki iyileştirme fikri olarak listeleniyor, otomatik uygulanmadı.</p>
+      </article>
+    </section>
+
+    <!-- ══════════════════ Öncelik sırası ══════════════════ -->
+    <section class="resource" id="oncelik">
+      <div class="resource-head">
+        <h2>Uygulama sırası</h2>
+      </div>
+      <p class="deck">Etki/zorluk oranına göre gerçek bir öncelik sırası — yukarıdan aşağı uygulaman önerilir.</p>
+      <ol class="priority">
+        <li><div><strong>Backpressure / kuyruk sınırı ekle (#12)</strong><span class="detail">Riski yok, sadece iyileştirir — OCR-CPU denemesinde yaşadığımız birikme sorununu tekrar yaşamamamızı garantiler.</span></div></li>
+        <li><div><strong>OCR isteklerini birleştir (#3)</strong><span class="detail">Tek kod değişikliği, hemen ölçülebilir round-trip kazancı.</span></div></li>
+        <li><div><strong>Görüntüyü küçült + JPEG'e geç (#4, #5)</strong><span class="detail">İkisi birlikte kırpım→OCR yolunun CPU maliyetini büyük ölçüde düşürür.</span></div></li>
+        <li><div><strong>Başlangıç ısınma isteği (#13)</strong><span class="detail">Beş satırlık kod, ilk çevirinin soğuk-başlangıç gecikmesini yok eder.</span></div></li>
+        <li><div><strong>Uyarlanabilir tarama aralığı (#14)</strong><span class="detail">Boşta senaryoda (menü, ara sahne) en büyük genel kazanım.</span></div></li>
+        <li><div><strong>Çeviri önbelleğine LRU sınırı (#8)</strong><span class="detail">Uzun oturumlarda RAM artışını durdurur, riski yok.</span></div></li>
+        <li><div><strong>Üretici-tüketici pipeline'a geçiş (#11)</strong><span class="detail">En büyük mimari kazanım ama en fazla test gerektiren refactor.</span></div></li>
+        <li><div><strong>CTranslate2'ye geçiş (#1)</strong><span class="detail">En yüksek etki ama BLEU'yu tekrar ölçmeyi gerektirir — ayrı bir oturumda ele alınmalı.</span></div></li>
+        <li><div><strong>OCR + çeviriyi tek sürece birleştir (#2)</strong><span class="detail">En büyük VRAM kazancı ama en riskli refactor — en sona bırakılmalı.</span></div></li>
+      </ol>
+    </section>
+
+    <footer class="doc-footer">
+      Bu rehber PsGameTranslator kod tabanının 2026-07-13 tarihli hâline göre yazıldı — dosya yolları ve
+      satır referansları o ana kadar yapılan değişiklikleri (fp16, greedy decoding, model merge, OCR
+      okuma sırası düzeltmesi) yansıtır. Hiçbir kod burada otomatik uygulanmadı.
+    </footer>
+  </main>
+</div>

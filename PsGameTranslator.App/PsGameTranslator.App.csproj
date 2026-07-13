@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- 10.0.19041.0 exposes the Windows.Media.Ocr WinRT projection for WindowsOcrProvider. -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\logo_icon.png" />
+    <Resource Include="Assets\logo_icon_transparent.png" />
+    <Resource Include="Assets\app.ico" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\dictionaries\global\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\dictionaries\genre\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\dictionaries\game\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\tools\ocr\paddle_ocr.py" Link="tools\ocr\paddle_ocr.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\tools\ocr\ocr_server.py" Link="tools\ocr\ocr_server.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\tools\translation\train_opus_mt.py" Link="tools\translation\train_opus_mt.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Wpf.Ui" Version="3.4.2.7" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PsGameTranslator.Core\PsGameTranslator.Core.csproj" />
+		<ProjectReference Include="..\PsGameTranslator.Capture\PsGameTranslator.Capture.csproj" />
+		<ProjectReference Include="..\PsGameTranslator.Ocr\PsGameTranslator.Ocr.csproj" />
+		<ProjectReference Include="..\PsGameTranslator.Overlay\PsGameTranslator.Overlay.csproj" />
+		<ProjectReference Include="..\PsGameTranslator.Infrastructure\PsGameTranslator.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Views\User\" />
+	</ItemGroup>
+
+</Project>

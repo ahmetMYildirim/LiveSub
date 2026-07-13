@@ -1,0 +1,17 @@
+[
+  { "sourceTerm": "Alan Wake", "targetTerm": "Alan Wake", "categories": ["CharacterName"], "shouldTranslate": false, "isProtected": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Saga Anderson", "targetTerm": "Saga Anderson", "categories": ["CharacterName"], "shouldTranslate": false, "isProtected": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Mr. Scratch", "targetTerm": "Bay Scratch", "categories": ["CharacterName"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Dark Place", "targetTerm": "Karanlık Yer", "categories": ["LocationName"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "The Dark Presence", "targetTerm": "Karanlık Varlık", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Bright Falls", "targetTerm": "Bright Falls", "categories": ["LocationName"], "shouldTranslate": false, "isProtected": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Cauldron Lake", "targetTerm": "Cauldron Gölü", "categories": ["LocationName"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Taken", "targetTerm": "Ele Geçirilmiş", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase", "notes": "Enemies possessed by the Dark Presence." },
+  { "sourceTerm": "Federal Bureau of Control", "targetTerm": "Federal Kontrol Bürosu", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "FBC", "targetTerm": "FBC", "categories": ["GameTerm"], "shouldTranslate": false, "isProtected": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Words of Power", "targetTerm": "Güç Sözcükleri", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "manuscript page", "targetTerm": "elyazması sayfa", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "flashlight", "targetTerm": "el feneri", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Clicker", "targetTerm": "Clicker", "categories": ["GameTerm"], "shouldTranslate": false, "isProtected": true, "matchMode": "Phrase" },
+  { "sourceTerm": "Cult of the Tree", "targetTerm": "Ağaç Tarikatı", "categories": ["GameTerm"], "shouldTranslate": true, "matchMode": "Phrase" }
+]

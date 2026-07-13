@@ -1,0 +1,523 @@
+<meta charset="utf-8">
+<title>Performans Optimizasyonu — Kapsamlı Teknik Rehber</title>
+<style>
+  :root {
+    --bg: #F5F4F0;
+    --surface: #FFFFFF;
+    --surface-2: #FAF9F5;
+    --text: #201F1C;
+    --text-muted: #6C6860;
+    --border: #E2DFD6;
+    --code-bg: #EEEBE2;
+    --code-text: #383530;
+    --accent: #3B5BA5;
+    --accent-2: #A5673B;
+    --good: #2E7D5B;
+    --warn: #B5602A;
+    --shadow: 0 1px 2px rgba(32,31,28,0.06), 0 4px 16px rgba(32,31,28,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161A; --surface: #1D1D22; --surface-2: #212026; --text: #EAE8E2;
+      --text-muted: #98948B; --border: #34333A; --code-bg: #232228; --code-text: #E3E0D8;
+      --accent: #8AA6E8; --accent-2: #E3A06B; --good: #6FCBA4; --warn: #F0925A;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16161A; --surface: #1D1D22; --surface-2: #212026; --text: #EAE8E2;
+    --text-muted: #98948B; --border: #34333A; --code-bg: #232228; --code-text: #E3E0D8;
+    --accent: #8AA6E8; --accent-2: #E3A06B; --good: #6FCBA4; --warn: #F0925A;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F5F4F0; --surface: #FFFFFF; --surface-2: #FAF9F5; --text: #201F1C;
+    --text-muted: #6C6860; --border: #E2DFD6; --code-bg: #EEEBE2; --code-text: #383530;
+    --accent: #3B5BA5; --accent-2: #A5673B; --good: #2E7D5B; --warn: #B5602A;
+    --shadow: 0 1px 2px rgba(32,31,28,0.06), 0 4px 16px rgba(32,31,28,0.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15.5px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono, .num {
+    font-family: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell { display: flex; max-width: 1180px; margin: 0 auto; align-items: flex-start; }
+
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; width: 240px; flex: none;
+    padding: 32px 20px 32px 28px; overflow-y: auto; border-right: 1px solid var(--border);
+  }
+  .sidebar-title {
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-muted); margin: 0 0 14px;
+  }
+  .toc { display: flex; flex-direction: column; gap: 2px; margin-bottom: 26px; }
+  .toc a {
+    color: var(--text-muted); text-decoration: none; font-size: 13.5px;
+    padding: 6px 8px; border-radius: 6px; display: flex; gap: 8px; align-items: baseline;
+  }
+  .toc a .n { font-family: "Cascadia Code", monospace; font-size: 11px; color: var(--accent-2); flex: none; }
+  .toc a:hover { color: var(--text); background: var(--surface-2); }
+
+  main { flex: 1; min-width: 0; padding: 56px 48px 120px; max-width: 800px; }
+
+  header.intro { margin-bottom: 48px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-2); font-weight: 600; margin: 0 0 10px; }
+  h1 { font-size: 31px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px; text-wrap: balance; }
+  .lede { font-size: 16.5px; color: var(--text-muted); max-width: 62ch; margin: 0 0 8px; }
+
+  section.chapter { margin: 68px 0 0; }
+  .chapter-head { margin-bottom: 18px; }
+  .chapter-eyebrow { font-family: "Cascadia Code", monospace; font-size: 12.5px; color: var(--accent-2); margin: 0 0 6px; }
+  .chapter-head h2 { font-size: 24px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .chapter-head p.deck { color: var(--text-muted); font-size: 14.5px; max-width: 62ch; margin: 0; }
+
+  .concept {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 24px 22px; margin: 18px 0; box-shadow: var(--shadow);
+  }
+  .concept h3 { font-size: 16.5px; margin: 0 0 8px; }
+  .concept p { margin: 8px 0; }
+  .concept p.def { color: var(--text-muted); font-size: 14px; }
+
+  .principle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .principle {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+  }
+  .principle .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .principle .v { font-size: 13.8px; color: var(--text); }
+
+  pre {
+    background: var(--code-bg); color: var(--code-text); padding: 14px 16px; border-radius: 8px;
+    overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 12px 0; border: 1px solid var(--border);
+  }
+  pre code { background: none; padding: 0; }
+  p code, li code {
+    background: var(--code-bg); color: var(--code-text); padding: 1px 6px; border-radius: 4px; font-size: 0.88em;
+  }
+
+  table.spec { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  table.spec th, table.spec td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.spec th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.spec td.num, table.spec th.num { text-align: right; }
+
+  .callout {
+    background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 13.8px; color: var(--text-muted);
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.good { border-left-color: var(--good); }
+  .callout strong { color: var(--text); }
+
+  .app-example {
+    margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+    border: 1px dashed var(--border); font-size: 13px; color: var(--text-muted);
+  }
+  .app-example strong { color: var(--accent); font-weight: 600; }
+
+  ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  ol.steps li {
+    counter-increment: step; display: grid; grid-template-columns: 28px 1fr; gap: 12px;
+    align-items: baseline;
+  }
+  ol.steps li::before {
+    content: counter(step); font-family: "Cascadia Code", monospace; font-weight: 700; font-size: 13px;
+    color: var(--accent-2);
+  }
+
+  footer.doc-footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); }
+
+  @media (max-width: 880px) {
+    .shell { flex-direction: column; }
+    .sidebar { position: relative; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px; }
+    main { padding: 32px 20px 80px; max-width: 100%; }
+    .principle-grid { grid-template-columns: 1fr; }
+  }
+
+  a { color: var(--accent); }
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <p class="sidebar-title">Bölümler</p>
+    <div class="toc">
+      <a href="#b1"><span class="n">01</span> Önce ölç, sonra optimize et</a>
+      <a href="#b2"><span class="n">02</span> Bant genişliği mi, hesaplama mı?</a>
+      <a href="#b3"><span class="n">03</span> Hassasiyet düşürme (quantization)</a>
+      <a href="#b4"><span class="n">04</span> Batching: verim ve gecikme takası</a>
+      <a href="#b5"><span class="n">05</span> Önbellekleme stratejileri</a>
+      <a href="#b6"><span class="n">06</span> Eşzamanlılık desenleri</a>
+      <a href="#b7"><span class="n">07</span> Bellek yönetimi (.NET)</a>
+      <a href="#b8"><span class="n">08</span> G/Ç ve serileştirme</a>
+      <a href="#b9"><span class="n">09</span> Model küçültme teknikleri</a>
+      <a href="#b10"><span class="n">10</span> Profil çıkarma araçları</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="intro">
+      <p class="eyebrow">Genel Referans</p>
+      <h1>Performans Optimizasyonu: Kavramlar ve Yöntemler</h1>
+      <p class="lede">
+        Bu doküman tek bir uygulamaya değil, genel olarak CPU/RAM/GPU/VRAM optimizasyonunun arkasındaki
+        <em>fikirlere</em> odaklanıyor — neden işe yaradıklarını anlarsan, PsGameTranslator'daki spesifik
+        rehberin (CTranslate2, batching, LRU vs.) önerilerini de, ileride karşılaşacağın başka projelerdeki
+        benzer sorunları da tanıyabilirsin. Her bölümde bir teori kutusu ve PsGameTranslator'dan somut bir
+        örnek var.
+      </p>
+    </header>
+
+    <!-- 01 -->
+    <section class="chapter" id="b1">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 01</p>
+        <h2>Önce ölç, sonra optimize et</h2>
+        <p class="deck">Optimizasyonun en sık yapılan hatası: sezgiyle "yavaş olduğunu düşündüğün" yeri hızlandırmak.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Amdahl Yasası</h3>
+        <p class="def">
+          Bir programın sadece bir kısmını (P oranı) hızlandırırsan, toplam kazanç asla
+          <code>1 / (1 - P)</code>'yi geçemez — geri kalan <code>(1 - P)</code> kısmı ne yaparsan yap
+          aynı kalır. Toplam sürenin %10'unu kaplayan bir adımı sonsuz hızlandırsan bile toplamda
+          en fazla %10 kazanırsın.
+        </p>
+        <div class="app-example">
+          <strong>Örnekle:</strong> Bu oturumda önce çeviri modelini optimize ettik (fp16 + greedy + merge) —
+          gerçekten hızlandı (~650ms → ~280ms). Ama kullanıcı "ekrana gelme süresi"ni sorunca ortaya çıktı ki
+          toplam sürenin büyük kısmı OCR tarama aralığı + 250ms stabilizasyon bekleme idi. Çeviriyi ne kadar
+          hızlandırırsak hızlandıralım, o sabit gecikmeler duruyor — <em>darboğaz taşındı</em>, kaybolmadı.
+        </div>
+      </div>
+
+      <div class="concept">
+        <h3>Darboğaz taşınır, kaybolmaz</h3>
+        <p class="def">
+          Bir pipeline'da (yakala → OCR → çevir → göster) her zaman <em>en yavaş halka</em> toplam süreyi
+          belirler. O halkayı hızlandırdığında bir sonraki en yavaş halka yeni darboğaz olur. Bu yüzden
+          optimizasyon tek seferlik değil, iteratif bir süreçtir: ölç → en yavaş yeri bul → düzelt → tekrar ölç.
+        </p>
+        <ol class="steps">
+          <li>Uçtan uca süreyi ölç (bu projede <code>stage_latency</code> logları zaten bunu yapıyor).</li>
+          <li>Her aşamanın süresini ayrı ayrı logla (capture_ms, ocr_ms, translate_ms, e2e_ms — hepsi zaten var).</li>
+          <li>En büyük payı alan aşamayı optimize et.</li>
+          <li>Tekrar ölç — genelde yeni bir darboğaz ortaya çıkar.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="chapter" id="b2">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 02</p>
+        <h2>Bant genişliği mi, hesaplama mı sınırlıyor?</h2>
+        <p class="deck">Bir işlemi hızlandırmadan önce onu neyin yavaşlattığını bilmen gerekir — cevap her zaman "daha güçlü donanım" değildir.</p>
+      </div>
+
+      <div class="principle-grid">
+        <div class="principle">
+          <div class="k">Compute-bound (hesaplama sınırlı)</div>
+          <div class="v">GPU/CPU çekirdekleri sürekli meşgul, veri beklemiyor. Çözüm: daha az işlem (quantization, daha küçük model, greedy vs. beam search).</div>
+        </div>
+        <div class="principle">
+          <div class="k">Memory-bound (bant genişliği sınırlı)</div>
+          <div class="v">Çekirdekler veri gelmesini bekliyor, kendisi boşta. Çözüm: daha az veri taşı (fp16, daha küçük görüntü, daha az kopyalama).</div>
+        </div>
+        <div class="principle">
+          <div class="k">I/O-bound</div>
+          <div class="v">Disk/ağ/HTTP round-trip bekleniyor. Çözüm: istekleri birleştir (batching), paralel çalıştır, önbellekle.</div>
+        </div>
+        <div class="principle">
+          <div class="k">Latency-bound (sabit gecikme)</div>
+          <div class="v">İşin kendisi hızlı ama aralarda bilinçli bekleme var (debounce, stabilizasyon). Çözüm: gecikmeyi içeriğe göre uyarla.</div>
+        </div>
+      </div>
+
+      <div class="app-example">
+        <strong>Örnekle:</strong> Çeviri modeli GPU'da <em>compute-bound</em>'du (matris çarpımları) — bu
+        yüzden fp16 (daha az bit, daha az hesaplama) ve greedy decoding (daha az adım) işe yaradı. OCR'ı
+        CPU'ya taşıyınca aynı iş artık CPU'da çok daha yavaş <em>compute-bound</em> hale geldi — donanımı
+        değiştirmek darboğazın türünü değiştirdi, ortadan kaldırmadı.
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="chapter" id="b3">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 03</p>
+        <h2>Hassasiyet düşürme (quantization)</h2>
+        <p class="deck">Sayıları daha az bit ile saklamak — genelde en yüksek kazanç/risk oranına sahip tek teknik.</p>
+      </div>
+
+      <table class="spec">
+        <tr><th>Format</th><th>Bit</th><th class="num">VRAM (görece)</th><th>Not</th></tr>
+        <tr><td>fp32</td><td class="num mono">32</td><td class="num mono">1.0×</td><td>Varsayılan eğitim hassasiyeti, çoğu zaman inference'ta gereksiz</td></tr>
+        <tr><td>fp16 / bf16</td><td class="num mono">16</td><td class="num mono">0.5×</td><td>Neredeyse kayıpsız, GPU'da native destek — <em>ilk denenmesi gereken</em></td></tr>
+        <tr><td>int8</td><td class="num mono">8</td><td class="num mono">0.25×</td><td>Kalibrasyon gerekir, küçük kalite kaybı olabilir</td></tr>
+        <tr><td>int4</td><td class="num mono">4</td><td class="num mono">0.125×</td><td>Büyük dil modellerinde yaygın, çeviri gibi küçük modellerde riskli</td></tr>
+      </table>
+
+      <div class="concept">
+        <h3>Neden işe yarıyor?</h3>
+        <p class="def">
+          GPU'da çoğu işlem <em>memory-bound</em>'dur — darboğaz matematiksel işlem değil, o sayıları
+          bellekten çekirdeklere taşımaktır. Bir sayıyı 32 bit yerine 16 bit ile saklamak taşınacak veriyi
+          yarıya indirir, dolayısıyla süreyi de yaklaşık yarıya indirir — <em>hesaplama gücünü değil, veri
+          yolunu</em> rahatlatıyorsun.
+        </p>
+      </div>
+
+      <div class="app-example">
+        <strong>Uygulandı:</strong> Çeviri sunucusunda <code>_model.half()</code> ile fp16'ya geçtik — ölçülen
+        gecikme düşüşünün büyük kısmı buradan geldi. Optimizasyon rehberindeki bir sonraki adım CTranslate2 ile
+        int8'e geçmek; kalite kaybı riski olduğu için BLEU skorunu yeniden ölçmek şart.
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="chapter" id="b4">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 04</p>
+        <h2>Batching: verim ve gecikme takası</h2>
+        <p class="deck">Birden fazla işi tek seferde yapmak — sabit maliyeti (overhead) tek ödeyip birçok işe yayma.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Sabit maliyet vs değişken maliyet</h3>
+        <p class="def">
+          Her istek (HTTP round-trip, Python fonksiyon çağrısı, GPU kernel launch) sabit bir "başlatma"
+          maliyeti taşır — işin kendisi ne kadar küçük olursa olsun bu maliyet ödenir. 10 küçük isteği tek
+          büyük istekte birleştirmek, bu sabit maliyeti 1 kez ödetir, 10 kez değil.
+        </p>
+        <div class="app-example">
+          <strong>Örnekle:</strong> Her karede ana altyazı + konuşmacı bölgesi için <em>iki ayrı</em>
+          <code>HTTP OCR request</code> atılıyor. İkisini tek istekte birleştirmek (bkz. rehber #3) sabit
+          HTTP+Python overhead'ini yarıya indirir — görüntülerin kendisi değişmiyor, sadece bir kez "gidiş"
+          ödeniyor.
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Takas:</strong> Batching, verimi (throughput) artırır ama tek bir isteğin gecikmesini
+        (latency) artırabilir — çünkü istek, batch dolana kadar bekleyebilir. Gerçek zamanlı altyazı gibi
+        gecikmeye duyarlı sistemlerde batch boyutunu küçük tutmak (2-4) ya da zaman aşımıyla batch'i erken
+        kapatmak gerekir.
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="chapter" id="b5">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 05</p>
+        <h2>Önbellekleme stratejileri</h2>
+        <p class="deck">Aynı işi iki kez yapmamak — en ucuz optimizasyon, çünkü doğru yapıldığında hem hızlanma hem de daha az kaynak kullanımı verir.</p>
+      </div>
+
+      <div class="principle-grid">
+        <div class="principle">
+          <div class="k">Memoization</div>
+          <div class="v">Aynı girdi → aynı çıktı garantiliyse (saf fonksiyon), sonucu sakla. PsGameTranslator'daki <code>translation_cache.json</code> tam olarak bu.</div>
+        </div>
+        <div class="principle">
+          <div class="k">LRU tahliye</div>
+          <div class="v">Önbellek sınırsız büyümesin — en uzun süredir kullanılmayanı at. Bellek sabit kalır, isabet oranı yüksek kalır.</div>
+        </div>
+        <div class="principle">
+          <div class="k">TTL (yaşam süresi)</div>
+          <div class="v">Bir süre sonra geçersiz sayılan veriler için (bu projede gerekmez, çeviriler değişmez).</div>
+        </div>
+        <div class="principle">
+          <div class="k">Negatif önbellek</div>
+          <div class="v">"Bu girdi için sonuç yok" bilgisini de saklamak — tekrar tekrar aynı başarısız işi denememek için.</div>
+        </div>
+      </div>
+
+      <div class="callout good">
+        <strong>Zaten iyi yapılmış:</strong> Bu projede çeviri önbelleği hem RAM'de hem diskte
+        (<code>translation_cache.json</code>) tutuluyor ve context-fingerprint'li anahtarlarla çalışıyor —
+        tek eksik, üst sınır olmaması (rehberin RAM bölümündeki LRU önerisi bunu tamamlıyor).
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="chapter" id="b6">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 06</p>
+        <h2>Eşzamanlılık desenleri</h2>
+        <p class="deck">Aşamaları birbirini bloke etmeden çalıştırmak — CPU/GPU'yu boşta bırakmamanın anahtarı.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Üretici-tüketici (producer-consumer)</h3>
+        <p class="def">
+          Bir aşama (üretici) veri üretirken, önceki verinin tüketicisi hâlâ işini bitirmemiş olabilir.
+          Aralarına bir kuyruk koymak, ikisinin bağımsız hızlarda çalışmasını sağlar — üretici tüketiciyi
+          beklemez, sadece kuyruğa yazar ve devam eder.
+        </p>
+      </div>
+
+      <div class="concept">
+        <h3>Backpressure (geri basınç)</h3>
+        <p class="def">
+          Üretici tüketiciden hızlıysa kuyruk sonsuza kadar büyür — bu "birikmiş iş" aslında hepsi bayat
+          olduğu için değersizdir. Backpressure, kuyruğa bir üst sınır koyup doluysa ya üreticiyi
+          yavaşlatmak ya da en eski/en değersiz öğeyi atmaktır.
+        </p>
+        <div class="app-example">
+          <strong>Gerçek olay:</strong> OCR'ı CPU'ya taşıdığımızda tam olarak backpressure'sız bir sistemin
+          nasıl çöktüğünü gördük — <code>capture_to_ocr_done_ms</code> 561ms'den 9402ms'ye kadar tırmandı
+          çünkü sınırsız kuyruğa yeni istekler birikmeye devam etti, sistem hiç "yetişemiyorum, en yeniye
+          atlayayım" diyemedi.
+        </div>
+      </div>
+
+      <div class="concept">
+        <h3>Debounce / throttle</h3>
+        <p class="def">
+          Debounce: art arda gelen olaylardan sadece "durulduktan sonraki son"u işle (bu projede 250ms
+          stabilizasyon bekleme — OCR'ın daktilo efektiyle parça parça okumasını beklemek). Throttle: bir
+          olayı en fazla X ms'de bir işle, ne kadar sık tetiklenirse tetiklensin.
+        </p>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="chapter" id="b7">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 07</p>
+        <h2>Bellek yönetimi (.NET tarafı)</h2>
+        <p class="deck">Garbage collector'ı az çalıştırmak, RAM'i öngörülebilir tutmanın anahtarıdır.</p>
+      </div>
+
+      <div class="concept">
+        <h3>ArrayPool&lt;T&gt; ile kiralama</h3>
+        <p class="def">
+          Her karede yeni bir <code>byte[]</code> ayırmak (görüntü buffer'ı gibi) GC'yi sık çalıştırır —
+          özellikle büyük diziler doğrudan Large Object Heap'e gider ve orada parçalanma (fragmentation)
+          yaratır. <code>ArrayPool&lt;byte&gt;.Shared</code> aynı boyuttaki diziyi tekrar tekrar ödünç
+          alıp geri vermeni sağlar, GC'ye yeni ayırma yükü bindirmez.
+        </p>
+        <pre><code>var buffer = ArrayPool&lt;byte&gt;.Shared.Rent(size);
+try { /* buffer'ı kullan */ }
+finally { ArrayPool&lt;byte&gt;.Shared.Return(buffer); }</code></pre>
+      </div>
+
+      <div class="concept">
+        <h3>Workstation GC vs Server GC</h3>
+        <p class="def">
+          Yaygın bir yanlış inanış: "Server GC her zaman daha hızlıdır." Aslında Server GC daha fazla
+          çekirdek ve daha fazla bellek kullanarak throughput'u artırır — bir masaüstü WPF uygulaması için
+          (tek kullanıcı, arayüz duyarlılığı önemli) genelde <strong>Workstation GC (concurrent modda)</strong>
+          daha az bellek izi ve daha az duraklama (pause) verir. Sunucu tarafı yüksek-throughput servisler
+          için Server GC mantıklıdır — bu proje öyle değil.
+        </p>
+      </div>
+
+      <div class="concept">
+        <h3>using / IDisposable disiplinleri</h3>
+        <p class="def">
+          <code>Bitmap</code>, <code>Stream</code>, DB bağlantısı gibi unmanaged kaynak tutan nesneler
+          GC'nin insafına bırakılmamalı — <code>using</code> bloğu kaynağı hemen, deterministik olarak
+          serbest bırakır. Bir kare işleme fonksiyonunda 3-4 <code>Bitmap</code> art arda oluşturulup
+          <code>using</code> olmadan bırakılırsa, GC devreye girene kadar hepsi bellekte asılı kalır.
+        </p>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="chapter" id="b8">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 08</p>
+        <h2>G/Ç ve serileştirme</h2>
+        <p class="deck">Veriyi diske/ağa yazmadan/okumadan önce onu küçültmek, her zaman veriyi hızlı taşımaktan daha ucuzdur.</p>
+      </div>
+
+      <table class="spec">
+        <tr><th>Format</th><th>Kayıpsız mı?</th><th class="num">Kodlama hızı</th><th>Ne zaman kullan</th></tr>
+        <tr><td>PNG</td><td>Evet</td><td class="num mono">Yavaş</td><td>Şeffaflık/kesin piksel gerektiğinde</td></tr>
+        <tr><td>JPEG</td><td>Hayır (ayarlanabilir)</td><td class="num mono">Hızlı</td><td>Fotoğraf/metin OCR gibi küçük kalite kaybının önemsiz olduğu yerler</td></tr>
+        <tr><td>WebP</td><td>Her ikisi de</td><td class="num mono">Orta</td><td>PNG'den küçük, JPEG'den biraz daha yavaş kodlama</td></tr>
+      </table>
+
+      <div class="callout">
+        <strong>Genel kural:</strong> Bir görüntü/veri sadece bir makine tarafından (insan gözü değil)
+        okunacaksa, kayıpsız format nadiren gereklidir. OCR modelleri JPEG artefaktlarına genelde
+        PNG'den çok daha toleranslıdır çünkü zaten karakter şekline bakar, piksel-mükemmelliğine değil.
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="chapter" id="b9">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 09</p>
+        <h2>Model küçültme teknikleri (ML'e özel)</h2>
+        <p class="deck">Quantization dışında, bir modeli küçültmenin/hızlandırmanın üç yolu daha var.</p>
+      </div>
+
+      <div class="principle-grid">
+        <div class="principle">
+          <div class="k">Distillation (damıtma)</div>
+          <div class="v">Büyük bir "öğretmen" modelin çıktılarıyla küçük bir "öğrenci" model eğitmek — öğrenci çok daha az parametreyle benzer kalite verir.</div>
+        </div>
+        <div class="principle">
+          <div class="k">Pruning (budama)</div>
+          <div class="v">Ağırlık matrislerindeki katkısı düşük bağlantıları sıfırlamak/silmek — seyrek (sparse) matrisler daha az bellek/hesap ister.</div>
+        </div>
+        <div class="principle">
+          <div class="k">Runtime derleme (ONNX/CTranslate2/TensorRT)</div>
+          <div class="v">Genel amaçlı PyTorch yerine, mimariye özel derlenmiş bir çalışma zamanı — gereksiz esnekliği atıp donanıma özel kernel'ler kullanır.</div>
+        </div>
+        <div class="principle">
+          <div class="k">LoRA merge (zaten uygulandı)</div>
+          <div class="v">İnce ayar adaptörünü ana modele kalıcı olarak gömmek — çalışma zamanında ekstra katman/hesap kalmaz.</div>
+        </div>
+      </div>
+
+      <div class="app-example">
+        <strong>Uygulandı:</strong> Fine-tune edilen OPUS-MT modelinin LoRA adaptörünü
+        <code>merge_and_unload()</code> ile ana modele gömdük — bu, "runtime'da ekstra hesap katmanı
+        taşıma" maliyetini tamamen ortadan kaldırdı. Rehberdeki CTranslate2 önerisi bu listenin
+        "runtime derleme" satırına karşılık geliyor.
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="chapter" id="b10">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 10</p>
+        <h2>Profil çıkarma: neyi, nasıl ölçmeli</h2>
+        <p class="deck">"Optimize ettim" demek için önce/sonra rakamın olmalı — sezgiyle "daha hızlı hissettiriyor" yeterli değil.</p>
+      </div>
+
+      <table class="spec">
+        <tr><th>Katman</th><th>Araç</th><th>Ne gösterir</th></tr>
+        <tr><td>.NET CPU/bellek</td><td class="mono">dotnet-trace, dotnet-counters</td><td>GC duraklamaları, thread pool doygunluğu, ayırma oranı</td></tr>
+        <tr><td>GPU kullanım/VRAM</td><td class="mono">nvidia-smi, nvitop</td><td>Anlık VRAM, GPU doygunluk yüzdesi, süreç başına kullanım</td></tr>
+        <tr><td>Python CPU</td><td class="mono">py-spy, cProfile</td><td>Hangi fonksiyon zamanın ne kadarını yiyor</td></tr>
+        <tr><td>Uçtan uca (bu proje)</td><td class="mono">Serilog stage_latency</td><td>capture_ms, ocr_ms, translate_ms, e2e_ms — zaten kodda var</td></tr>
+      </table>
+
+      <div class="callout good">
+        <strong>Bu projenin avantajı:</strong> <code>stage_latency</code> logları bu oturumdaki hemen her
+        teşhisin temeliydi — OCR'ın yavaşladığını, kuyruğun biriktiğini, çevirinin hızlandığını hep bu
+        loglardan okuduk. Yeni bir optimizasyon denerken önce/sonra bu logları karşılaştırmak, "gerçekten
+        işe yaradı mı" sorusuna kod okumadan cevap verir.
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      Bu doküman genel optimizasyon teorisini anlatır; PsGameTranslator'a özel, dosya yollu adım adım
+      talimatlar için "Kaynak Optimizasyon Rehberi" belgesine bakın. Hiçbir kod burada uygulanmadı.
+    </footer>
+  </main>
+</div>

@@ -1,0 +1,663 @@
+<meta charset="utf-8">
+<title>Kurumsal Backend Optimizasyonu — Java/Spring Boot &amp; C#/.NET</title>
+<style>
+  :root {
+    --bg: #F5F4F0;
+    --surface: #FFFFFF;
+    --surface-2: #FAF9F5;
+    --text: #1F1E1B;
+    --text-muted: #6B6459;
+    --border: #E2DFD3;
+    --code-bg: #EEEBE1;
+    --code-text: #383530;
+    --java: #B85A1E;
+    --dotnet: #5B4B9E;
+    --shared: #1F7A72;
+    --shadow: 0 1px 2px rgba(31,30,27,0.06), 0 4px 16px rgba(31,30,27,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17151A; --surface: #1E1C22; --surface-2: #211F26; --text: #EDE9E1;
+      --text-muted: #9C948A; --border: #332F38; --code-bg: #221F27; --code-text: #E7E2D8;
+      --java: #E68A4A; --dotnet: #A292E0; --shared: #5FCABE;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17151A; --surface: #1E1C22; --surface-2: #211F26; --text: #EDE9E1;
+    --text-muted: #9C948A; --border: #332F38; --code-bg: #221F27; --code-text: #E7E2D8;
+    --java: #E68A4A; --dotnet: #A292E0; --shared: #5FCABE;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F5F4F0; --surface: #FFFFFF; --surface-2: #FAF9F5; --text: #1F1E1B;
+    --text-muted: #6B6459; --border: #E2DFD3; --code-bg: #EEEBE1; --code-text: #383530;
+    --java: #B85A1E; --dotnet: #5B4B9E; --shared: #1F7A72;
+    --shadow: 0 1px 2px rgba(31,30,27,0.06), 0 4px 16px rgba(31,30,27,0.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15.5px; line-height: 1.62; -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono { font-family: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", monospace; }
+
+  .shell { display: flex; max-width: 1220px; margin: 0 auto; align-items: flex-start; }
+
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; width: 236px; flex: none;
+    padding: 32px 18px 32px 26px; overflow-y: auto; border-right: 1px solid var(--border);
+  }
+  .sidebar-title { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 14px; }
+  .legend { display: flex; flex-direction: column; gap: 8px; margin-bottom: 26px; }
+  .legend-item { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--text-muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.java { background: var(--java); }
+  .dot.dotnet { background: var(--dotnet); }
+  .dot.shared { background: var(--shared); }
+  .toc { display: flex; flex-direction: column; gap: 2px; }
+  .toc a { color: var(--text-muted); text-decoration: none; font-size: 13px; padding: 5px 8px; border-radius: 6px; }
+  .toc a:hover { color: var(--text); background: var(--surface-2); }
+
+  main { flex: 1; min-width: 0; padding: 56px 46px 120px; max-width: 880px; }
+
+  header.intro { margin-bottom: 44px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--shared); font-weight: 600; margin: 0 0 10px; }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 14px; text-wrap: balance; }
+  .lede { font-size: 16px; color: var(--text-muted); max-width: 66ch; margin: 0 0 20px; }
+
+  .stack-key { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+  .stack-key span { display: flex; align-items: center; gap: 7px; color: var(--text-muted); }
+
+  section.chapter { margin: 60px 0 0; }
+  .chapter-head { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .chapter-eyebrow { font-family: "Cascadia Code", monospace; font-size: 12px; color: var(--shared); margin: 0 0 6px; }
+  .chapter-head h2 { font-size: 23px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .chapter-head p.deck { color: var(--text-muted); font-size: 14.5px; max-width: 68ch; margin: 0; }
+
+  /* Side-by-side stack comparison */
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+  .stack-panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px 20px; box-shadow: var(--shadow); border-top: 3px solid var(--border);
+  }
+  .stack-panel.java { border-top-color: var(--java); }
+  .stack-panel.dotnet { border-top-color: var(--dotnet); }
+  .stack-panel h4 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 10px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .stack-panel.java h4 { color: var(--java); }
+  .stack-panel.dotnet h4 { color: var(--dotnet); }
+  .stack-panel p { font-size: 13.5px; color: var(--text-muted); margin: 6px 0 10px; }
+
+  .concept {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--shared);
+    border-radius: 10px; padding: 18px 22px 20px; margin: 18px 0; box-shadow: var(--shadow);
+  }
+  .concept h3 { font-size: 16px; margin: 0 0 8px; }
+  .concept p { margin: 8px 0; color: var(--text); }
+  .concept p.def { color: var(--text-muted); font-size: 14px; }
+
+  pre {
+    background: var(--code-bg); color: var(--code-text); padding: 13px 15px; border-radius: 8px;
+    overflow-x: auto; font-size: 12.4px; line-height: 1.52; margin: 8px 0; border: 1px solid var(--border);
+  }
+  pre code { background: none; padding: 0; }
+  p code, li code, h4 code {
+    background: var(--code-bg); color: var(--code-text); padding: 1px 6px; border-radius: 4px; font-size: 0.86em;
+  }
+
+  table.spec { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.3px; }
+  table.spec th, table.spec td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.spec th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.spec td.java-col { border-left: 2px solid color-mix(in srgb, var(--java) 35%, transparent); }
+  table.spec td.dotnet-col { border-left: 2px solid color-mix(in srgb, var(--dotnet) 35%, transparent); }
+
+  .callout {
+    background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--shared);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 13.6px; color: var(--text-muted);
+  }
+  .callout strong { color: var(--text); }
+
+  .arch-diagram {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px; margin: 16px 0; font-size: 13px; color: var(--text-muted);
+  }
+  .arch-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: "Cascadia Code", monospace; font-size: 12.5px; margin-bottom: 10px; }
+  .arch-node {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; color: var(--text); white-space: nowrap;
+  }
+  .arch-node.shared { border-color: color-mix(in srgb, var(--shared) 50%, var(--border)); color: var(--shared); }
+  .arch-arrow { color: var(--text-muted); }
+
+  footer.doc-footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); }
+
+  @media (max-width: 880px) {
+    .shell { flex-direction: column; }
+    .sidebar { position: relative; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 24px; }
+    main { padding: 32px 20px 80px; max-width: 100%; }
+    .versus { grid-template-columns: 1fr; }
+  }
+
+  a { color: var(--shared); }
+  ::selection { background: color-mix(in srgb, var(--shared) 30%, transparent); }
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <p class="sidebar-title">Yığınlar</p>
+    <div class="legend">
+      <div class="legend-item"><span class="dot java"></span> Java / Spring Boot</div>
+      <div class="legend-item"><span class="dot dotnet"></span> C# / .NET</div>
+      <div class="legend-item"><span class="dot shared"></span> Ortak mimari</div>
+    </div>
+    <p class="sidebar-title">İçindekiler</p>
+    <div class="toc">
+      <a href="#giris">Giriş</a>
+      <a href="#b1">01 · Çalışma zamanı: JIT &amp; GC</a>
+      <a href="#b2">02 · Ahead-of-time derleme</a>
+      <a href="#b3">03 · Bağlantı havuzlama</a>
+      <a href="#b4">04 · N+1 sorgu problemi</a>
+      <a href="#b5">05 · Çok katmanlı önbellekleme</a>
+      <a href="#b6">06 · Asenkron / reaktif mimari</a>
+      <a href="#b7">07 · Mesaj kuyruğuyla ayrıştırma</a>
+      <a href="#b8">08 · CQRS: okuma-yazma ayrımı</a>
+      <a href="#b9">09 · Devre kesici &amp; dayanıklılık</a>
+      <a href="#b10">10 · Yatay ölçekleme</a>
+      <a href="#b11">11 · Profilleme araçları</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="intro" id="giris">
+      <p class="eyebrow">Genel Referans · Proje-bağımsız</p>
+      <h1>Kurumsal Backend Optimizasyonu: Java/Spring Boot &amp; C#/.NET</h1>
+      <p class="lede">
+        Bu doküman PsGameTranslator'dan tamamen bağımsız — Java/Spring Boot ve C#/.NET dünyasında yaygın
+        backend performans sorunlarını ve mimari çözümlerini yan yana anlatıyor. Amaç: bir teknikle bir
+        yığında karşılaşınca diğerinde de tanıyabilmen. Her bölüm önce <em>neden</em> işe yaradığını
+        (mimari), sonra <em>her iki yığında nasıl uygulandığını</em> (kod) gösteriyor.
+      </p>
+      <div class="stack-key">
+        <span><span class="dot java"></span> Java / Spring Boot örnekleri</span>
+        <span><span class="dot dotnet"></span> C# / .NET (Core) örnekleri</span>
+        <span><span class="dot shared"></span> Yığından bağımsız mimari kavram</span>
+      </div>
+    </header>
+
+    <!-- 01 -->
+    <section class="chapter" id="b1">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 01</p>
+        <h2>Çalışma zamanı temelleri: JIT ve Garbage Collector</h2>
+        <p class="deck">Hem JVM hem CLR yönetilen (managed) çalışma zamanlarıdır — ikisi de kodu anında (JIT) derler ve belleği otomatik toplar. Farklı olan, bu iki sürecin nasıl ayarlanabildiği.</p>
+      </div>
+
+      <div class="concept">
+        <h3>JIT: sıcak yol (hot path) optimizasyonu</h3>
+        <p class="def">
+          Kod ilk çalıştığında yorumlanır/az optimize derlenir. Sık çalışan metodlar ("sıcak") zamanla
+          daha agresif optimize edilerek yeniden derlenir — bu yüzden bir servisin ilk birkaç isteği
+          (soğuk başlangıç) her zaman sonraki isteklerden yavaştır.
+        </p>
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ JVM — G1GC / ZGC</h4>
+          <p>Modern JVM'lerde varsayılan <code>G1GC</code>, büyük heap'lerde milisaniye altı duraklama
+          hedefler. Çok büyük heap (&gt;32GB) veya duraklama-kritik servislerde <code>ZGC</code>/<code>Shenandoah</code>
+          tercih edilir — duraklama süresi heap boyutundan bağımsızdır.</p>
+          <pre><code>-XX:+UseG1GC
+-XX:MaxGCPauseMillis=200
+-Xms2g -Xmx2g          # min=max: heap resize duraklamasını önler
+-XX:+UseZGC             # çok büyük heap / ultra-düşük duraklama gerekirse</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 CLR — Workstation vs Server GC</h4>
+          <p>Server GC çekirdek başına bir heap açar, throughput'u artırır ama bellek izini büyütür —
+          sunucu/API iş yükü için uygun. Workstation GC (özellikle concurrent modda) masaüstü/düşük
+          eşzamanlı servislerde daha az bellek, daha öngörülebilir duraklama verir.</p>
+          <pre><code>// .csproj veya runtimeconfig.json
+&lt;ServerGarbageCollection&gt;true&lt;/ServerGarbageCollection&gt;
+&lt;ConcurrentGarbageCollection&gt;true&lt;/ConcurrentGarbageCollection&gt;
+// Yüksek eşzamanlı ASP.NET Core API → Server GC true
+// Masaüstü/az eşzamanlı araç      → Server GC false (varsayılan)</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Ortak ilke:</strong> Her iki runtime'da da GC ayarlamanın altın kuralı aynı — <em>önce
+        ne kadar ve ne sıklıkla nesne ayırdığını ölç</em> (allocation rate), sonra GC'yi buna göre ayarla.
+        GC ayarını kör kör değiştirmek genelde işe yaramaz; asıl kazanç genelde gereksiz ayırmayı
+        <em>azaltmaktan</em> gelir (obje havuzları, struct kullanımı, streaming API'ler).
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="chapter" id="b2">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 02</p>
+        <h2>Ahead-of-time (AOT) derleme</h2>
+        <p class="deck">JIT'in "ilk isteği yavaş" sorununu tamamen ortadan kaldıran yaklaşım: kodu dağıtımdan önce, çalışma zamanında değil, derleme sırasında makine koduna çevirmek.</p>
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ GraalVM Native Image</h4>
+          <p>Spring Boot uygulamasını gerçek bir native binary'e derler — JVM başlatma maliyeti ve JIT
+          ısınma süresi sıfırlanır. Başlangıç süresi saniyelerden milisaniyelere iner; container/serverless
+          ortamlarda (soğuk başlangıç kritikse) büyük fark yaratır.</p>
+          <pre><code>&lt;plugin&gt;
+  &lt;groupId&gt;org.graalvm.buildtools&lt;/groupId&gt;
+  &lt;artifactId&gt;native-maven-plugin&lt;/artifactId&gt;
+&lt;/plugin&gt;
+# mvn -Pnative native:compile
+# Sonuç: ~50ms başlangıç (vs ~2-3sn JVM ısınması)</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 .NET Native AOT</h4>
+          <p>.NET 8+'da <code>PublishAot</code> ile aynı fikir — JIT'siz, doğrudan çalıştırılabilir native
+          binary. Daha küçük dağıtım boyutu, anında başlangıç, daha az bellek izi (JIT altyapısının kendisi
+          de bellek kaplamıyor).</p>
+          <pre><code>&lt;PropertyGroup&gt;
+  &lt;PublishAot&gt;true&lt;/PublishAot&gt;
+&lt;/PropertyGroup&gt;
+&lt;!-- dotnet publish -c Release -r win-x64 --&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Takas:</strong> AOT, reflection-yoğun kütüphanelerle (bazı ORM'ler, DI container'lar,
+        serileştiriciler) sorun çıkarabilir çünkü "hangi kodun çalışacağı" derleme zamanında bilinmelidir.
+        Spring Boot 3+ ve ASP.NET Core 8+ bunu büyük ölçüde çözdü ama üçüncü parti kütüphane uyumluluğunu
+        migrasyondan önce kontrol etmek gerekir.
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="chapter" id="b3">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 03</p>
+        <h2>Bağlantı havuzlama (connection pooling)</h2>
+        <p class="deck">Her istekte yeni bir veritabanı bağlantısı açmak (TCP handshake + auth) tek başına isteğin geri kalanından daha pahalı olabilir.</p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <span class="arch-node">İstek</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">Havuzdan bağlantı ödünç al</span><span class="arch-arrow">→</span>
+          <span class="arch-node">Sorguyu çalıştır</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">Bağlantıyı havuza geri ver</span>
+        </div>
+        Bağlantı kapatılmaz, sadece havuza iade edilir — bir sonraki istek onu yeniden kurmadan kullanır.
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ HikariCP (Spring Boot varsayılanı)</h4>
+          <pre><code>spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.minimum-idle=2
+spring.datasource.hikari.connection-timeout=3000
+spring.datasource.hikari.idle-timeout=600000</code></pre>
+          <p><code>maximum-pool-size</code>'ı çekirdek sayısının katı gibi büyütmek genelde yanlıştır —
+          HikariCP'nin kendi dokümantasyonu bile "az bağlantı, çok istek" formülünü önerir çünkü veritabanı
+          sunucusu zaten sınırlı eşzamanlılıkla çalışır.</p>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 ADO.NET / EF Core (dahili havuzlama)</h4>
+          <pre><code>"ConnectionStrings": {
+  "Default": "Server=...;Max Pool Size=50;Min Pool Size=5;
+              Connection Timeout=15;"
+}
+// EF Core: DbContext'i her istek için Scoped olarak kaydet,
+// bağlantı havuzu connection string düzeyinde otomatik yönetilir.
+services.AddDbContext&lt;AppDbContext&gt;(o => o.UseSqlServer(connStr),
+    ServiceLifetime.Scoped);</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="chapter" id="b4">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 04</p>
+        <h2>N+1 sorgu problemi</h2>
+        <p class="deck">ORM'lerin en yaygın performans tuzağı — 1 liste sorgusu, ardından her öğe için ayrı ayrı N sorgu daha.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Neden olur?</h3>
+        <p class="def">
+          <code>Order</code> listesi çekip her <code>order.getCustomer()</code>'a eriştiğinde, ORM lazy-loading
+          ile o an ayrı bir sorgu atar. 100 sipariş = 1 + 100 = 101 sorgu. Çözüm: ilişkiyi baştan, tek sorguda
+          (join ile) getirmek.
+        </p>
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ JPA / Hibernate</h4>
+          <pre><code>// Kötü: N+1 tetikler
+List&lt;Order&gt; orders = orderRepository.findAll();
+orders.forEach(o -> o.getCustomer().getName());  // her biri ayrı sorgu
+
+// İyi: JOIN FETCH ile tek sorguda getir
+@Query("SELECT o FROM Order o JOIN FETCH o.customer")
+List&lt;Order&gt; findAllWithCustomer();
+
+// Ya da @EntityGraph
+@EntityGraph(attributePaths = {"customer"})
+List&lt;Order&gt; findAll();</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 Entity Framework Core</h4>
+          <pre><code>// Kötü: N+1 tetikler (lazy loading açıksa)
+var orders = context.Orders.ToList();
+orders.ForEach(o => Console.WriteLine(o.Customer.Name));
+
+// İyi: Include ile eager loading, tek sorguda JOIN
+var orders = context.Orders
+    .Include(o => o.Customer)
+    .AsNoTracking()   // salt-okunur sorguda change-tracking kapat
+    .ToList();</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Ek ipucu (her iki yığın):</strong> Salt-okunur (read-only) sorgularda change-tracking'i
+        kapatmak (<code>AsNoTracking()</code> / Hibernate'de <code>@Transactional(readOnly = true)</code>)
+        ORM'nin "bu nesneyi değişiklik için izlememe" yükünü ortadan kaldırır — genelde gözden kaçan ama
+        ucuz bir kazanç.
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="chapter" id="b5">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 05</p>
+        <h2>Çok katmanlı önbellekleme mimarisi</h2>
+        <p class="deck">Tek bir önbellek yetmez — istek sürecinin farklı noktalarında farklı ömürde önbellek katmanları olur.</p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <span class="arch-node">İstek</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">L1: süreç-içi bellek (Caffeine/IMemoryCache)</span><span class="arch-arrow">→ yok →</span>
+          <span class="arch-node shared">L2: dağıtık önbellek (Redis)</span><span class="arch-arrow">→ yok →</span>
+          <span class="arch-node">Veritabanı</span>
+        </div>
+        L1 en hızlı ama süreç yeniden başlayınca/yatay ölçeklenince kaybolur ve tutarsızlaşabilir; L2
+        süreçler arası paylaşılır ve tutarlı kalır ama ağ gecikmesi taşır.
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ Spring Cache + Caffeine + Redis</h4>
+          <pre><code>@Cacheable(value = "products", key = "#id")
+public Product getProduct(Long id) { ... }
+
+// application.yml
+spring.cache.type: caffeine
+spring.cache.caffeine.spec: maximumSize=5000,expireAfterWrite=10m
+
+// İkinci katman için spring-boot-starter-data-redis +
+// @Cacheable(cacheManager = "redisCacheManager")</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 IMemoryCache + IDistributedCache (Redis)</h4>
+          <pre><code>public async Task&lt;Product&gt; GetProductAsync(int id)
+{
+    if (_memoryCache.TryGetValue(id, out Product p)) return p;
+
+    var cached = await _distributedCache.GetStringAsync($"product:{id}");
+    if (cached is not null)
+    {
+        p = JsonSerializer.Deserialize&lt;Product&gt;(cached);
+        _memoryCache.Set(id, p, TimeSpan.FromMinutes(2));
+        return p;
+    }
+
+    p = await _db.Products.FindAsync(id);
+    await _distributedCache.SetStringAsync($"product:{id}",
+        JsonSerializer.Serialize(p), new() { SlidingExpiration = TimeSpan.FromMinutes(10) });
+    _memoryCache.Set(id, p, TimeSpan.FromMinutes(2));
+    return p;
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="chapter" id="b6">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 06</p>
+        <h2>Asenkron / reaktif mimari</h2>
+        <p class="deck">Bir thread'i G/Ç beklerken bloke etmemek — az sayıda thread'le çok sayıda eşzamanlı isteği karşılamanın yolu.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Neden thread bloklamak pahalı?</h3>
+        <p class="def">
+          Her thread işletim sisteminde ~1MB stack ve context-switch maliyeti taşır. Senkron bir servis
+          10.000 eşzamanlı isteği karşılamak için 10.000 thread ister (pratikte imkansız). Asenkron model,
+          bir thread G/Ç beklerken (DB sorgusu, HTTP çağrısı) o thread'i havuza iade eder — sonuç gelince
+          uygun bir thread devam ettirir. Az thread, çok eşzamanlı iş.
+        </p>
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ Spring WebFlux (Reactor)</h4>
+          <pre><code>@GetMapping("/products/{id}")
+public Mono&lt;Product&gt; getProduct(@PathVariable Long id) {
+    return productRepository.findById(id)          // non-blocking DB
+        .flatMap(p -> enrichWithPricing(p))          // başka bir async çağrı
+        .timeout(Duration.ofSeconds(3));
+}
+// Netty event-loop üzerinde çalışır — sabit sayıda thread,
+// binlerce eşzamanlı bağlantı.</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 async/await (ASP.NET Core)</h4>
+          <pre><code>[HttpGet("products/{id}")]
+public async Task&lt;Product&gt; GetProduct(int id)
+{
+    var product = await _db.Products.FindAsync(id);   // thread pool'a iade edilir
+    var pricing = await _pricingClient.GetAsync(id);   // beklerken de öyle
+    return Merge(product, pricing);
+}
+// Kestrel de aynı prensiple çalışır: I/O completion port'lar
+// üzerinden az thread'le çok bağlantı.</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Yaygın hata (her iki yığın):</strong> Asenkron bir API'yi senkron gibi çağırmak
+        (<code>.block()</code> Reactor'da, <code>.Result</code>/<code>.Wait()</code> .NET'te) tüm
+        kazanımı sıfırlar ve deadlock riski yaratır. Asenkron zincir baştan sona asenkron kalmalı.
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="chapter" id="b7">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 07</p>
+        <h2>Mesaj kuyruğuyla ayrıştırma (decoupling)</h2>
+        <p class="deck">Yığından bağımsız bir mimari desen — bir isteğin cevabını, o isteğin tetiklediği ağır işin bitmesine bağlamamak.</p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <span class="arch-node">API isteği</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">Kuyruğa yaz (Kafka/RabbitMQ)</span><span class="arch-arrow">→</span>
+          <span class="arch-node">202 Accepted, hemen dön</span>
+        </div>
+        <div class="arch-flow" style="margin-top:10px">
+          <span class="arch-node shared">Kuyruk</span><span class="arch-arrow">→</span>
+          <span class="arch-node">Arka plan işçisi (worker)</span><span class="arch-arrow">→</span>
+          <span class="arch-node">Ağır iş (e-posta, rapor, video işleme...)</span>
+        </div>
+        Kullanıcı ağır işin bitmesini beklemez; sistem yük altında kuyruk büyür ama çöküp istek kaybetmez.
+      </div>
+
+      <div class="concept">
+        <h3>Ne zaman kullanılır?</h3>
+        <p class="def">
+          İş, kullanıcının o an cevap almasını gerektirmeyen bir yan etkiyse (bildirim gönderme, rapor
+          üretme, resim/video işleme, üçüncü parti API senkronizasyonu) senkron tutmak isteği gereksiz yere
+          yavaşlatır ve üçüncü parti servisin yavaşlığını/çökmesini doğrudan kullanıcıya yansıtır. Kuyruk
+          bu bağımlılığı zamanla ayırır (temporal decoupling).
+        </p>
+      </div>
+
+      <table class="spec">
+        <tr><th>Kavram</th><th class="java-col">Java/Spring</th><th class="dotnet-col">.NET</th></tr>
+        <tr><td>Kuyruk/broker</td><td class="java-col">Kafka, RabbitMQ (spring-kafka, spring-amqp)</td><td class="dotnet-col">Azure Service Bus, RabbitMQ (MassTransit), Kafka</td></tr>
+        <tr><td>Arka plan işçisi</td><td class="java-col">@KafkaListener / @RabbitListener</td><td class="dotnet-col">BackgroundService / IHostedService</td></tr>
+        <tr><td>Yeniden deneme</td><td class="java-col">Spring Retry / broker seviyesi DLQ</td><td class="dotnet-col">Polly retry policy / broker seviyesi DLQ</td></tr>
+      </table>
+    </section>
+
+    <!-- 08 -->
+    <section class="chapter" id="b8">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 08</p>
+        <h2>CQRS: okuma ve yazma yollarını ayırma</h2>
+        <p class="deck">Aynı veri modeli hem okuma hem yazma için optimize edilemez — CQRS bu ikisini mimari olarak ayırır.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Temel fikir</h3>
+        <p class="def">
+          Command (yazma) tarafı tutarlılığa, doğrulamaya ve normalize edilmiş veri modeline önem verir.
+          Query (okuma) tarafı hıza ve genelde denormalize, sorgu-dostu bir şekle önem verir. İkisini aynı
+          entity/repository ile yapmaya çalışmak her iki tarafı da orta seviyede tutar — ayırmak ikisini de
+          kendi amacına göre optimize etmeni sağlar.
+        </p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <span class="arch-node">Yazma isteği</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">Command handler → normalize edilmiş DB</span><span class="arch-arrow">→</span>
+          <span class="arch-node shared">Olay yayınla</span>
+        </div>
+        <div class="arch-flow" style="margin-top:10px">
+          <span class="arch-node shared">Olay</span><span class="arch-arrow">→</span>
+          <span class="arch-node">Okuma modelini güncelle (denormalize/materialized view)</span><span class="arch-arrow">→</span>
+          <span class="arch-node">Sorgular buradan, hızlı okur</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Ne zaman gerekli değil:</strong> Basit CRUD uygulamalarında CQRS gereksiz karmaşıklıktır.
+        Okuma yükü yazma yükünden çok daha büyükse (tipik: 100:1 okuma/yazma oranı) ve okuma tarafı farklı
+        şekillerde sorgulanıyorsa (raporlama, arama, dashboard) mantıklı hale gelir.
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="chapter" id="b9">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 09</p>
+        <h2>Devre kesici (circuit breaker) ve dayanıklılık</h2>
+        <p class="deck">Yavaş/çökmüş bir bağımlılığın tüm sistemi aşağı çekmesini önlemek — bu bir performans deseni değil ama performans <em>çöküşünü</em> önler.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Kademeli çöküş (cascading failure)</h3>
+        <p class="def">
+          Bir alt servis yavaşladığında, ona bağımlı her istek de yavaşlar, thread'ler o yavaş çağrıda
+          birikir, thread pool tükenir, sonunda bağımsız endpoint'ler bile cevap veremez hale gelir.
+          Devre kesici, art arda başarısız/yavaş çağrılardan sonra "devreyi açar" — bir süre o servise hiç
+          istek göndermez, hızlıca hata döner, sistemin geri kalanını korur.
+        </p>
+      </div>
+
+      <div class="versus">
+        <div class="stack-panel java">
+          <h4>☕ Resilience4j</h4>
+          <pre><code>@CircuitBreaker(name = "pricingService", fallbackMethod = "fallback")
+public Pricing getPricing(Long productId) {
+    return pricingClient.fetch(productId);
+}
+private Pricing fallback(Long productId, Throwable t) {
+    return Pricing.cached(productId);   // bayat ama hızlı cevap
+}</code></pre>
+        </div>
+        <div class="stack-panel dotnet">
+          <h4>🔷 Polly</h4>
+          <pre><code>var breaker = Policy
+    .Handle&lt;HttpRequestException&gt;()
+    .CircuitBreakerAsync(
+        exceptionsAllowedBeforeBreaking: 5,
+        durationOfBreak: TimeSpan.FromSeconds(30));
+
+var pricing = await breaker.ExecuteAsync(() => _pricingClient.GetAsync(productId));</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="chapter" id="b10">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 10</p>
+        <h2>Yatay ölçekleme: durum tutmama (statelessness)</h2>
+        <p class="deck">Bir sunucuyu büyütmek (dikey) yerine sunucu sayısını artırmak (yatay) — ama bu, uygulamanın durumsuz tasarlanmasını gerektirir.</p>
+      </div>
+
+      <div class="concept">
+        <h3>Neden durum tutmamak şart?</h3>
+        <p class="def">
+          Bir kullanıcının oturum verisi tek bir sunucunun belleğinde tutulursa (in-memory session), bir
+          sonraki isteği farklı bir sunucuya (load balancer arkasında) düşünce o veri yok gibi görünür.
+          Durumu paylaşılan bir yere (Redis, veritabanı) taşımak, herhangi bir sunucunun herhangi bir
+          isteği karşılayabilmesini sağlar — bu da yatay ölçeklemenin ön koşuludur.
+        </p>
+      </div>
+
+      <table class="spec">
+        <tr><th>Durum türü</th><th class="java-col">Java/Spring çözümü</th><th class="dotnet-col">.NET çözümü</th></tr>
+        <tr><td>Oturum (session)</td><td class="java-col">Spring Session + Redis</td><td class="dotnet-col">ASP.NET Core Distributed Session + Redis</td></tr>
+        <tr><td>Kimlik doğrulama durumu</td><td class="java-col">Durumsuz JWT (sunucu bir şey saklamaz)</td><td class="dotnet-col">Durumsuz JWT (aynı prensip)</td></tr>
+        <tr><td>Kısa süreli önbellek</td><td class="java-col">L1'i (Caffeine) kabul et, ama gerçeği her zaman L2/DB'den doğrula</td><td class="dotnet-col">Aynı prensip — IMemoryCache asla "tek gerçek kaynak" olmamalı</td></tr>
+      </table>
+    </section>
+
+    <!-- 11 -->
+    <section class="chapter" id="b11">
+      <div class="chapter-head">
+        <p class="chapter-eyebrow">Bölüm 11</p>
+        <h2>Profilleme araçları</h2>
+        <p class="deck">Her iki dünyada da "önce ölç" prensibinin somut karşılığı.</p>
+      </div>
+
+      <table class="spec">
+        <tr><th>İhtiyaç</th><th class="java-col">Java/JVM</th><th class="dotnet-col">.NET/CLR</th></tr>
+        <tr><td>Canlı CPU/bellek profili</td><td class="java-col">JFR (Java Flight Recorder) + JDK Mission Control, async-profiler</td><td class="dotnet-col">dotnet-trace, dotnet-counters, PerfView</td></tr>
+        <tr><td>Heap dump analizi</td><td class="java-col">Eclipse MAT</td><td class="dotnet-col">dotnet-dump, WinDbg + SOS</td></tr>
+        <tr><td>APM / dağıtık izleme</td><td class="java-col">Micrometer + Zipkin/Jaeger, Datadog APM</td><td class="dotnet-col">Application Insights, OpenTelemetry .NET</td></tr>
+        <tr><td>Yük testi</td><td class="java-col">Gatling, JMeter</td><td class="dotnet-col">k6, NBomber</td></tr>
+      </table>
+
+      <div class="callout">
+        <strong>Ortak metodoloji:</strong> Hangi araç olursa olsun sıra hep aynı — üretim benzeri yükte
+        profil çıkar, en çok zaman/bellek harcayan 3-5 noktayı bul, sadece onları optimize et, tekrar ölç.
+        Mikro-benchmark'lara (JMH, BenchmarkDotNet) güvenmeden önce gerçek trafiği yansıtan bir profil
+        çıkarmak, yanlış darboğazı optimize etmeni önler.
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      Bu doküman herhangi bir projeye bağlı değildir — Java/Spring Boot ve C#/.NET'te ortak backend
+      performans sorunlarının mimari çözümlerini karşılaştırmalı anlatır. PsGameTranslator'a özel öneriler
+      için "Kaynak Optimizasyon Rehberi", genel optimizasyon teorisi için "Performans Optimizasyonu:
+      Kavramlar ve Yöntemler" belgesine bakın.
+    </footer>
+  </main>
+</div>

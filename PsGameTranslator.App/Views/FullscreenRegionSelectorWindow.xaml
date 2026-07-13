@@ -1,0 +1,39 @@
+<Window x:Class="PsGameTranslator.App.Views.FullscreenRegionSelectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowState="Maximized"
+        Topmost="True"
+        Cursor="Cross"
+        ShowInTaskbar="False">
+    <Canvas x:Name="RootCanvas">
+        <!-- Frozen screenshot as background -->
+        <Image x:Name="ScreenshotImage" Stretch="Fill" />
+
+        <!-- Semi-transparent dark overlay -->
+        <Rectangle x:Name="DarkOverlay" Fill="#99000000" />
+
+        <!-- Rubber-band selection rectangle -->
+        <Border x:Name="SelectionBorder"
+                BorderBrush="#4488FF" BorderThickness="2"
+                Background="#221155FF"
+                Visibility="Collapsed" />
+
+        <!-- Coordinate tooltip near cursor -->
+        <Border x:Name="CoordLabel"
+                Background="#CC000000" CornerRadius="4" Padding="8,4"
+                Visibility="Collapsed">
+            <TextBlock x:Name="CoordText"
+                       Foreground="White" FontFamily="Consolas" FontSize="13" />
+        </Border>
+
+        <!-- Hint bar at top -->
+        <Border x:Name="HintLabel"
+                Background="#CC000000" CornerRadius="4" Padding="14,8">
+            <TextBlock Foreground="White" FontSize="15"
+                       Text="Sürükleyerek OCR bölgesini seçin   ·   ESC: İptal   ·   Enter: Onayla" />
+        </Border>
+    </Canvas>
+</Window>

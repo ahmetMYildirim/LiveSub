@@ -1,0 +1,2903 @@
+<Window x:Class="PsGameTranslator.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="PS Game Translator"
+        Width="960"
+        Height="700"
+        MinWidth="720"
+        MinHeight="520"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="PS Game Translator"
+                       FontSize="28"
+                       FontWeight="SemiBold" />
+            <TextBlock Margin="0,6,0,0"
+                       Foreground="#666666"
+                       Text="Initial application architecture" />
+        </StackPanel>
+
+        <TabControl Grid.Row="2">
+
+            <!-- ══════════════════════════════════════════
+                 CAPTURE TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Capture" DataContext="{Binding Capture}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="2*" MinHeight="120" />
+                        <RowDefinition Height="6" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0"
+                            Width="100" Padding="12,6" HorizontalAlignment="Left"
+                            Command="{Binding RefreshCommand}"
+                            Content="Refresh" />
+
+                    <DataGrid Grid.Row="2"
+                              ItemsSource="{Binding Windows}"
+                              SelectedItem="{Binding SelectedWindow, Mode=TwoWay}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*"   Header="Window title"  Binding="{Binding Title}" />
+                            <DataGridTextColumn Width="180" Header="Process"        Binding="{Binding ProcessName}" />
+                            <DataGridTextColumn Width="100" Header="Process ID"     Binding="{Binding ProcessId}" />
+                            <DataGridTextColumn Width="140" Header="Window handle"  Binding="{Binding Handle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Selected window details -->
+                    <Border Grid.Row="4"
+                            Visibility="{Binding IsWindowSelected, Converter={StaticResource BoolToVis}}"
+                            Background="#F7F7F7" BorderBrush="#DDDDDD" BorderThickness="1"
+                            CornerRadius="3" Padding="10,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Foreground="#888" Text="Title:" />
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedWindow.Title}"
+                                       TextTrimming="CharacterEllipsis" FontWeight="SemiBold" />
+                            <TextBlock Grid.Column="2" Foreground="#888" Text="Process:" />
+                            <TextBlock Grid.Column="3" Text="{Binding SelectedWindow.ProcessName}" />
+                        </Grid>
+                    </Border>
+
+                    <Button Grid.Row="6"
+                            Width="160" Padding="12,6" HorizontalAlignment="Left"
+                            Command="{Binding CaptureCommand}"
+                            Content="Capture Screenshot" />
+
+                    <Border Grid.Row="8"
+                            Background="#EEEEEE" BorderBrush="#CCCCCC" BorderThickness="1">
+                        <Image Source="{Binding PreviewImageSource}"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="4" />
+                    </Border>
+
+                    <TextBlock Grid.Row="10"
+                               Foreground="#666666"
+                               Text="{Binding StatusText}" />
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 REGION SELECTION TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Region Selection" DataContext="{Binding Region}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <!-- 0: toolbar -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 1: gap -->
+                        <RowDefinition Height="10" />
+                        <!-- 2: screenshot + selection overlay -->
+                        <RowDefinition Height="3*" MinHeight="160" />
+                        <!-- 3: gap -->
+                        <RowDefinition Height="8" />
+                        <!-- 4: coordinates row -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 5: gap -->
+                        <RowDefinition Height="6" />
+                        <!-- 6: debug info panel -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 7: gap -->
+                        <RowDefinition Height="8" />
+                        <!-- 8: action buttons -->
+                        <RowDefinition Height="Auto" />
+                        <!-- 9: gap -->
+                        <RowDefinition Height="8" />
+                        <!-- 10: cropped preview -->
+                        <RowDefinition Height="2*" MinHeight="100" />
+                        <!-- 11: gap -->
+                        <RowDefinition Height="6" />
+                        <!-- 12: status -->
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Toolbar -->
+                    <Button Grid.Row="0"
+                            Width="140" Padding="12,6" HorizontalAlignment="Left"
+                            Command="{Binding LoadScreenshotCommand}"
+                            Content="Load Screenshot" />
+
+                    <!--
+                        Screenshot + rubber-band overlay.
+                        Strategy: wrap both Image and Canvas inside a Viewbox sized to the
+                        screenshot's exact pixel dimensions. The Viewbox applies a uniform
+                        scale so the pair fills the Border. Because the Canvas is in the
+                        same coordinate space as the image pixels, GetPosition() on the
+                        Canvas already returns image-pixel coordinates — no manual
+                        coordinate conversion is required.
+                    -->
+                    <Border Grid.Row="2"
+                            BorderBrush="#CCCCCC" BorderThickness="1"
+                            Background="#1A1A1A">
+                        <Grid>
+                            <!-- Placeholder shown before any screenshot is loaded -->
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="#666666" FontSize="14"
+                                       Text="No screenshot loaded — click 'Load Screenshot'">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsScreenshotLoaded}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!--
+                                Viewbox visible only when an image is loaded.
+                                The inner Grid is given the exact pixel size of the image so
+                                the Viewbox can scale it uniformly to fit.
+                            -->
+                            <Viewbox x:Name="SelectionViewbox"
+                                     Stretch="Uniform"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center">
+                                <Viewbox.Style>
+                                    <Style TargetType="Viewbox">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsScreenshotLoaded}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Viewbox.Style>
+
+                                <!-- Fixed pixel dimensions — Viewbox scales this uniformly -->
+                                <Grid Width="{Binding ScreenshotPixelWidth}"
+                                      Height="{Binding ScreenshotPixelHeight}">
+
+                                    <!-- Image rendered at its exact pixel dimensions (Viewbox scales it) -->
+                                    <Image x:Name="ScreenshotImage"
+                                           Source="{Binding ScreenshotSource}"
+                                           Width="{Binding ScreenshotPixelWidth}"
+                                           Height="{Binding ScreenshotPixelHeight}"
+                                           Stretch="Fill" />
+
+                                    <!-- Transparent canvas — coordinates are image pixel coords -->
+                                    <Canvas x:Name="SelectionOverlay"
+                                            Width="{Binding ScreenshotPixelWidth}"
+                                            Height="{Binding ScreenshotPixelHeight}"
+                                            Background="Transparent"
+                                            Cursor="Cross"
+                                            MouseDown="SelectionOverlay_MouseDown"
+                                            MouseMove="SelectionOverlay_MouseMove"
+                                            MouseUp="SelectionOverlay_MouseUp">
+                                        <!-- Rubber-band rectangle; IsHitTestVisible=False so it
+                                             does not intercept events meant for the canvas. -->
+                                        <Rectangle x:Name="SelectionRect"
+                                                   IsHitTestVisible="False"
+                                                   Visibility="Collapsed"
+                                                   Stroke="#EE3333"
+                                                   StrokeThickness="2"
+                                                   StrokeDashArray="6 2"
+                                                   Fill="#220055FF" />
+                                    </Canvas>
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
+                    </Border>
+
+                    <!-- Selected pixel coordinates (visible only after a region is drawn) -->
+                    <Border Grid.Row="4"
+                            Visibility="{Binding HasRegion, Converter={StaticResource BoolToVis}}"
+                            Background="#F7F7F7" BorderBrush="#DDDDDD" BorderThickness="1"
+                            CornerRadius="3" Padding="10,8">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Foreground="#888" Text="X: " />
+                            <TextBlock Text="{Binding RegionX}" FontWeight="SemiBold" />
+                            <TextBlock Foreground="#888" Text="   Y: " />
+                            <TextBlock Text="{Binding RegionY}" FontWeight="SemiBold" />
+                            <TextBlock Foreground="#888" Text="   W: " />
+                            <TextBlock Text="{Binding RegionWidth}" FontWeight="SemiBold" />
+                            <TextBlock Foreground="#888" Text=" px   H: " />
+                            <TextBlock Text="{Binding RegionHeight}" FontWeight="SemiBold" />
+                            <TextBlock Foreground="#888" Text=" px" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Debug info panel -->
+                    <Border Grid.Row="6"
+                            Background="#F0F4FF" BorderBrush="#C0CCEE" BorderThickness="1"
+                            CornerRadius="3" Padding="10,6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Foreground="#6677AA" Text="Mouse: " FontSize="11" />
+                                <TextBlock Text="{Binding DbgMouseUi}" FontSize="11" FontFamily="Consolas" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                <TextBlock Foreground="#6677AA" Text="Image: " FontSize="11" />
+                                <TextBlock Text="{Binding DbgImgSize}" FontSize="11" FontFamily="Consolas" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                                <TextBlock Foreground="#6677AA" Text="Scale: " FontSize="11" />
+                                <TextBlock Text="{Binding DbgScale}" FontSize="11" FontFamily="Consolas" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="6" Orientation="Horizontal">
+                                <TextBlock Foreground="#6677AA" Text="Rect: " FontSize="11" />
+                                <TextBlock Text="{Binding DbgPixelRect}" FontSize="11" FontFamily="Consolas" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Action buttons -->
+                    <StackPanel Grid.Row="8" Orientation="Horizontal">
+                        <Button Width="110" Padding="12,6"
+                                Command="{Binding SaveRegionCommand}"
+                                Content="Save Region" />
+                        <Button Width="170" Padding="12,6" Margin="8,0,0,0"
+                                Command="{Binding CropRegionCommand}"
+                                Content="Crop Selected Region" />
+                    </StackPanel>
+
+                    <!-- Cropped region preview -->
+                    <Border Grid.Row="10"
+                            Background="#EEEEEE" BorderBrush="#CCCCCC" BorderThickness="1">
+                        <Grid>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="#AAAAAA"
+                                       Text="Cropped preview will appear here">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CroppedPreviewSource}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Image Source="{Binding CroppedPreviewSource}"
+                                   Stretch="Uniform"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="4" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Status -->
+                    <TextBlock Grid.Row="12"
+                               Foreground="#666666"
+                               Text="{Binding StatusText}" />
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 OCR TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="OCR" DataContext="{Binding Ocr}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="*" MinHeight="80" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="Auto" MinHeight="44" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="Auto" MinHeight="44" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="2*" MinHeight="70" />
+                        <RowDefinition Height="6" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <WrapPanel Margin="0,0,0,8">
+                            <TextBlock Text="OCR Profile:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <ComboBox Width="120" SelectedIndex="{Binding OcrProfileIndex}" Margin="0,0,12,0">
+                                <ComboBoxItem Content="Fast" />
+                                <ComboBoxItem Content="Balanced" />
+                                <ComboBoxItem Content="Accurate" />
+                                <ComboBoxItem Content="Custom" />
+                            </ComboBox>
+                            <TextBlock Text="OCR Method:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <ComboBox Width="140" SelectedIndex="{Binding OcrProviderTypeIndex}" Margin="0,0,12,0">
+                                <ComboBoxItem Content="PaddleOCR" />
+                                <ComboBoxItem Content="WindowsOCR" />
+                                <ComboBoxItem Content="RapidOCR" />
+                                <ComboBoxItem Content="EasyOCR" />
+                                <ComboBoxItem Content="OneOCR" />
+                                <ComboBoxItem Content="MockOCR" />
+                                <ComboBoxItem Content="Multi-OCR" />
+                            </ComboBox>
+                            <TextBlock Text="Actual:" VerticalAlignment="Center" Margin="0,0,4,0" />
+                            <TextBlock Text="{Binding LastActualOcrProviderText}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Text="Score:" VerticalAlignment="Center" Margin="0,0,4,0" />
+                            <TextBlock Text="{Binding LastBestOcrScoreText}" VerticalAlignment="Center" />
+                        </WrapPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Width="120" Padding="12,6"
+                                    Command="{Binding RunOcrCommand}"
+                                    Content="Run OCR" />
+                            <Button Width="120" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding ForceOcrCommand}"
+                                    Content="Force OCR" />
+                            <Button Width="150" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding ForceOcrDebugCommand}"
+                                    Content="Force OCR Debug" />
+                            <Button Width="180" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestSelectedOcrProviderCommand}"
+                                    Content="Test Selected OCR Provider" />
+                            <Button Width="150" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding SaveOcrDebugCropCommand}"
+                                    Content="Save OCR Debug Crop" />
+                            <Button Width="150" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding OpenOcrDebugFolderCommand}"
+                                    Content="Open OCR Debug Folder" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Region image preview -->
+                    <Border Grid.Row="2"
+                            Background="#EEEEEE" BorderBrush="#CCCCCC" BorderThickness="1">
+                        <Grid>
+                            <TextBlock HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="#AAAAAA"
+                                       Text="Region image will appear here after running OCR">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RegionPreview}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Image Source="{Binding RegionPreview}"
+                                   Stretch="Uniform"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="4" />
+                        </Grid>
+                    </Border>
+
+                    <!--
+                        Error detail panel — visible only when HasError is true.
+                        Shows exit code, Python path, script path, image path,
+                        stdout and stderr so the user can diagnose the problem.
+                    -->
+                    <Border Grid.Row="4"
+                            Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                            Background="#FFF0F0" BorderBrush="#CC4444" BorderThickness="1"
+                            CornerRadius="3">
+                        <ScrollViewer MaxHeight="160"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto">
+                            <TextBox Text="{Binding ErrorDetail, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextWrapping="NoWrap"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="8,6"
+                                     FontFamily="Consolas"
+                                     FontSize="11"
+                                     Foreground="#AA2222" />
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- 8px gap between error panel and detected-text label, but only when the
+                         error panel is shown (avoid double gap when it is collapsed). -->
+                    <Border Grid.Row="5"
+                            Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                            Height="8" />
+
+                    <TextBlock Grid.Row="6"
+                               Text="Raw OCR Text"
+                               FontWeight="SemiBold" />
+
+                    <TextBox Grid.Row="8"
+                             Text="{Binding RawOcrText, Mode=OneWay}"
+                             IsReadOnly="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             Background="#FAFAFA"
+                             BorderBrush="#DDDDDD"
+                             Padding="6,4"
+                             FontFamily="Consolas"
+                             FontSize="13" />
+
+                    <TextBlock Grid.Row="10"
+                               Text="Cleaned OCR Text"
+                               FontWeight="SemiBold" />
+
+                    <TextBox Grid.Row="12"
+                             Text="{Binding CleanedOcrText, Mode=OneWay}"
+                             IsReadOnly="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             Background="#F7FBF7"
+                             BorderBrush="#CCDCCC"
+                             Padding="6,4"
+                             FontFamily="Consolas"
+                             FontSize="13" />
+
+                    <Grid Grid.Row="14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <TextBlock Foreground="#888888" Text="Confidence: " />
+                            <TextBlock Text="{Binding ConfidenceText}" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock Foreground="#888888" Text="Status: " />
+                            <TextBlock Text="{Binding ChangeStatus}" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
+                            <TextBlock Foreground="#888888" Text="Last OCR: " />
+                            <TextBlock Text="{Binding LastOcrTimeText}" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Grid.Row="16"
+                               Text="Line-by-line results"
+                               FontWeight="SemiBold" />
+
+                    <Border Grid.Row="18"
+                            BorderBrush="#DDDDDD" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding Lines}"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 BorderThickness="0"
+                                 Background="Transparent">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="6,4" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="70" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding Text}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Confidence}"
+                                                   Foreground="#888888"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+
+                    <TextBlock Grid.Row="20"
+                               Foreground="#666666"
+                               Text="{Binding StatusText}" />
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 OCR SERVER TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="OCR Server" DataContext="{Binding OcrServer}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="EngineBoolToVis" />
+                </TabItem.Resources>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="520" HorizontalAlignment="Left">
+
+                        <TextBlock Text="OCR Server"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,20">
+                            Starts a persistent PaddleOCR server that loads the model once.
+                            The Monitoring loop sends images to this server via HTTP,
+                            eliminating the per-request Python startup cost.
+                        </TextBlock>
+
+                        <!-- Server URL info -->
+                        <Border Background="#F4F8FF" BorderBrush="#C0CCEE" BorderThickness="1"
+                                CornerRadius="4" Padding="14,10" Margin="0,0,0,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="6" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#6677AA" Text="Server URL:" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding ServerBaseUrl}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#6677AA" Text="Status:" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" FontWeight="SemiBold"
+                                           Text="{Binding ServerStatusText}" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Controls -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Button Width="140" Padding="12,6"
+                                    Command="{Binding StartServerCommand}"
+                                    Content="Start OCR Server" />
+                            <Button Width="140" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding StopServerCommand}"
+                                    Content="Stop OCR Server" />
+                            <Button Width="140" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestConnectionCommand}"
+                                    Content="Test Connection" />
+                        </StackPanel>
+
+                        <!-- Last test result -->
+                        <TextBlock Text="{Binding LastTestResultText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#444444"
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   Margin="0,0,0,24" />
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <!-- Installed OCR Engines -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="Installed OCR Engines"
+                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button Padding="10,3" Margin="12,0,0,0"
+                                    Command="{Binding RefreshEnginesCommand}"
+                                    Content="Refresh" />
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,8">
+                            Each engine works independently — no engine silently falls back to another.
+                            Missing engines can be installed here without using a terminal.
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Engines}" Margin="0,0,0,16">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#D0D7DE" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="120" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}"
+                                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding StatusText}"
+                                                           FontFamily="Consolas" FontSize="12"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding ProgressText}"
+                                                           FontFamily="Consolas" FontSize="10"
+                                                           Foreground="#57606A"
+                                                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                                                           MaxHeight="28" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Padding="12,4" Margin="8,0,0,0"
+                                                    Content="Install"
+                                                    Command="{Binding InstallCommand}"
+                                                    Visibility="{Binding CanInstall,
+                                                        Converter={StaticResource EngineBoolToVis}}" />
+                                            <Button Grid.Column="3" Padding="12,4" Margin="8,0,0,0"
+                                                    Content="Remove"
+                                                    Command="{Binding RemoveCommand}"
+                                                    Visibility="{Binding CanRemove,
+                                                        Converter={StaticResource EngineBoolToVis}}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 MONITORING TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Monitoring" DataContext="{Binding Monitoring}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="900" HorizontalAlignment="Left">
+
+                        <TextBlock Text="Automatic OCR Monitoring"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,20">
+                            Starts a background loop that captures the selected Remote Play window,
+                            crops the saved region, runs OCR when the image changes,
+                            and forwards the text to the overlay.
+                        </TextBlock>
+
+                        <!-- Start / Stop -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Button Width="160" Padding="12,6"
+                                    Command="{Binding StartMonitoringCommand}"
+                                    Content="Start Monitoring" />
+                            <Button Width="160" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding StopMonitoringCommand}"
+                                    Content="Stop Monitoring" />
+                            <Button Width="160" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding RunPipelineDoctorCommand}"
+                                    Content="Pipeline Doctor" />
+                        </StackPanel>
+
+                        <!-- Pipeline doctor report -->
+                        <Border Background="#F6F8FA" BorderBrush="#D0D7DE" BorderThickness="1"
+                                CornerRadius="4" Padding="14,10" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding PipelineDoctorReportText}"
+                                       TextWrapping="Wrap"
+                                       FontFamily="Consolas" FontSize="12" />
+                        </Border>
+
+                        <!-- Status info panel -->
+                        <Border Background="#F4F8FF" BorderBrush="#C0CCEE" BorderThickness="1"
+                                CornerRadius="4" Padding="14,10" Margin="0,0,0,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="6" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="6" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="6" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#6677AA" Text="Status:" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold"
+                                           Text="{Binding MonitoringStatusText}" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#6677AA" Text="Target window:" />
+                                <TextBlock Grid.Row="2" Grid.Column="1"
+                                           Text="{Binding TargetWindowText}"
+                                           TextTrimming="CharacterEllipsis" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Foreground="#6677AA" Text="Last capture:" />
+                                <TextBlock Grid.Row="4" Grid.Column="1"
+                                           Text="{Binding LastCaptureTimeText}"
+                                           FontFamily="Consolas" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Foreground="#6677AA" Text="Last OCR:" />
+                                <TextBlock Grid.Row="6" Grid.Column="1"
+                                           Text="{Binding LastOcrTimeText}"
+                                           FontFamily="Consolas" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Error panel -->
+                        <Border Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                                Background="#FFF0F0" BorderBrush="#CC4444" BorderThickness="1"
+                                CornerRadius="4" Padding="12,8" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding ErrorText}"
+                                       TextWrapping="Wrap"
+                                       Foreground="#AA2222" />
+                        </Border>
+
+                        <!-- Last detected text -->
+                        <TextBlock Text="Last Detected Text"
+                                   FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding LastDetectedText, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 MinHeight="60"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#FAFAFA"
+                                 BorderBrush="#DDDDDD"
+                                 Padding="6,4"
+                                 FontFamily="Consolas"
+                                 FontSize="13"
+                                 Margin="0,0,0,20" />
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <!-- Settings -->
+                        <TextBlock Text="Monitoring Settings"
+                                   FontWeight="SemiBold" Margin="0,0,0,10" />
+
+                        <!-- Interval + OCR timeout -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Capture interval (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding IntervalMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="OCR request timeout (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding OcrRequestTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Fast Capture and OCR Scheduling"
+                                   FontWeight="SemiBold" Margin="0,6,0,8" />
+                        <Border Background="#F3F8FF" BorderBrush="#B8CCE8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Minimum OCR interval (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MinOcrIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Maximum OCR interval (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MaxOcrIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Frame difference threshold (%)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding FrameDifferenceThresholdPercent, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Force OCR every (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ForceOcrEveryMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+                                <CheckBox Content="Process latest pending frame immediately after OCR"
+                                          IsChecked="{Binding ProcessLatestPendingFrameAfterOcr}" Margin="0,0,0,7" />
+                                <CheckBox Content="Keep only latest pending OCR frame"
+                                          IsChecked="{Binding KeepOnlyLatestPendingOcrFrame}" Margin="0,0,0,7" />
+                                <CheckBox Content="Enable fast downscaled frame difference"
+                                          IsChecked="{Binding EnableFastFrameDifference}" Margin="0,0,0,7" />
+                                <CheckBox Content="Run OCR on every changed frame"
+                                          IsChecked="{Binding RunOcrOnEveryChangedFrame}" Margin="0,0,0,7" />
+                                <CheckBox Content="Enable fast OCR mode"
+                                          IsChecked="{Binding EnableFastOcrMode}" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Short Subtitle Protection"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Border Background="#FFF9F0" BorderBrush="#E5C99A" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <CheckBox Content="Show source subtitle while translating"
+                                          IsChecked="{Binding ShowSourceWhileTranslatingSetting}" Margin="0,0,0,7" />
+                                <CheckBox Content="Keep previous subtitle on empty OCR"
+                                          IsChecked="{Binding KeepPreviousSubtitleOnEmptyOcr}" Margin="0,0,0,10" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Minimum overlay display (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MinOverlayDisplayMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Previous subtitle hold (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding PreviousSubtitleHoldMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <CheckBox Content="Auto-start overlay when monitoring begins"
+                                  IsChecked="{Binding AutoStartOverlay}"
+                                  Margin="0,0,0,12" />
+
+                        <CheckBox Content="Enable hash-based OCR skipping  (skips OCR when region image is identical)"
+                                  IsChecked="{Binding EnableImageHashSkip}"
+                                  Margin="0,0,0,8" />
+
+                        <CheckBox Content="Run OCR on every tick  (debug reliability mode)"
+                                  IsChecked="{Binding RunOcrOnEveryTick}"
+                                  Margin="0,0,0,8" />
+
+                        <CheckBox Content="Enable region-difference OCR skipping"
+                                  IsChecked="{Binding EnableRegionDifferenceSkip}"
+                                  Margin="0,0,0,12" />
+
+                        <!-- Hash-skip tuning (Force / Pixel-diff) -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Force OCR every N frames" Margin="0,0,0,4"
+                                           ToolTip="When hash-skip is ON, force OCR after this many skipped frames" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding ForceOcrEveryNFrames, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Force OCR every ms" Margin="0,0,0,4"
+                                           ToolTip="When hash-skip is ON, force OCR after this many milliseconds" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding ForceOcrEveryMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Pixel-change threshold (%)"  Margin="0,0,0,4"
+                                       ToolTip="Run OCR when this % of pixels in the region changed (0 = disabled, 1 = 1% change triggers OCR)" />
+                            <TextBox Padding="8,5" MaxWidth="200" HorizontalAlignment="Left"
+                                     Text="{Binding RegionChangeThresholdPercent, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <!-- Crop padding / HUD exclusion -->
+                        <TextBlock Text="OCR Crop Padding  (px, trims the saved region before OCR)"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Left" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding CropPaddingLeft, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Top" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding CropPaddingTop, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Right" Margin="0,0,0,4"
+                                           ToolTip="Default 80 px — excludes right-side HUD text like 'Switch'" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding CropPaddingRight, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="6">
+                                <TextBlock Text="Bottom" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding CropPaddingBottom, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="Max line right position (0.1 – 1.0)" Margin="0,0,0,4"
+                                       ToolTip="OCR lines starting after this fraction of region width are ignored (HUD filter)" />
+                            <TextBox Padding="8,5" MaxWidth="200" HorizontalAlignment="Left"
+                                     Text="{Binding MaxLineRightPercent, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Clear overlay after empty OCR count" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding ClearOverlayAfterEmptyOcrCount, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <CheckBox Grid.Column="2"
+                                      VerticalAlignment="Center"
+                                      Content="Keep previous text on empty OCR"
+                                      IsChecked="{Binding KeepPreviousTextOnEmptyOcr}" />
+                        </Grid>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Subtitle Formatter"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <CheckBox Content="Enable subtitle formatter"
+                                  IsChecked="{Binding EnableSubtitleFormatter}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Show detected speaker name"
+                                  IsChecked="{Binding ShowSpeakerName}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Remove standalone HUD noise words"
+                                  IsChecked="{Binding RemoveHudNoise}"
+                                  Margin="0,0,0,10" />
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Maximum subtitle lines" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding MaxSubtitleLines, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Maximum characters per line" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding MaxCharactersPerLine, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="OCR Preprocessing"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+
+                        <CheckBox Content="Enable OCR preprocessing"
+                                  IsChecked="{Binding EnableOcrPreprocessing}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Convert to grayscale"
+                                  IsChecked="{Binding ConvertToGrayscale}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Increase contrast"
+                                  IsChecked="{Binding IncreaseContrast}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Sharpen image"
+                                  IsChecked="{Binding SharpenImage}"
+                                  Margin="0,0,0,12" />
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Upscale factor" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding UpscaleFactor, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Threshold mode (none / binary)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding ThresholdMode, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <CheckBox Content="Save debug frames and monitoring_state.json"
+                                  IsChecked="{Binding SaveDebugFrames}"
+                                  Margin="0,0,0,16" />
+
+                        <!-- Final crop preview -->
+                        <TextBlock Text="Final OCR crop preview  (after padding)"
+                                   Margin="0,0,0,4" Foreground="#6677AA" />
+                        <Border BorderBrush="#CCCCCC" BorderThickness="1"
+                                Background="#222222" MaxHeight="160"
+                                HorizontalAlignment="Left" Margin="0,0,0,16">
+                            <Image Source="{Binding CropPreview}"
+                                   Stretch="Uniform" MaxHeight="158" MaxWidth="520"
+                                   StretchDirection="DownOnly" />
+                        </Border>
+
+                        <TextBlock Text="OCR image preview  (after preprocessing; exact image sent to OCR)"
+                                   Margin="0,0,0,4" Foreground="#6677AA" />
+                        <Border BorderBrush="#CCCCCC" BorderThickness="1"
+                                Background="#222222" MaxHeight="200"
+                                HorizontalAlignment="Left" Margin="0,0,0,16">
+                            <Image Source="{Binding OcrImagePreview}"
+                                   Stretch="Uniform" MaxHeight="198" MaxWidth="520"
+                                   StretchDirection="DownOnly" />
+                        </Border>
+
+                        <TextBlock Text="{Binding CropSizeWarningText}"
+                                   Foreground="#B06000" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                        <WrapPanel Margin="0,0,0,12">
+                            <Button Width="180" Padding="12,6" Margin="0,0,8,8"
+                                    Command="{Binding RunSingleTickCommand}"
+                                    Content="Run Single Monitoring Tick" />
+                            <Button Width="190" Padding="12,6" Margin="0,0,8,8"
+                                    Command="{Binding RunOcrOnCurrentPreviewCommand}"
+                                    Content="Run OCR On Current Crop" />
+                            <Button Width="170" Padding="12,6" Margin="0,0,8,8"
+                                    Command="{Binding ToggleNeverSkipOcrCommand}"
+                                    Content="Toggle Never Skip OCR" />
+                            <Button Width="220" Padding="12,6" Margin="0,0,8,8"
+                                    Command="{Binding StartFastDialogueStressTestCommand}"
+                                    Content="Start Fast Dialogue Stress Test" />
+                        </WrapPanel>
+
+                        <!-- Test overlay buttons -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <Button Width="170" Padding="12,6"
+                                    Command="{Binding ShowTestOverlayCommand}"
+                                    Content="Show Test Overlay" />
+                            <Button Width="210" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding ShowTestOverlayLongTextCommand}"
+                                    Content="Show Test Overlay Long Text" />
+                        </StackPanel>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <!-- ── Subtitle line filtering (dialogue vs HUD prompts) ── -->
+                        <TextBlock Text="Subtitle Line Filtering" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Border Background="#FFF8F0" BorderBrush="#E0C8A8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,16">
+                            <StackPanel>
+                                <CheckBox Content="Enable Subtitle Line Filtering"
+                                          IsChecked="{Binding EnableSubtitleLineFiltering}"
+                                          Margin="0,0,0,10" />
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Subtitle Band Mode" Margin="0,0,0,4" />
+                                        <ComboBox Padding="8,5"
+                                                  SelectedIndex="{Binding SubtitleBandModeIndex}">
+                                            <ComboBoxItem Content="Full Crop" />
+                                            <ComboBoxItem Content="Upper Band" />
+                                            <ComboBoxItem Content="Center Band" />
+                                            <ComboBoxItem Content="Custom" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Game Profile" Margin="0,0,0,4" />
+                                        <ComboBox Padding="8,5"
+                                                  SelectedIndex="{Binding ActiveGameProfileIndex}">
+                                            <ComboBoxItem Content="Default English Game" />
+                                            <ComboBoxItem Content="Red Dead Redemption 2" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Band Top % (0-1)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5"
+                                                 Text="{Binding SubtitleBandTopPercent, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Band Bottom % (0-1)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5"
+                                                 Text="{Binding SubtitleBandBottomPercent, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <CheckBox Content="Show Rejected HUD Lines"
+                                              IsChecked="{Binding ShowRejectedHudLines}" />
+                                    <CheckBox Content="Show Selected Subtitle Lines" Margin="16,0,0,0"
+                                              IsChecked="{Binding ShowSelectedSubtitleLines}" />
+                                </StackPanel>
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Selected subtitle lines" Foreground="#3A7A3A" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding SelectedSubtitleLinesText, Mode=OneWay}"
+                                                 IsReadOnly="True" FontFamily="Consolas" TextWrapping="Wrap"
+                                                 MinHeight="44" MaxHeight="90" VerticalScrollBarVisibility="Auto" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Rejected HUD lines" Foreground="#AA5500" Margin="0,0,0,4" />
+                                        <TextBox Text="{Binding RejectedHudLinesText, Mode=OneWay}"
+                                                 IsReadOnly="True" FontFamily="Consolas" TextWrapping="Wrap"
+                                                 MinHeight="44" MaxHeight="90" VerticalScrollBarVisibility="Auto" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Manual filtering test -->
+                                <TextBlock Text="Manual Filtering Test" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <TextBlock Text="Line 1" Margin="0,0,0,2" />
+                                <TextBox Padding="8,5" Margin="0,0,0,6"
+                                         Text="{Binding FilterTestLine1, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="Line 2" Margin="0,0,0,2" />
+                                <TextBox Padding="8,5" Margin="0,0,0,8"
+                                         Text="{Binding FilterTestLine2, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Width="210" Padding="12,6" HorizontalAlignment="Left" Margin="0,0,0,8"
+                                        Command="{Binding TestSubtitleFilteringCommand}"
+                                        Content="Test Subtitle Line Filtering" />
+                                <TextBox Text="{Binding FilterTestResultText, Mode=OneWay}"
+                                         IsReadOnly="True" FontFamily="Consolas" TextWrapping="Wrap"
+                                         MinHeight="70" MaxHeight="160" VerticalScrollBarVisibility="Auto" />
+                            </StackPanel>
+                        </Border>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Realtime Queue Diagnostics (Ordered Turkish Pipeline)"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <CheckBox Content="Turkish-only live mode (never show English on overlay)"
+                                  IsChecked="{Binding TurkishOnlyMode}" Margin="0,0,0,8" />
+                        <TextBox Text="{Binding OrderedPipelineDiagnosticsText, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True"
+                                 TextWrapping="Wrap" FontFamily="Consolas"
+                                 MinHeight="220" MaxHeight="360"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#FFF7F0" BorderBrush="#E8CCA8"
+                                 Padding="10" Margin="0,0,0,16" />
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Realtime Pipeline Diagnostics"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <TextBox Text="{Binding RealtimeDiagnosticsText, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True"
+                                 TextWrapping="Wrap" FontFamily="Consolas"
+                                 MinHeight="250" MaxHeight="420"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#F3F8FF" BorderBrush="#B8CCE8"
+                                 Padding="10" Margin="0,0,0,16" />
+
+                        <!-- Debug panel -->
+                        <TextBlock Text="OCR Debug Panel"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+
+                        <Border Background="#F5F5FF" BorderBrush="#C8C8E8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,4">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="0,0,0,5" />
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="190" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0"  Grid.Column="0" Foreground="#6677AA" Text="Total frames:" />
+                                <TextBlock Grid.Row="0"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgFrameCount}" />
+
+                                <TextBlock Grid.Row="1"  Grid.Column="0" Foreground="#6677AA" Text="Skipped frames:" />
+                                <TextBlock Grid.Row="1"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgSkippedCount}" />
+
+                                <TextBlock Grid.Row="2"  Grid.Column="0" Foreground="#6677AA" Text="OCR executions:" />
+                                <TextBlock Grid.Row="2"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgOcrCount}" />
+
+                                <TextBlock Grid.Row="3"  Grid.Column="0" Foreground="#6677AA" Text="Last OCR run reason:" />
+                                <TextBlock Grid.Row="3"  Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding DbgLastOcrReason}" />
+
+                                <TextBlock Grid.Row="4"  Grid.Column="0" Foreground="#6677AA" Text="Last skip reason:" />
+                                <TextBlock Grid.Row="4"  Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding DbgLastSkipReason}" />
+
+                                <TextBlock Grid.Row="5"  Grid.Column="0" Foreground="#6677AA" Text="Frames since last OCR:" />
+                                <TextBlock Grid.Row="5"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgFramesSinceOcr}" />
+
+                                <TextBlock Grid.Row="6"  Grid.Column="0" Foreground="#6677AA" Text="Ms since last OCR:" />
+                                <TextBlock Grid.Row="6"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgMsSinceOcr}" />
+
+                                <TextBlock Grid.Row="7"  Grid.Column="0" Foreground="#6677AA" Text="Last OCR duration:" />
+                                <TextBlock Grid.Row="7"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgLastOcrMs}" />
+
+                                <TextBlock Grid.Row="8"  Grid.Column="0" Foreground="#6677AA" Text="Current hash:" />
+                                <TextBlock Grid.Row="8"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgCurrentHash}" />
+
+                                <TextBlock Grid.Row="9"  Grid.Column="0" Foreground="#6677AA" Text="Previous hash:" />
+                                <TextBlock Grid.Row="9"  Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgPrevHash}" />
+
+                                <TextBlock Grid.Row="10" Grid.Column="0" Foreground="#6677AA" Text="Region pixel diff:" />
+                                <TextBlock Grid.Row="10" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding DbgRegionDiff}" />
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Text="Subtitle Formatter Diagnostics"
+                                   FontWeight="SemiBold" Margin="0,16,0,8" />
+                        <Border Background="#F5FFF7" BorderBrush="#B8D8BE" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#55775C" Text="Formatter enabled:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontFamily="Consolas" Text="{Binding FormatterEnabledText}" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Foreground="#55775C" Text="Raw OCR text:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding FormatterRawOcrText}" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#55775C" Text="Cleaned OCR text:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding FormatterCleanedOcrText}" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Foreground="#55775C" Text="Speaker name:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding FormatterSpeakerName}" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Foreground="#55775C" Text="Main text:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding FormatterMainText}" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Foreground="#55775C" Text="Display text:" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding FormatterDisplayText}" />
+                            </Grid>
+                        </Border>
+
+                        <TextBox Text="{Binding DiagnosticsText, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 MinHeight="300"
+                                 Margin="0,8,0,0"
+                                 Padding="10"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#FAFAFF"
+                                 BorderBrush="#C8C8E8" />
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 OVERLAY TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Overlay" DataContext="{Binding Overlay}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="620" HorizontalAlignment="Left">
+
+                        <TextBlock Text="Overlay Settings"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,20">
+                            Enable the overlay, then use Configure to place it on screen.
+                            Click-through lets game input pass through when the overlay is active.
+                        </TextBlock>
+
+                        <CheckBox Content="Enable Overlay"
+                                  IsChecked="{Binding IsEnabled}"
+                                  Margin="0,0,0,10" />
+
+                        <CheckBox Content="Click-Through Mode  (mouse clicks pass through the overlay)"
+                                  IsChecked="{Binding IsClickThrough}"
+                                  Margin="0,0,0,24" />
+
+                        <TextBlock Text="Display Mode" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,16"
+                                  SelectedIndex="{Binding DisplayModeIndex}">
+                            <ComboBoxItem Content="Native Subtitle Overlay" />
+                            <ComboBoxItem Content="Translation Panel Overlay" />
+                            <ComboBoxItem Content="Subtitle Replacement Overlay" />
+                        </ComboBox>
+
+                        <Border Background="#F8F8F8" BorderBrush="#DDDDDD" BorderThickness="1"
+                                CornerRadius="4" Padding="12" Margin="0,0,0,18">
+                            <StackPanel>
+                                <TextBlock Text="Subtitle Replacement"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,10" />
+
+                                <CheckBox Content="Enable replacement mask"
+                                          IsChecked="{Binding ReplacementMaskEnabled}"
+                                          Margin="0,0,0,8" />
+
+                                <TextBlock Text="Mask opacity" Margin="0,0,0,4" />
+                                <Slider Minimum="0" Maximum="1" TickFrequency="0.05"
+                                        Value="{Binding ReplacementMaskOpacity}"
+                                        Margin="0,0,0,12" />
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Padding Left" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementPaddingLeft, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Padding Top" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementPaddingTop, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Padding Right" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementPaddingRight, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Padding Bottom" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementPaddingBottom, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Replacement font size" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementFontSize, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Max lines" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding ReplacementMaxLines, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <CheckBox Content="Readable subtitle timing"
+                                          IsChecked="{Binding EnableReadableSubtitleTiming}"
+                                          Margin="0,0,0,8" />
+                                <CheckBox Content="Show mask while translation pending"
+                                          IsChecked="{Binding ShowMaskWhileTranslationPending}"
+                                          Margin="0,0,0,8" />
+                                <CheckBox Content="Show replacement rect outline"
+                                          IsChecked="{Binding ShowReplacementRectOutline}"
+                                          Margin="0,0,0,8" />
+                                <CheckBox Content="Reject HUD/control text"
+                                          IsChecked="{Binding RejectHudControlText}"
+                                          Margin="0,0,0,8" />
+                                <CheckBox Content="Use subtitle candidate scoring"
+                                          IsChecked="{Binding UseSubtitleCandidateScoring}"
+                                          Margin="0,0,0,12" />
+
+                                <!-- Manual Replacement Mask Region (primary positioning method) -->
+                                <Border Background="#FFF7F0" BorderBrush="#E8CCA8" BorderThickness="1"
+                                        CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="Manual Replacement Mask Region (primary)"
+                                                   FontWeight="SemiBold" Margin="0,0,0,4" />
+                                        <TextBlock TextWrapping="Wrap" Foreground="#775522" Margin="0,0,0,8">
+                                            The Turkish text is rendered directly inside this fixed region,
+                                            covering the original English subtitle — independent of OCR
+                                            bounding boxes. Coordinates are relative to the game window.
+                                        </TextBlock>
+                                        <CheckBox Content="Use manual replacement region (recommended)"
+                                                  IsChecked="{Binding UseManualReplacementRegion}"
+                                                  Margin="0,0,0,8" />
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="X" Margin="0,0,0,4" />
+                                                <TextBox Padding="8,5" Text="{Binding ManualReplacementRegionX, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="Y" Margin="0,0,0,4" />
+                                                <TextBox Padding="8,5" Text="{Binding ManualReplacementRegionY, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4">
+                                                <TextBlock Text="Width" Margin="0,0,0,4" />
+                                                <TextBox Padding="8,5" Text="{Binding ManualReplacementRegionWidth, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6">
+                                                <TextBlock Text="Height" Margin="0,0,0,4" />
+                                                <TextBox Padding="8,5" Text="{Binding ManualReplacementRegionHeight, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{Binding ManualReplacementRegionSummary}"
+                                                   FontFamily="Consolas" FontSize="11" Foreground="#775522"
+                                                   Margin="0,0,0,8" />
+                                        <TextBlock Text="{Binding ManualReplacementRegionIsValidText}"
+                                                   FontFamily="Consolas" FontSize="11" Foreground="#775522"
+                                                   Margin="0,0,0,8" />
+                                        <WrapPanel>
+                                            <Button Content="Select Replacement Mask Region"
+                                                    Command="{Binding UseOcrRegionAsMaskRegionCommand}"
+                                                    Padding="10,6" Margin="0,0,8,8" />
+                                            <Button Content="Use OCR Region as Mask Region"
+                                                    Command="{Binding UseOcrRegionAsMaskRegionCommand}"
+                                                    Padding="10,6" Margin="0,0,8,8" />
+                                            <Button Content="Preview Replacement Mask"
+                                                    Command="{Binding PreviewReplacementMaskCommand}"
+                                                    Padding="10,6" Margin="0,0,8,8" />
+                                            <Button Content="Reset Replacement Region"
+                                                    Command="{Binding ResetReplacementRegionCommand}"
+                                                    Padding="10,6" Margin="0,0,8,8" />
+                                        </WrapPanel>
+                                        <CheckBox Content="Auto-fit Turkish text inside mask (shrink font, never overflow)"
+                                                  IsChecked="{Binding ReplacementAutoFitText}"
+                                                  Margin="0,4,0,4" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Min font size:" Margin="0,4,8,0" />
+                                            <TextBox Width="60" Padding="8,5" Text="{Binding ReplacementMinFontSize, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Min display (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MinTurkishDisplayMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Max display (ms)" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MaxTurkishDisplayMs, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Text="ms per character" Margin="0,0,0,4" />
+                                        <TextBox Padding="8,5" Text="{Binding MsPerCharacter, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <WrapPanel>
+                                    <Button Content="Test Replacement Overlay"
+                                            Command="{Binding TestReplacementOverlayCommand}"
+                                            Padding="10,6" Margin="0,0,8,8" />
+                                    <Button Content="Preview Last Subtitle Replacement Rect"
+                                            Command="{Binding PreviewLastReplacementRectCommand}"
+                                            Padding="10,6" Margin="0,0,8,8" />
+                                    <Button Content="Reset Replacement Overlay Settings"
+                                            Command="{Binding ResetReplacementSettingsCommand}"
+                                            Padding="10,6" Margin="0,0,8,8" />
+                                    <Button Content="Run Replacement Self-Test"
+                                            Command="{Binding RunReplacementSelfTestCommand}"
+                                            Padding="10,6" Margin="0,0,8,8" />
+                                </WrapPanel>
+
+                                <Grid Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Last replacement rect:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LastReplacementRectText}" FontFamily="Consolas" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Last displayed Turkish:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LastDisplayedTurkishText}" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Last display duration:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LastDisplayDurationText}" FontFamily="Consolas" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Last update reason:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastOverlayUpdateReasonText}" FontFamily="Consolas" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Last accepted OCR:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LastAcceptedCandidateText}" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Last rejected reason:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding LastRejectedReasonText}" FontFamily="Consolas" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Was English blocked:" Foreground="#666666" />
+                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WasEnglishBlockedText}" FontFamily="Consolas" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Appearance"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,10" />
+
+                        <TextBlock Text="Preset" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,12"
+                                  SelectedIndex="{Binding PresetIndex}">
+                            <ComboBoxItem Content="Cinematic" />
+                            <ComboBoxItem Content="Large Readable" />
+                            <ComboBoxItem Content="Compact" />
+                            <ComboBoxItem Content="Accessibility" />
+                        </ComboBox>
+
+                        <TextBlock Text="Font size" Margin="0,0,0,4" />
+                        <Slider Minimum="12" Maximum="72" TickFrequency="1" IsSnapToTickEnabled="True"
+                                Value="{Binding FontSize}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Background opacity" Margin="0,0,0,4" />
+                        <Slider Minimum="0" Maximum="1" TickFrequency="0.05"
+                                Value="{Binding BackgroundOpacity}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Bottom margin" Margin="0,0,0,4" />
+                        <Slider Minimum="0" Maximum="200" TickFrequency="5" IsSnapToTickEnabled="True"
+                                Value="{Binding BottomMargin}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Max width ratio" Margin="0,0,0,4" />
+                        <Slider Minimum="0.25" Maximum="1.0" TickFrequency="0.01"
+                                Value="{Binding MaxWidthPercent}" Margin="0,0,0,12" />
+
+                        <CheckBox Content="Show background"
+                                  IsChecked="{Binding BackgroundEnabled}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Show outline"
+                                  IsChecked="{Binding OutlineEnabled}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Show shadow"
+                                  IsChecked="{Binding ShadowEnabled}"
+                                  Margin="0,0,0,16" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                            <Button Width="120" Padding="12,6"
+                                    Command="{Binding ResetToPresetCommand}"
+                                    Content="Reset Preset" />
+                            <Button Width="140" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding ApplySettingsCommand}"
+                                    Content="Apply Style" />
+                            <Button Width="140" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding SaveSettingsCommand}"
+                                    Content="Save Settings" />
+                        </StackPanel>
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Position &amp; Preview"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,12">
+                            Click Configure to drag and resize the overlay directly on screen.
+                            Position is saved automatically when you click Done.
+                        </TextBlock>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Button Width="170" Padding="12,6"
+                                    Command="{Binding ToggleConfigModeCommand}"
+                                    Content="{Binding ConfigButtonText}" />
+                            <Button Width="130" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestOverlayCommand}"
+                                    Content="Test Overlay" />
+                            <Button Width="130" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestSubtitleCommand}"
+                                    Content="Test Subtitle" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding StatusText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#444444"
+                                   FontStyle="Italic"
+                                   Margin="0,0,0,20" />
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Multi-Monitor / Overlay Position"
+                                   FontSize="16" FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,14">
+                            Keeps the overlay recoverable when monitors are connected, disconnected,
+                            or resized. If a saved position points at a monitor that no longer exists,
+                            it is automatically moved back on-screen.
+                        </TextBlock>
+
+                        <!-- Off-screen warning -->
+                        <Border Visibility="{Binding IsOverlayOffScreen, Converter={StaticResource BoolToVis}}"
+                                Background="#FFF0F0" BorderBrush="#E8A8A8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="Overlay is off-screen. Click Reset Overlay Position."
+                                           Foreground="#AA2222" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,8" />
+                                <Button Content="Recover Overlay Now" Command="{Binding RecoverOverlayNowCommand}"
+                                        Padding="12,6" HorizontalAlignment="Left" Background="#FFE0E0" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{Binding ManualMonitorWarningText}"
+                                   Foreground="#AA5500" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                        <!-- Status grid -->
+                        <Border Background="#F5F5FF" BorderBrush="#C8C8E8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="0,0,0,5" />
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#6677AA" Text="Primary monitor:" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding PrimaryMonitorText}" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Foreground="#6677AA" Text="Capture window monitor:" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding CaptureWindowMonitorText}" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#6677AA" Text="Current overlay monitor:" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" Text="{Binding CurrentOverlayMonitorText}" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Foreground="#6677AA" Text="Current overlay rect:" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" FontFamily="Consolas" Text="{Binding CurrentOverlayRectText}" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Foreground="#6677AA" Text="Overlay visible:" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" FontFamily="Consolas" Text="{Binding OverlayVisibleText}" />
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Text="Connected monitors" FontWeight="SemiBold" Margin="0,0,0,6" />
+                        <ItemsControl ItemsSource="{Binding ConnectedMonitorsDisplay}" Margin="0,0,0,14">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontFamily="Consolas" Margin="0,0,0,4" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="Overlay target monitor mode" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,10"
+                                  SelectedIndex="{Binding OverlayTargetMonitorModeIndex}">
+                            <ComboBoxItem Content="Primary Monitor" />
+                            <ComboBoxItem Content="Same as Capture Window" />
+                            <ComboBoxItem Content="Manual Monitor" />
+                        </ComboBox>
+
+                        <TextBlock Text="Manual monitor" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,14"
+                                  ItemsSource="{Binding AvailableMonitorDeviceNames}"
+                                  SelectedItem="{Binding SelectedOverlayMonitorDeviceName}" />
+
+                        <CheckBox Content="Auto recover off-screen overlay"
+                                  IsChecked="{Binding AutoRecoverOffscreenOverlay}"
+                                  Margin="0,0,0,14" />
+
+                        <WrapPanel Margin="0,0,0,10">
+                            <Button Content="Move to Primary" Command="{Binding MoveToPrimaryMonitorCommand}" Padding="10,6" Margin="0,0,8,8" />
+                            <Button Content="Move to Capture Monitor" Command="{Binding MoveToCaptureWindowMonitorCommand}" Padding="10,6" Margin="0,0,8,8" />
+                            <Button Content="Center on Current Monitor" Command="{Binding CenterOnCurrentMonitorCommand}" Padding="10,6" Margin="0,0,8,8" />
+                            <Button Content="Reset Overlay Position" Command="{Binding ResetOverlayPositionCommand}" Padding="10,6" Margin="0,0,8,8" />
+                            <Button Content="Refresh Monitors" Command="{Binding RefreshMonitorsCommand}" Padding="10,6" Margin="0,0,8,8" />
+                        </WrapPanel>
+
+                        <TextBlock Text="{Binding LastRecoveryReasonText, StringFormat='Last recovery reason: {0}'}"
+                                   Foreground="#666666" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,0,0,20" />
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 TRANSLATION TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Translation" DataContext="{Binding Translation}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="900" HorizontalAlignment="Left">
+
+                        <TextBlock Text="Translation Providers"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,20">
+                            Configures the translation provider layer. Machine Translation uses the
+                            local Python OPUS-MT server (tools/translation/translation_server.py).
+                        </TextBlock>
+
+                        <CheckBox Content="Enable Translation"
+                                  IsChecked="{Binding EnableTranslation}"
+                                  Margin="0,0,0,14" />
+
+                        <Border Background="#FFF7F0" BorderBrush="#E8CCA8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Ordered Turkish Live Mode preset" FontWeight="SemiBold" Margin="0,0,0,4" />
+                                <TextBlock TextWrapping="Wrap" Foreground="#775522" Margin="0,0,0,8">
+                                    Applies the recommended settings for a reliable, ordered, Turkish-only
+                                    live subtitle pipeline: never shows English, keeps Turkish lines visible
+                                    long enough to read, and prefers translation memory/cache before OPUS-MT.
+                                </TextBlock>
+                                <Button Content="Apply Ordered Turkish Live Mode Preset"
+                                        Command="{Binding ApplyOrderedTurkishLiveModePresetCommand}"
+                                        Padding="12,6" HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Translation Profile" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8"
+                                  SelectedIndex="{Binding TranslationProfileIndex}">
+                            <ComboBoxItem Content="Fast" />
+                            <ComboBoxItem Content="Balanced" />
+                            <ComboBoxItem Content="Accurate" />
+                            <ComboBoxItem Content="Local Fast" />
+                            <ComboBoxItem Content="Custom" />
+                        </ComboBox>
+
+                        <TextBlock Text="Provider Mode" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8"
+                                  SelectedIndex="{Binding TranslationProviderChainModeIndex}">
+                            <ComboBoxItem Content="LocalOnly" />
+                            <ComboBoxItem Content="SelectedOnly" />
+                            <ComboBoxItem Content="ProviderChain" />
+                            <ComboBoxItem Content="HybridBalanced" />
+                        </ComboBox>
+
+                        <TextBlock Text="Translation provider" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8"
+                                  SelectedIndex="{Binding TranslationProviderTypeIndex}">
+                            <ComboBoxItem Content="None" />
+                            <ComboBoxItem Content="OPUS-MT" />
+                            <ComboBoxItem Content="Ollama" />
+                            <ComboBoxItem Content="Hybrid: Machine then Ollama" />
+                            <ComboBoxItem Content="Google Translate" />
+                            <ComboBoxItem Content="DeepL" />
+                            <ComboBoxItem Content="Gemini" />
+                            <ComboBoxItem Content="ChatGPT" />
+                            <ComboBoxItem Content="Groq" />
+                            <ComboBoxItem Content="LM Studio" />
+                            <ComboBoxItem Content="Mistral" />
+                            <ComboBoxItem Content="Mock" />
+                        </ComboBox>
+
+                        <!-- Model selection (per provider) -->
+                        <TextBlock Text="Machine Translation model (local server)" Margin="0,4,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8" IsEditable="True"
+                                  ItemsSource="{Binding MachineTranslationModelOptions}"
+                                  Text="{Binding MachineTranslationModel, UpdateSourceTrigger=LostFocus}" />
+
+                        <TextBlock Text="Ollama model" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8" IsEditable="True"
+                                  ItemsSource="{Binding OllamaModels}"
+                                  Text="{Binding OllamaModel, UpdateSourceTrigger=LostFocus}" />
+
+                        <TextBlock Text="LM Studio model (empty = currently loaded model)" Margin="0,0,0,4" />
+                        <ComboBox Padding="8,5" Margin="0,0,0,8" IsEditable="True"
+                                  ItemsSource="{Binding LmStudioModels}"
+                                  Text="{Binding LmStudioModel, UpdateSourceTrigger=LostFocus}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                            <Button Padding="12,5"
+                                    Command="{Binding CheckAllProvidersCommand}"
+                                    Content="Check Providers" />
+                            <Button Padding="12,5" Margin="8,0,0,0"
+                                    Command="{Binding RefreshModelListsCommand}"
+                                    Content="Refresh Models" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding ProviderHealthSummaryText}"
+                                   TextWrapping="Wrap"
+                                   FontFamily="Consolas" FontSize="11"
+                                   Foreground="#57606A"
+                                   Margin="0,0,0,8" />
+
+                        <CheckBox Content="Use fake translation provider (DEBUG ONLY — overrides selected provider)"
+                                  IsChecked="{Binding UseFakeTranslationProviderForDebug}"
+                                  Foreground="#AA5500"
+                                  Margin="0,0,0,12" />
+
+                        <Border Background="#F6F8FA" BorderBrush="#D0D7DE" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="Runtime Provider Routing" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding SelectedProviderText, StringFormat=Selected provider: {0}}" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding ActualProviderUsedText, StringFormat=Actual provider: {0}}" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding FallbackProviderText, StringFormat=Fallback provider: {0}}" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding ProviderStatusText, StringFormat=Provider status: {0}}" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding LastProviderName, StringFormat=Last provider used: {0}}" />
+                                <TextBlock FontFamily="Consolas" Text="{Binding LastFallbackReasonText, StringFormat=Last fallback reason: {0}}" />
+                            </StackPanel>
+                        </Border>
+
+                        <WrapPanel Margin="0,0,0,12">
+                            <CheckBox Content="Enable translation provider fallback"
+                                      IsChecked="{Binding EnableTranslationProviderFallback}"
+                                      Margin="0,0,16,8" />
+                            <CheckBox Content="Allow fallback during provider test"
+                                      IsChecked="{Binding AllowFallbackDuringProviderTest}"
+                                      Margin="0,0,16,8" />
+                            <CheckBox Content="Auto-start OPUS-MT server"
+                                      IsChecked="{Binding AutoStartOpusServer}"
+                                      Margin="0,0,16,8" />
+                            <CheckBox Content="Start OPUS only when selected or fallback"
+                                      IsChecked="{Binding StartOpusOnlyWhenSelectedOrFallback}"
+                                      Margin="0,0,16,8" />
+                        </WrapPanel>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Source language" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5" FontFamily="Consolas"
+                                         Text="{Binding SourceLanguage, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Target language" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5" FontFamily="Consolas"
+                                         Text="{Binding TargetLanguage, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Machine Translation Base URL" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5" FontFamily="Consolas"
+                                         Text="{Binding MachineTranslationBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Machine Translation timeout (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding MachineTranslationTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="OPUS-MT Translation Server" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Border Background="#F5FFF5" BorderBrush="#B8D8B8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10" Margin="0,0,0,16">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#4A7A4A" Text="Server status:" Margin="0,0,0,5" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" FontFamily="Consolas"
+                                               Text="{Binding TranslationServerStatusText}" Margin="0,0,0,5" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2" Foreground="#4A7A4A" Text="Process id:" Margin="0,0,0,5" />
+                                    <TextBlock Grid.Row="0" Grid.Column="3" FontFamily="Consolas"
+                                               Text="{Binding TranslationServerProcessIdText}" Margin="0,0,0,5" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Foreground="#4A7A4A" Text="Last health check:" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" FontFamily="Consolas"
+                                               Text="{Binding TranslationServerLastHealthCheckText}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="2" Foreground="#4A7A4A" Text="Last health error:" />
+                                    <TextBlock Grid.Row="1" Grid.Column="3" FontFamily="Consolas"
+                                               TextWrapping="Wrap" Foreground="#AA2222"
+                                               Text="{Binding TranslationServerLastHealthErrorText}" />
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Width="170" Padding="12,6"
+                                            Command="{Binding StartTranslationServerCommand}"
+                                            Content="Start OPUS-MT Server" />
+                                    <Button Width="170" Padding="12,6" Margin="8,0,0,0"
+                                            Command="{Binding StopTranslationServerCommand}"
+                                            Content="Stop OPUS-MT Server" />
+                                    <Button Width="170" Padding="12,6" Margin="8,0,0,0"
+                                            Command="{Binding CheckTranslationServerCommand}"
+                                            Content="Check OPUS-MT Server" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Ollama Base URL" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5" FontFamily="Consolas"
+                                         Text="{Binding OllamaBaseUrl, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Model" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5" FontFamily="Consolas"
+                                         Text="{Binding OllamaModel, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Translation timeout (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding TranslationTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Display mode" Margin="0,0,0,4" />
+                                <ComboBox Padding="8,5"
+                                          SelectedIndex="{Binding DisplayModeIndex}">
+                                    <ComboBoxItem Content="OCR Only" />
+                                    <ComboBoxItem Content="Translate Only" />
+                                    <ComboBoxItem Content="OCR Then Translate" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+
+                        <CheckBox Content="Enable translation cache"
+                                  IsChecked="{Binding UseTranslationCache}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Show source while translating"
+                                  IsChecked="{Binding ShowSourceWhileTranslating}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Keep translated text while same source is detected"
+                                  IsChecked="{Binding KeepTranslatedTextWhileSameSourceDetected}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Drop stale translations (skip if subtitle already changed)"
+                                  IsChecked="{Binding DropStaleTranslations}"
+                                  Margin="0,0,0,8" />
+                        <CheckBox Content="Show OCR fallback when translation fails"
+                                  IsChecked="{Binding ShowOcrFallbackWhenTranslationFails}"
+                                  Margin="0,0,0,8" />
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Min translated display (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding MinTranslatedDisplayMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Clear overlay after no subtitle (ms)" Margin="0,0,0,4" />
+                                <TextBox Padding="8,5"
+                                         Text="{Binding ClearOverlayAfterNoSubtitleMs, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Test Translate Text" Margin="0,0,0,4" />
+                        <TextBox Padding="8,6" Margin="0,0,0,10"
+                                 Text="{Binding TestTranslationText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Width="180" Padding="12,6"
+                                    Command="{Binding TestTranslationServerCommand}"
+                                    Content="Test OPUS-MT" />
+                            <Button Width="190" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestMachineTranslationCommand}"
+                                    Content="Test OPUS-MT Translate" />
+                            <Button Width="120" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding ClearCacheCommand}"
+                                    Content="Clear Cache" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Button Width="180" Padding="12,6"
+                                    Command="{Binding TestConnectionCommand}"
+                                    Content="Test Ollama Connection" />
+                            <Button Width="190" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestTranslateCommand}"
+                                    Content="Test Ollama Translate" />
+                            <Button Width="170" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestFakeTranslationCommand}"
+                                    Content="Test Fake Translation" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Button Width="210" Padding="12,6"
+                                    Command="{Binding RunPipelineHealthCheckCommand}"
+                                    Content="Run Pipeline Health Check" />
+                            <Button Width="230" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestLivePipelineEndToEndCommand}"
+                                    Content="Test Live Pipeline End-to-End" />
+                            <Button Width="230" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestSelectedTranslationProviderCommand}"
+                                    Content="Test Selected Translation Provider" />
+                            <Button Width="180" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestProviderChainCommand}"
+                                    Content="Test Provider Chain" />
+                            <Button Width="220" Padding="12,6" Margin="8,0,0,0"
+                                    Command="{Binding TestReplacementOverlayDisplayCommand}"
+                                    Content="Test Replacement Overlay Display" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding StatusText}"
+                                   TextWrapping="Wrap" FontStyle="Italic"
+                                   Foreground="#444444" Margin="0,0,0,16" />
+
+                        <Separator Margin="0,0,0,16" />
+
+                        <TextBlock Text="Translation Queue Status" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding TranslationQueueStatus}" FontFamily="Consolas"
+                                   Margin="0,4,0,6" />
+                        <TextBlock Text="{Binding TranslationCountersText}" FontFamily="Consolas"
+                                   TextWrapping="Wrap" Margin="0,0,0,14" />
+
+                        <TextBlock Text="Raw Ollama Response" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding LastRawResponse, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas"
+                                 TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="150"
+                                 VerticalScrollBarVisibility="Auto" Margin="0,4,0,10" />
+                        <TextBlock Text="Parsed Translation" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding LastParsedText, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas"
+                                 TextWrapping="Wrap" Margin="0,4,0,10" />
+                        <TextBlock Text="Post-processed Translation" FontWeight="SemiBold" />
+                        <TextBox Text="{Binding LastPostProcessedText, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas"
+                                 TextWrapping="Wrap" Margin="0,4,0,16" />
+
+                        <TextBlock Text="Diagnostics" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Border Background="#F5F5FF" BorderBrush="#C8C8E8" BorderThickness="1"
+                                CornerRadius="4" Padding="12,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#6677AA" Text="Last source text:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap" Text="{Binding LastSourceText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Foreground="#6677AA" Text="Last translation:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap" Text="{Binding LastTranslatedText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#6677AA" Text="Duration:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding LastDurationText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Foreground="#6677AA" Text="From cache:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding LastFromCacheText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Foreground="#6677AA" Text="Cache size:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding CacheCountText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Foreground="#6677AA" Text="Last error:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap" Foreground="#AA2222"
+                                           Text="{Binding LastErrorText}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Foreground="#6677AA" Text="Last provider:" Margin="0,0,0,5" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding LastProviderName}" Margin="0,0,0,5" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Foreground="#6677AA" Text="Last translation time:" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding LastTranslationTimeText}" />
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Foreground="#6677AA" Text="Translation enabled:" Margin="0,5,0,5" />
+                                <TextBlock Grid.Row="8" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding TranslationEnabledText}" Margin="0,5,0,5" />
+
+                                <TextBlock Grid.Row="9" Grid.Column="0" Foreground="#6677AA" Text="Selected provider:" />
+                                <TextBlock Grid.Row="9" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding SelectedProviderText}" />
+
+                                <TextBlock Grid.Row="10" Grid.Column="0" Foreground="#6677AA" Text="Actual provider used:" Margin="0,5,0,0" />
+                                <TextBlock Grid.Row="10" Grid.Column="1" FontFamily="Consolas"
+                                           Text="{Binding ActualProviderUsedText}" Margin="0,5,0,0" />
+
+                                <TextBlock Grid.Row="11" Grid.Column="0" Foreground="#6677AA" Text="Fallback reason:" Margin="0,5,0,0" />
+                                <TextBlock Grid.Row="11" Grid.Column="1" FontFamily="Consolas"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding LastFallbackReasonText}" Margin="0,5,0,0" />
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Text="End-to-End Pipeline Diagnostics"
+                                   FontWeight="SemiBold" Margin="0,16,0,8" />
+                        <TextBox Text="{Binding PipelineDiagnosticsText, Mode=OneWay}"
+                                 IsReadOnly="True" AcceptsReturn="True"
+                                 TextWrapping="Wrap" FontFamily="Consolas"
+                                 VerticalScrollBarVisibility="Auto"
+                                 MinHeight="260" MaxHeight="520" />
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 MODEL MANAGER TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Model Manager" DataContext="{Binding ModelManager}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="820" HorizontalAlignment="Left">
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBlock Text="Model Manager"
+                                       FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button Padding="12,4" Margin="14,0,0,0"
+                                    Command="{Binding RefreshCommand}"
+                                    Content="Refresh" />
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,6">
+                            Install, verify and remove translation models without a terminal.
+                            OCR engines are managed on the OCR Server tab.
+                        </TextBlock>
+                        <TextBlock Text="{Binding StatusText}"
+                                   FontFamily="Consolas" FontSize="12"
+                                   Foreground="#57606A" Margin="0,0,0,16" TextWrapping="Wrap" />
+
+                        <!-- Machine translation (HuggingFace) models -->
+                        <TextBlock Text="Machine Translation models (local server)"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding MachineModels}" Margin="0,0,0,20">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#D0D7DE" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock>
+                                                    <Run Text="{Binding DisplayName, Mode=OneWay}" FontWeight="SemiBold" />
+                                                    <Run Text="  " />
+                                                    <Run Text="{Binding StatusText, Mode=OneWay}" />
+                                                </TextBlock>
+                                                <TextBlock FontFamily="Consolas" FontSize="11" Foreground="#57606A">
+                                                    <Run Text="{Binding ModelId, Mode=OneWay}" />
+                                                    <Run Text="  —  " />
+                                                    <Run Text="{Binding Notes, Mode=OneWay}" />
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding ProgressText}"
+                                                           FontFamily="Consolas" FontSize="10"
+                                                           Foreground="#57606A"
+                                                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                                                           MaxHeight="28" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Install"
+                                                        Command="{Binding InstallCommand}" />
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Verify"
+                                                        Command="{Binding VerifyCommand}" />
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Use"
+                                                        Command="{Binding UseCommand}" />
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Remove"
+                                                        Command="{Binding RemoveCommand}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Ollama models -->
+                        <TextBlock Text="Ollama models (post-edit / LLM translation)"
+                                   FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding OllamaModels}" Margin="0,0,0,20">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#D0D7DE" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock>
+                                                    <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" FontFamily="Consolas" />
+                                                    <Run Text="  " />
+                                                    <Run Text="{Binding StatusText, Mode=OneWay}" />
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding ProgressText}"
+                                                           FontFamily="Consolas" FontSize="10"
+                                                           Foreground="#57606A"
+                                                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                                                           MaxHeight="28" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Pull"
+                                                        Command="{Binding PullCommand}" />
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Use"
+                                                        Command="{Binding UseCommand}" />
+                                                <Button Padding="10,4" Margin="4,0,0,0" Content="Remove"
+                                                        Command="{Binding RemoveCommand}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 SETTINGS TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Settings" DataContext="{Binding Settings}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="620" HorizontalAlignment="Left">
+
+                        <TextBlock Text="Settings"
+                                   FontSize="18" FontWeight="SemiBold"
+                                   Margin="0,0,0,20" />
+
+                        <!-- OCR / Python section -->
+                        <TextBlock Text="OCR — Python executable"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+
+                        <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,8">
+                            Full path to the Python executable used to run PaddleOCR.
+                            Leave empty to auto-detect from PATH ("python", "python3", "py").
+                        </TextBlock>
+
+                        <TextBox Text="{Binding PythonExePath, UpdateSourceTrigger=PropertyChanged}"
+                                 FontFamily="Consolas" FontSize="13"
+                                 Padding="8,6"
+                                 SpellCheck.IsEnabled="False"
+                                 ToolTip="Example: C:\Users\ahmet\AppData\Local\Programs\Python\Python311\python.exe" />
+
+                        <TextBlock TextWrapping="Wrap" Foreground="#777777"
+                                   FontSize="11" Margin="0,4,0,0">
+                            Example: C:\Users\ahmet\AppData\Local\Programs\Python\Python311\python.exe
+                        </TextBlock>
+
+                        <TextBlock Margin="0,16,0,0" TextWrapping="Wrap" Foreground="#555555">
+                            If PaddleOCR is not installed, run:
+                        </TextBlock>
+                        <TextBox IsReadOnly="True" Margin="0,4,0,0"
+                                 FontFamily="Consolas" FontSize="12"
+                                 Padding="8,6" Background="#F4F4F4"
+                                 BorderBrush="#CCCCCC"
+                                 Text="pip install paddleocr paddlepaddle" />
+
+                        <Separator Margin="0,20,0,16" />
+
+                        <TextBlock Text="OCR stabilization"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,10" />
+
+                        <CheckBox Content="Enable OCR cache"
+                                  IsChecked="{Binding EnableOcrCache}"
+                                  Margin="0,0,0,12" />
+
+                        <TextBlock Text="OCR interval (milliseconds)"
+                                   Margin="0,0,0,4" />
+                        <TextBox Width="160" HorizontalAlignment="Left"
+                                 Padding="8,5" Margin="0,0,0,12"
+                                 Text="{Binding OcrIntervalMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Minimum confidence threshold (0.0 - 1.0)"
+                                   Margin="0,0,0,4" />
+                        <TextBox Width="160" HorizontalAlignment="Left"
+                                 Padding="8,5"
+                                 Text="{Binding MinimumConfidenceThreshold, UpdateSourceTrigger=PropertyChanged}" />
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════════════════════════════════════
+                 GLOSSARY TAB
+                 ══════════════════════════════════════════ -->
+            <TabItem Header="Glossary" DataContext="{Binding Glossary}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,16" MaxWidth="860" HorizontalAlignment="Left">
+
+                        <TextBlock Text="User Glossary / Corrections"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBlock Text="{Binding SlotStatsText, Mode=OneWay}"
+                                   Foreground="#555" FontSize="12" Margin="0,0,0,10" />
+
+                        <!-- ── Search / Filter row ───────────────────────── -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Padding="6,4"
+                                     Text="{Binding SearchSource, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Filter by source term (EN)" />
+                            <TextBox Grid.Column="2" Padding="6,4"
+                                     Text="{Binding SearchTarget, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Filter by target term (TR)" />
+                            <TextBox Grid.Column="4" Padding="6,4"
+                                     Text="{Binding FilterCategory, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Filter by category" />
+                            <CheckBox Grid.Column="6" Content="Protected only"
+                                      IsChecked="{Binding FilterProtectedOnly}"
+                                      VerticalAlignment="Center" />
+                            <CheckBox Grid.Column="8" Content="User only"
+                                      IsChecked="{Binding FilterUserCorrectionsOnly}"
+                                      VerticalAlignment="Center" />
+                            <Button Grid.Column="10" Padding="6,4"
+                                    Command="{Binding ClearFilterCommand}" Content="Clear" />
+                        </Grid>
+
+                        <!-- ── Term list ─────────────────────────────────── -->
+                        <DataGrid ItemsSource="{Binding TermsView}"
+                                  SelectedItem="{Binding SelectedTerm, Mode=TwoWay}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  Height="220"
+                                  Margin="0,0,0,8">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Source (EN)" Width="150" Binding="{Binding SourceTerm}" />
+                                <DataGridTextColumn Header="Target (TR)" Width="160" Binding="{Binding TargetTerm}" />
+                                <DataGridTextColumn Header="Categories"  Width="110" Binding="{Binding CategoriesText}" />
+                                <DataGridTextColumn Header="Mode"        Width="70"  Binding="{Binding MatchMode}" />
+                                <DataGridTextColumn Header="Pri"         Width="36"  Binding="{Binding Priority}" />
+                                <DataGridCheckBoxColumn Header="Xlate"   Width="46"  Binding="{Binding ShouldTranslate}" />
+                                <DataGridCheckBoxColumn Header="Prot"    Width="42"  Binding="{Binding IsProtected}" />
+                                <DataGridTextColumn Header="Dict"        Width="80"  Binding="{Binding SourceDictionary}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Notes"       Width="*"   Binding="{Binding Notes}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- ── Add new term ──────────────────────────────── -->
+                        <TextBlock Text="Add new term" FontWeight="SemiBold" Margin="0,4,0,6" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="140" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Padding="6,4"
+                                     Text="{Binding NewSourceTerm, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Source term (EN)" />
+                            <TextBox Grid.Column="2" Padding="6,4"
+                                     Text="{Binding NewTargetTerm, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Target term (TR)" />
+                            <ComboBox Grid.Column="4" Padding="6,4"
+                                      IsEditable="True"
+                                      Text="{Binding NewCategoriesText, UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding CategoryOptions}"
+                                      ToolTip="Category tag(s), comma-separated" />
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Match mode:" VerticalAlignment="Center" Foreground="#555" />
+                            <ComboBox Grid.Column="2" Padding="6,2"
+                                      ItemsSource="{Binding MatchModeOptions}"
+                                      SelectedItem="{Binding NewMatchMode}" />
+                            <TextBox Grid.Column="4" Padding="6,4"
+                                     Text="{Binding NewPriority, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Priority (0=default, 50=game term, 100=user correction)" />
+                            <CheckBox Grid.Column="6" Content="Translate"
+                                      IsChecked="{Binding NewShouldTranslate}" VerticalAlignment="Center" />
+                            <CheckBox Grid.Column="8" Content="Protected"
+                                      IsChecked="{Binding NewIsProtected}" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="10" Padding="6,4"
+                                     Text="{Binding NewNotes, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Notes" />
+                        </Grid>
+
+                        <!-- Action buttons -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <Button Width="100" Padding="8,6" Margin="0,0,6,0"
+                                    Command="{Binding AddTermCommand}" Content="Add term" />
+                            <Button Width="130" Padding="8,6" Margin="0,0,6,0"
+                                    Command="{Binding RemoveSelectedTermCommand}" Content="Remove selected" />
+                            <Button Width="80" Padding="8,6" Margin="0,0,6,0"
+                                    Command="{Binding SaveCommand}" Content="Save" />
+                            <Button Width="80" Padding="8,6" Margin="0,0,6,0"
+                                    Command="{Binding ReloadCommand}" Content="Reload" />
+                            <Button Width="175" Padding="8,6"
+                                    Command="{Binding SaveCurrentCorrectionCommand}"
+                                    Content="Pre-fill from current subtitle" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding StatusText, Mode=OneWay}"
+                                   Foreground="#444" FontSize="12" Margin="0,0,0,10" />
+
+                        <!-- ── Help expander ──────────────────────────────── -->
+                        <Expander Header="Field reference — what each column means" Margin="0,0,0,6">
+                            <Border Background="#F9F9F9" Padding="12,8" Margin="0,4,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Text="Source (EN)" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="The English word or phrase to match in OCR output." />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="SemiBold" Text="Target (TR)" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="The Turkish translation to enforce. Leave blank to suppress translation." />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="SemiBold" Text="Categories" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="Comma-separated tags: GameTerm, CharacterName, LocationName, Phrase, UserCorrection…" />
+                                    <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="SemiBold" Text="MatchMode" />
+                                    <TextBlock Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="Phrase = source appears anywhere in subtitle (default). Exact = entire subtitle equals source. Contains = loose case-insensitive substring." />
+                                    <TextBlock Grid.Row="8" Grid.Column="0" FontWeight="SemiBold" Text="Priority" />
+                                    <TextBlock Grid.Row="8" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="Higher = applied first. User corrections default to 100, game-specific to 80, genre to 30, global to 10. Set to 50 for important protected game terms." />
+                                    <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="SemiBold" Text="Protected" />
+                                    <TextBlock Grid.Row="10" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="When checked, the term must appear verbatim in the final translation regardless of what the machine translator produces." />
+                                    <TextBlock Grid.Row="12" Grid.Column="0" FontWeight="SemiBold" Text="Translate" />
+                                    <TextBlock Grid.Row="12" Grid.Column="1" TextWrapping="Wrap" Foreground="#444"
+                                               Text="Unchecked = keep the source word as-is (e.g., 'Pawn', 'Arisen'). Checked = replace with Target." />
+                                </Grid>
+                            </Border>
+                        </Expander>
+
+                        <!-- ── Bulk import expander ──────────────────────── -->
+                        <Expander Header="Bulk import" Margin="0,0,0,6">
+                            <StackPanel Margin="0,6,0,0">
+                                <TextBlock Foreground="#666" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,6">
+                                    One term per line. Columns separated by | or Tab or , (CSV).
+                                    Format: Source | Target | Categories | Priority | MatchMode | Notes
+                                    (Priority and MatchMode are optional; defaults: 0 / Phrase)
+                                </TextBlock>
+                                <TextBox Height="120" Padding="6,4" FontFamily="Consolas" FontSize="11"
+                                         AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                         Text="{Binding BulkImportText, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTip="Paste terms here — one per line" />
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+                                    <CheckBox Content="Update existing terms"
+                                              IsChecked="{Binding BulkImportUpdateExisting}"
+                                              VerticalAlignment="Center" Margin="0,0,12,0" />
+                                    <Button Width="90" Padding="8,5" Margin="0,0,8,0"
+                                            Command="{Binding PreviewBulkImportCommand}" Content="Preview" />
+                                    <Button Width="90" Padding="8,5"
+                                            Command="{Binding ImportBulkCommand}" Content="Import" />
+                                </StackPanel>
+                                <TextBox IsReadOnly="True" Padding="6,4" FontFamily="Consolas" FontSize="11"
+                                         Height="80" Background="#F8F8F8"
+                                         Text="{Binding BulkImportPreview, Mode=OneWay}" />
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- ── Dictionary management expander ────────────── -->
+                        <Expander Header="Dictionary sources" Margin="0,0,0,6">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Foreground="#666" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8">
+                                    Enable/disable dictionaries. User Corrections always override other sources.
+                                    Priority: User (100) → Game (80) → Genre (30-40) → Global (10).
+                                </TextBlock>
+                                <WrapPanel Margin="0,0,0,8">
+                                    <CheckBox Content="Global" IsChecked="{Binding UseGlobal}" Margin="0,0,16,4" />
+                                    <CheckBox Content="RPG"    IsChecked="{Binding UseRpg}"    Margin="0,0,16,4" />
+                                    <CheckBox Content="CRPG"   IsChecked="{Binding UseCrpg}"   Margin="0,0,16,4" />
+                                    <CheckBox Content="Action RPG" IsChecked="{Binding UseActionRpg}" Margin="0,0,16,4" />
+                                    <CheckBox Content="JRPG"   IsChecked="{Binding UseJrpg}"   Margin="0,0,16,4" />
+                                    <CheckBox Content="Game-specific" IsChecked="{Binding UseGameSpecific}" Margin="0,0,16,4" />
+                                    <CheckBox Content="User Corrections" IsChecked="{Binding UseUserCorrections}" Margin="0,0,0,4" />
+                                </WrapPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Button Width="140" Padding="8,5" Margin="0,0,8,0"
+                                            Command="{Binding LoadGlobalDictionaryCommand}"
+                                            Content="Load Global dict…" />
+                                    <Button Width="155" Padding="8,5" Margin="0,0,8,0"
+                                            Command="{Binding LoadGameDictionaryCommand}"
+                                            Content="Load Game-specific dict…" />
+                                    <Button Width="145" Padding="8,5"
+                                            Command="{Binding ReloadDefaultDictionariesCommand}"
+                                            Content="Reload default paths" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- ── Import / Export expander ──────────────────── -->
+                        <Expander Header="Import / Export" Margin="0,0,0,6">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Foreground="#666" FontSize="12" Margin="0,0,0,8">
+                                    Import a JSON glossary file into User Corrections, or export the current glossary.
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <Button Width="160" Padding="8,5" Margin="0,0,8,0"
+                                            Command="{Binding ImportJsonFileCommand}"
+                                            Content="Import JSON file…" />
+                                </StackPanel>
+                                <TextBlock Text="Export:" FontWeight="SemiBold" Margin="0,8,0,4" />
+                                <WrapPanel>
+                                    <Button Width="190" Padding="8,5" Margin="0,0,8,4"
+                                            Command="{Binding ExportUserCorrectionsJsonCommand}"
+                                            Content="User Corrections JSON…" />
+                                    <Button Width="175" Padding="8,5" Margin="0,0,8,4"
+                                            Command="{Binding ExportMergedJsonCommand}"
+                                            Content="Merged Glossary JSON…" />
+                                    <Button Width="165" Padding="8,5" Margin="0,0,8,4"
+                                            Command="{Binding ExportFineTuneCsvCommand}"
+                                            Content="Fine-Tune CSV…" />
+                                    <Button Width="170" Padding="8,5"
+                                            Command="{Binding ExportFineTuneJsonlCommand}"
+                                            Content="Fine-Tune JSONL…" />
+                                </WrapPanel>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- ── Ollama refinement expander ─────────────────── -->
+                        <Expander Header="Ollama refinement test" Margin="0,0,0,6">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Foreground="#666" TextWrapping="Wrap" Margin="0,0,0,10">
+                                    Lightweight post-translation refinement with a small Ollama model.
+                                    Never blocks OCR or machine translation.
+                                </TextBlock>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Model:" VerticalAlignment="Center" Foreground="#555" />
+                                    <TextBox Grid.Column="1" Padding="6,4"
+                                             Text="{Binding RefinementModel, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Grid.Column="3" Text="Timeout ms:" VerticalAlignment="Center"
+                                               Foreground="#555" Margin="0,0,4,0" />
+                                    <TextBox Grid.Column="4" Padding="6,4"
+                                             Text="{Binding RefinementTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                                <TextBlock Text="Source English:" Foreground="#555" Margin="0,0,0,3" />
+                                <TextBox Padding="6,4" Margin="0,0,0,8"
+                                         TextWrapping="Wrap" AcceptsReturn="True" Height="52"
+                                         Text="{Binding RefinementSourceText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="Machine Turkish:" Foreground="#555" Margin="0,0,0,3" />
+                                <TextBox Padding="6,4" Margin="0,0,0,8"
+                                         TextWrapping="Wrap" AcceptsReturn="True" Height="52"
+                                         Text="{Binding RefinementMachineText, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Width="150" Padding="10,6" HorizontalAlignment="Left"
+                                        Command="{Binding TestRefinementCommand}" Content="Test Refinement" />
+                                <TextBlock Text="{Binding RefinementStatusText, Mode=OneWay}"
+                                           Foreground="#444" FontSize="12" Margin="0,6,0,3" />
+                                <TextBlock Text="{Binding RefinementDurationText, Mode=OneWay}"
+                                           Foreground="#666" FontSize="12" Margin="0,0,0,6" />
+                                <TextBlock Text="Refined result:" Foreground="#555" Margin="0,6,0,3" />
+                                <TextBox IsReadOnly="True" TextWrapping="Wrap" Padding="6,4"
+                                         Background="#F8F8F8" Height="52"
+                                         Text="{Binding RefinementResultText, Mode=OneWay}" />
+                                <TextBlock Text="Raw Ollama output:" Foreground="#555" Margin="0,8,0,3" />
+                                <TextBox IsReadOnly="True" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11"
+                                         Padding="6,4" Background="#F8F8F8" Height="72"
+                                         Text="{Binding RefinementRawOutput, Mode=OneWay}" />
+                                <Separator Margin="0,12,0,8" />
+                                <TextBlock Text="Refinement diagnostics" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="6" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#666" Text="Enabled:" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RefinementEnabledText, Mode=OneWay}" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Foreground="#666" Text="Mode:" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RefinementModeText, Mode=OneWay}" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Foreground="#666" Text="Last duration:" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding LastRefinementDurationDiag, Mode=OneWay}" />
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Foreground="#666" Text="Last refined:" />
+                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding LastRefinedTextDiag, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="8" Grid.Column="0" Foreground="#666" Text="Last error:" />
+                                    <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding LastRefinementErrorDiag, Mode=OneWay}"
+                                               Foreground="#C0392B" TextWrapping="Wrap" />
+                                </Grid>
+                                <TextBlock TextWrapping="Wrap" Foreground="#888" FontSize="11" Margin="0,10,0,0">
+                                    Pull command: ollama pull qwen3:1.7b
+                                </TextBlock>
+                            </StackPanel>
+                        </Expander>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ═══════════════════════════════════════════════════ Learning / Dataset ══ -->
+            <TabItem Header="Learning" DataContext="{Binding Learning}">
+                <TabItem.Resources>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </TabItem.Resources>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12,8">
+
+                        <!-- Status & Stats -->
+                        <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding StatsText}" Foreground="#555" FontSize="11" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+                        <!-- Settings row -->
+                        <Expander Header="Settings" IsExpanded="False" Margin="0,0,0,8">
+                            <StackPanel Margin="8,4">
+                                <CheckBox Content="Enable Translation Memory (use accepted/edited records before calling MT)"
+                                          IsChecked="{Binding EnableTranslationMemory}" Margin="0,2"/>
+                                <CheckBox Content="Enable Learning Records (save every translated line to DB)"
+                                          IsChecked="{Binding EnableLearningRecords}" Margin="0,2"/>
+                                <CheckBox Content="Use Global TM Fallback (look up __global__ if game-specific TM misses)"
+                                          IsChecked="{Binding UseGlobalFallback}" Margin="0,2"/>
+                                <CheckBox Content="Enable Dataset Quality Filter (skip noise, untranslated, too-short)"
+                                          IsChecked="{Binding EnableDatasetQualityFilter}" Margin="0,2"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- Action buttons -->
+                        <WrapPanel Margin="0,0,0,8">
+                            <Button Content="Refresh" Command="{Binding RefreshCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                            <Button Content="✓ Accept" Command="{Binding AcceptCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                            <Button Content="✎ Edit Correction" Command="{Binding EditCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                            <Button Content="✗ Reject" Command="{Binding RejectCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                        </WrapPanel>
+
+                        <!-- Edit correction panel -->
+                        <Border Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                                BorderBrush="#0078D4" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="Edit correction — enter the correct Turkish translation:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding EditCorrectionText, UpdateSourceTrigger=PropertyChanged}"
+                                         AcceptsReturn="False" Height="30" Margin="0,0,0,6"/>
+                                <WrapPanel>
+                                    <Button Content="Save Correction" Command="{Binding SaveCorrectionCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                                    <Button Content="Cancel" Command="{Binding CancelEditCommand}" Padding="10,4"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Records DataGrid -->
+                        <DataGrid ItemsSource="{Binding Records}"
+                                  SelectedItem="{Binding SelectedRecord}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="True"
+                                  CanUserResizeColumns="True"
+                                  Height="320"
+                                  GridLinesVisibility="Horizontal"
+                                  SelectionMode="Single"
+                                  Margin="0,0,0,10">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Action" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Approve Turkish"
+                                                    Padding="6,2"
+                                                    Command="{Binding DataContext.ApproveTurkishCommand, RelativeSource={RelativeSource AncestorType=TabItem}}"
+                                                    CommandParameter="{Binding Id}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="45"/>
+                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70"/>
+                                <DataGridTextColumn Header="Game" Binding="{Binding GameName}" Width="70"/>
+                                <DataGridTextColumn Header="Source (EN)" Binding="{Binding SourceText}" Width="180"/>
+                                <DataGridTextColumn Header="OPUS" Binding="{Binding OpusTranslation}" Width="160"/>
+                                <DataGridTextColumn Header="Glossary" Binding="{Binding GlossaryTranslation}" Width="160"/>
+                                <DataGridTextColumn Header="Ollama" Binding="{Binding OllamaPostedit}" Width="120"/>
+                                <DataGridTextColumn Header="User Correction" Binding="{Binding UserCorrection}" Width="140"/>
+                                <DataGridTextColumn Header="Final (TR)" Binding="{Binding FinalTranslation}" Width="160"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="110"/>
+                                <DataGridTextColumn Header="Provider" Binding="{Binding ProviderName}" Width="120"/>
+                                <DataGridTextColumn Header="Ms" Binding="{Binding DurationMs}" Width="48"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Export -->
+                        <Expander Header="Export Fine-Tune Dataset" IsExpanded="True" Margin="0,0,0,8">
+                            <StackPanel Margin="8,6">
+                                <TextBlock Text="Export only accepted and edited records." Foreground="#555" Margin="0,0,0,6"/>
+                                <WrapPanel>
+                                    <Button Content="Export JSONL" Command="{Binding ExportJsonlCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                                    <Button Content="Export TSV" Command="{Binding ExportTsvCommand}" Padding="10,4" Margin="0,0,6,0"/>
+                                    <Button Content="Open Export Folder" Command="{Binding OpenExportFolderCommand}" Padding="10,4"/>
+                                </WrapPanel>
+                                <TextBlock Text="JSONL: {&quot;translation&quot;:{&quot;en&quot;:&quot;...&quot;,&quot;tr&quot;:&quot;...&quot;}}" FontFamily="Consolas" FontSize="11" Foreground="#555" Margin="0,6,0,0"/>
+                                <TextBlock Text="TSV: source_text ⇥ final_translation" FontFamily="Consolas" FontSize="11" Foreground="#555"/>
+                                <TextBlock Text="Saved to: exports/fine_tune_dataset_en_tr.{jsonl,tsv}" FontFamily="Consolas" FontSize="11" Foreground="#777"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- Field reference -->
+                        <Expander Header="Field Reference" IsExpanded="False">
+                            <TextBlock FontFamily="Consolas" FontSize="11" Margin="8,4" Foreground="#444" TextWrapping="Wrap">
+OPUS = raw output from OPUS-MT machine translation provider&#10;Glossary = OPUS output after glossary term corrections&#10;Ollama = async post-edit (if Ollama refinement is enabled)&#10;User Correction = your manually edited final translation&#10;Final = the text shown on overlay (best available: User→Ollama→Glossary→OPUS)&#10;&#10;Status values:&#10;  AutoSaved      — translated automatically, not yet reviewed&#10;  MemoryHit      — served from translation memory (previous accept/edit)&#10;  AcceptedByUser — you accepted it; it's in translation memory&#10;  EditedByUser   — you corrected it; your correction is in TM&#10;  RejectedByUser — you rejected it; not exported, not used in TM&#10;&#10;Only AcceptedByUser and EditedByUser records are exported for fine-tuning.
+                            </TextBlock>
+                        </Expander>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>

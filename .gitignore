@@ -1,0 +1,10 @@
+.venv/
+.vs/
+**/bin/
+**/obj/
+**/logs/
+**/debug/
+__pycache__/
+*.user
+work/
+tmp-logo-nodeps/
