@@ -41,7 +41,6 @@ public sealed class ImageCropService : IImageCropService
             throw new ArgumentOutOfRangeException(nameof(region),
                 $"Region has invalid dimensions: {region.Width}×{region.Height}.");
 
-        // Clamp the crop rectangle to the image bounds instead of failing.
         var x = Math.Clamp(region.X, 0, source.Width - 1);
         var y = Math.Clamp(region.Y, 0, source.Height - 1);
         var w = Math.Clamp(region.Width,  1, source.Width  - x);
@@ -56,7 +55,12 @@ public sealed class ImageCropService : IImageCropService
 
         using var cropped = source.Clone(rect, source.PixelFormat);
         using var stream = new MemoryStream();
-        cropped.Save(stream, ImageFormat.Png);
+
+        var jpegEncoder = ImageCodecInfo.GetImageEncoders()
+            .First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+        using var encoderParams = new EncoderParameters(1);
+        encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 88L);
+        cropped.Save(stream, jpegEncoder, encoderParams);
 
         _logger.LogInformation(
             "Cropped region ({X},{Y}) {Width}×{Height} from {Source}",

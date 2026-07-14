@@ -309,7 +309,7 @@ def main() -> int:
     log(f"Loading base model {args.base_model} on {device} …")
     load_start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(args.base_model)
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.base_model).to(device)
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.base_model, torch_dtype=torch.float16 if device == "cuda" else torch.float32,).to(device)
     log(f"Base model loaded in {time.time() - load_start:.1f}s")
 
     param_count = sum(p.numel() for p in model.parameters())
@@ -324,6 +324,11 @@ def main() -> int:
         target_modules=["k_proj", "v_proj", "q_proj", "out_proj"],
     )
     model = get_peft_model(model, lora_config)
+
+    model.enable_input_require_grads()
+    model.gradient_checkpointing_enable()
+
+
     trainable, total = model.get_nb_trainable_parameters()
     emit({"type": "lora_ready", "trainable_params": trainable, "total_params": total})
 
@@ -384,6 +389,7 @@ def main() -> int:
         logging_steps=5,
         predict_with_generate=True,
         fp16=(device == "cuda"),
+        gradient_checkpointing=True,
         report_to=[],
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
@@ -403,6 +409,8 @@ def main() -> int:
     emit({"type": "training_started", "epochs": args.epochs, "train_pairs": len(train_examples)})
     try:
         trainer.train()
+        if device == "cuda":
+            torch.cuda.empty_cache()
     except torch.cuda.OutOfMemoryError:
         emit_error(
             "CUDA out of memory. Lower batch size or max sequence length and try again "
@@ -444,6 +452,11 @@ def main() -> int:
     # is done — merging once here keeps runtime inference exactly as fast as
     # the unmodified base model.
     save_model = model.merge_and_unload() if hasattr(model, "merge_and_unload") else model
+    
+    if device == "cuda":
+        del model
+        torch.cuda.empty_cache()
+
     save_model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
     emit({"type": "done", "output_dir": os.path.abspath(args.output_dir)})

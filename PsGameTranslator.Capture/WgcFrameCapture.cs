@@ -39,12 +39,12 @@ internal static class WgcFrameCapture
     /// <summary>Captures the latest frame of the given window and returns it as PNG bytes.
     /// Throws if the window cannot be captured (closed, minimized, WGC unavailable, etc.) —
     /// callers should fall back to PrintWindow on failure.</summary>
-    public static byte[] CaptureWindowPng(nint hwnd)
+    public static byte[] CaptureWindowJpeg(nint hwnd)
     {
         var session = Sessions.GetOrAdd(hwnd, static h => CaptureSession.Create(h));
         try
         {
-            return session.CaptureFramePng();
+            return session.CaptureFrameJpeg();
         }
         catch
         {
@@ -78,6 +78,16 @@ internal static class WgcFrameCapture
         // an intermittent NullReferenceException inside CopyResource.
         private readonly ID3D11DeviceContext _context;
         private volatile bool _closed;
+        // A session is cached per window handle and reused across every caller —
+        // the main OCR polling loop *and* one-off callers (e.g. the vision-based
+        // game identifier grabbing its own screenshot of the same window) can
+        // both land on the same session concurrently. TryGetNextFrame()/the
+        // shared ID3D11DeviceContext aren't safe for concurrent access from two
+        // threads, so a race here intermittently failed WGC capture entirely
+        // (falling back to the slower/blurrier PrintWindow) right at the moment
+        // a second caller's capture overlapped the polling loop's. Serializing
+        // access here costs nothing when there's no contention.
+        private readonly object _captureLock = new();
 
         private CaptureSession(
             GraphicsCaptureItem item, ID3D11Device d3dDevice, IDXGIDevice dxgiDevice,
@@ -111,25 +121,28 @@ internal static class WgcFrameCapture
             return new CaptureSession(item, d3dDevice, dxgiDevice, winrtDevice, framePool, session);
         }
 
-        public byte[] CaptureFramePng()
+        public byte[] CaptureFrameJpeg()
         {
-            if (_closed) throw new InvalidOperationException("WGC: the captured window has closed.");
-
-            Direct3D11CaptureFrame? frame = null;
-            var deadline = DateTime.UtcNow.AddSeconds(2);
-            while (frame is null && DateTime.UtcNow < deadline)
+            lock (_captureLock)
             {
-                frame = _framePool.TryGetNextFrame();
-                if (frame is null) Thread.Sleep(15);
-            }
+                if (_closed) throw new InvalidOperationException("WGC: the captured window has closed.");
 
-            if (frame is null)
-                throw new InvalidOperationException("WGC: no frame arrived from the capture session in time.");
+                Direct3D11CaptureFrame? frame = null;
+                var deadline = DateTime.UtcNow.AddSeconds(2);
+                while (frame is null && DateTime.UtcNow < deadline)
+                {
+                    frame = _framePool.TryGetNextFrame();
+                    if (frame is null) Thread.Sleep(15);
+                }
 
-            using (frame)
-            {
-                using var sourceTexture = WgcFrameCapture.GetTextureForSurface(frame.Surface);
-                return TextureToPng(_d3dDevice, _context, sourceTexture);
+                if (frame is null)
+                    throw new InvalidOperationException("WGC: no frame arrived from the capture session in time.");
+
+                using (frame)
+                {
+                    using var sourceTexture = WgcFrameCapture.GetTextureForSurface(frame.Surface);
+                    return TextureToJpeg(_d3dDevice, _context, sourceTexture);
+                }
             }
         }
 
@@ -257,7 +270,7 @@ internal static class WgcFrameCapture
         }
     }
 
-    private static byte[] TextureToPng(ID3D11Device device, ID3D11DeviceContext context, ID3D11Texture2D sourceTexture)
+    private static byte[] TextureToJpeg(ID3D11Device device, ID3D11DeviceContext context, ID3D11Texture2D sourceTexture)
     {
         var description = sourceTexture.Description;
         var stagingDescription = description;
@@ -293,7 +306,13 @@ internal static class WgcFrameCapture
             }
 
             using var stream = new MemoryStream();
-            bitmap.Save(stream, ImageFormat.Png);
+
+            var jpegEncoder = ImageCodecInfo.GetImageEncoders()
+                .First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+            using var encodersParams = new EncoderParameters(1);
+            encodersParams.Param[0] = new EncoderParameter(Encoder.Quality, 88L);
+            bitmap.Save(stream, jpegEncoder, encodersParams);
+
             return stream.ToArray();
         }
         finally

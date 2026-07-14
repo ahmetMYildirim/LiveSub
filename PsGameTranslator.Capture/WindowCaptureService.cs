@@ -66,7 +66,7 @@ public sealed class WindowCaptureService : IWindowCaptureService
         {
             var dir = Path.Combine(AppContext.BaseDirectory, "debug");
             Directory.CreateDirectory(dir);
-            File.WriteAllBytes(Path.Combine(dir, "latest_capture_full.png"), bytes);
+            File.WriteAllBytes(Path.Combine(dir, "latest_capture_full.jpg"), bytes);
         }
         catch (Exception ex)
         {
@@ -87,7 +87,7 @@ public sealed class WindowCaptureService : IWindowCaptureService
         if (!WgcFrameCapture.IsSupported()) return null;
         try
         {
-            var bytes = WgcFrameCapture.CaptureWindowPng(window.Handle);
+            var bytes = WgcFrameCapture.CaptureWindowJpeg(window.Handle);
             _logger.LogInformation("Captured window '{Title}' via Windows.Graphics.Capture", window.Title);
             return bytes;
         }
@@ -131,9 +131,19 @@ public sealed class WindowCaptureService : IWindowCaptureService
         }
 
         using var stream = new MemoryStream();
-        bitmap.Save(stream, ImageFormat.Png);
-        _logger.LogInformation(
-            "Captured window '{Title}' ({Width}×{Height}) via PrintWindow", window.Title, width, height);
+
+        var jpegEncoder = ImageCodecInfo
+            .GetImageEncoders()
+            .First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+
+        using var encoderParams = new EncoderParameters(1);
+
+        encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 88L);
+
+        bitmap.Save(stream, jpegEncoder, encoderParams);
+
+        _logger.LogInformation("Captured Window '{Title}' ({Width}x{Height}) via PrintWindow");
+
         return stream.ToArray();
     }
 

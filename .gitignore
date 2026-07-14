@@ -8,3 +8,8 @@ __pycache__/
 *.user
 work/
 tmp-logo-nodeps/
+.dotnet-cli/
+.localappdata/
+.nuget-packages/
+artifacts/
+tmp/

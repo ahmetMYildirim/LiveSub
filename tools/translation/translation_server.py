@@ -86,6 +86,13 @@ _tokenizer = None
 _model = None
 _device: str = "cpu"
 _is_nllb: bool = "nllb" in MODEL_NAME.lower()
+# When a sibling "<model>-ct2" directory exists (built with
+# ct2-transformers-converter), it's preferred over the plain transformers
+# model: ~2-3x faster generation and roughly half the VRAM/disk footprint
+# (int8_float16 quantization) for equivalent translation quality. _tokenizer
+# is still loaded normally either way — CT2's Translator only does the
+# encoder/decoder compute, tokenization stays on the HF tokenizer.
+_ct2_translator = None
 
 # NLLB uses FLORES language codes; map the app's ISO codes.
 _NLLB_LANG = {"en": "eng_Latn", "tr": "tur_Latn"}
@@ -103,12 +110,34 @@ _stats = {
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _tokenizer, _model, _device
+    global _tokenizer, _model, _device, _ct2_translator
 
     print(f"[translation_server] Loading model {MODEL_NAME} …", flush=True)
     t0 = time.perf_counter()
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    ct2_dir = MODEL_NAME.rstrip("/\\") + "-ct2"
+    if os.path.isdir(ct2_dir) and os.path.isfile(os.path.join(ct2_dir, "model.bin")):
+        try:
+            import ctranslate2
+            _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+            _ct2_translator = ctranslate2.Translator(ct2_dir, device=_device)
+            elapsed = (time.perf_counter() - t0) * 1000
+            print(
+                f"[translation_server] CTranslate2 model loaded in {elapsed:.0f} ms  "
+                f"device={_device}  dir={ct2_dir}",
+                flush=True,
+            )
+            yield
+            return
+        except ImportError:
+            print(
+                "[translation_server] ct2 model found but 'ctranslate2' package is not "
+                "installed (pip install ctranslate2) — falling back to transformers.",
+                flush=True,
+            )
+            _ct2_translator = None
 
     # Detect a local LoRA adapter directory (has adapter_config.json).
     adapter_config_path = os.path.join(MODEL_NAME, "adapter_config.json")
@@ -173,13 +202,15 @@ class TranslateResponse(BaseModel):
 
 @app.get("/health")
 def health():
+    loaded = _model is not None or _ct2_translator is not None
     return {
         "status": "ok",
         "provider": PROVIDER_ID,
-        "modelLoaded": _model is not None,
-        "model_loaded": _model is not None,  # backward-compatible alias
+        "modelLoaded": loaded,
+        "model_loaded": loaded,  # backward-compatible alias
         "model": MODEL_NAME,
         "device": _device,
+        "backend": "ctranslate2" if _ct2_translator is not None else "transformers",
     }
 
 
@@ -189,7 +220,7 @@ def stats():
         **_stats,
         "cacheSize": len(_cache),
         "provider": PROVIDER_ID,
-        "modelLoaded": _model is not None,
+        "modelLoaded": _model is not None or _ct2_translator is not None,
         "device": _device,
     }
 
@@ -222,7 +253,7 @@ def translate(request: TranslateRequest):
             mode=mode,
         )
 
-    if _model is None or _tokenizer is None:
+    if (_model is None and _ct2_translator is None) or _tokenizer is None:
         _stats["errors"] += 1
         return TranslateResponse(
             translation="",
@@ -254,45 +285,65 @@ def translate(request: TranslateRequest):
 
     t0 = time.perf_counter()
     try:
-        if _is_nllb:
-            _tokenizer.src_lang = _NLLB_LANG.get(request.sourceLanguage, "eng_Latn")
+        if _ct2_translator is not None:
+            # CTranslate2 path: tokenize with the HF tokenizer (subword tokens,
+            # not IDs), let CT2 do the encoder/decoder compute, then decode the
+            # returned tokens with the same HF tokenizer. ~2-3x faster and half
+            # the VRAM of the transformers path for equivalent output quality
+            # (verified against the fp16 transformers path on real subtitle
+            # lines before this was wired in).
+            src_tokens = _tokenizer.convert_ids_to_tokens(_tokenizer.encode(text))
+            beam_size = QUALITY_NUM_BEAMS if mode == "quality" else FAST_NUM_BEAMS
+            max_len = QUALITY_MAX_NEW_TOKENS if mode == "quality" else FAST_MAX_NEW_TOKENS
+            result = _ct2_translator.translate_batch(
+                [src_tokens],
+                beam_size=beam_size,
+                max_decoding_length=max_len,
+            )
+            out_tokens = result[0].hypotheses[0]
+            translation = _tokenizer.decode(
+                _tokenizer.convert_tokens_to_ids(out_tokens), skip_special_tokens=True
+            )
+        else:
+            if _is_nllb:
+                _tokenizer.src_lang = _NLLB_LANG.get(request.sourceLanguage, "eng_Latn")
 
-        inputs = _tokenizer(
-            text,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=512,
-        ).to(_device)
+            inputs = _tokenizer(
+                text,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512,
+            ).to(_device)
 
-        generate_kwargs = {}
-        if _is_nllb:
-            tgt = _NLLB_LANG.get(request.targetLanguage, "tur_Latn")
-            generate_kwargs["forced_bos_token_id"] = _tokenizer.convert_tokens_to_ids(tgt)
+            generate_kwargs = {}
+            if _is_nllb:
+                tgt = _NLLB_LANG.get(request.targetLanguage, "tur_Latn")
+                generate_kwargs["forced_bos_token_id"] = _tokenizer.convert_tokens_to_ids(tgt)
 
-        with torch.no_grad():
-            if mode == "quality":
-                output_ids = _model.generate(
-                    **inputs,
-                    max_new_tokens=QUALITY_MAX_NEW_TOKENS,
-                    num_beams=QUALITY_NUM_BEAMS,
-                    do_sample=False,
-                    early_stopping=QUALITY_EARLY_STOPPING,
-                    no_repeat_ngram_size=QUALITY_NO_REPEAT_NGRAM,
-                    **generate_kwargs,
-                )
-            else:
-                output_ids = _model.generate(
-                    **inputs,
-                    max_new_tokens=FAST_MAX_NEW_TOKENS,
-                    num_beams=FAST_NUM_BEAMS,
-                    do_sample=False,
-                    early_stopping=FAST_EARLY_STOPPING,
-                    no_repeat_ngram_size=FAST_NO_REPEAT_NGRAM,
-                    **generate_kwargs,
-                )
+            with torch.no_grad():
+                if mode == "quality":
+                    output_ids = _model.generate(
+                        **inputs,
+                        max_new_tokens=QUALITY_MAX_NEW_TOKENS,
+                        num_beams=QUALITY_NUM_BEAMS,
+                        do_sample=False,
+                        early_stopping=QUALITY_EARLY_STOPPING,
+                        no_repeat_ngram_size=QUALITY_NO_REPEAT_NGRAM,
+                        **generate_kwargs,
+                    )
+                else:
+                    output_ids = _model.generate(
+                        **inputs,
+                        max_new_tokens=FAST_MAX_NEW_TOKENS,
+                        num_beams=FAST_NUM_BEAMS,
+                        do_sample=False,
+                        early_stopping=FAST_EARLY_STOPPING,
+                        no_repeat_ngram_size=FAST_NO_REPEAT_NGRAM,
+                        **generate_kwargs,
+                    )
 
-        translation = _tokenizer.decode(output_ids[0], skip_special_tokens=True)
+            translation = _tokenizer.decode(output_ids[0], skip_special_tokens=True)
         elapsed_ms  = int((time.perf_counter() - t0) * 1000)
 
         print(

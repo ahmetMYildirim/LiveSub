@@ -48,8 +48,8 @@ public sealed class HttpOcrService : IOcrService
 
         using var content  = new MultipartFormDataContent();
         var imageContent   = new ByteArrayContent(imageData.ToArray());
-        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-        content.Add(imageContent, "file", "image.png");
+        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+        content.Add(imageContent, "file", "image.jpg");
 
         _logger.LogInformation("HTTP OCR request → {Url}", url);
 

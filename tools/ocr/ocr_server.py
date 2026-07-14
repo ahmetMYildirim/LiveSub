@@ -24,6 +24,13 @@ import tempfile
 import threading
 import types
 
+# PaddlePaddle's default GPU allocator grabs a large fraction of available VRAM
+# up front regardless of actual need — this process shares the GPU with the
+# translation server, so a growth-based allocator (only takes what it actually
+# uses) avoids starving it. Must be set before `paddle` is imported anywhere
+# (including transitively), so it's set here, at the very top of the module.
+os.environ.setdefault("FLAGS_allocator_strategy", "auto_growth")
+
 # ── ModelScope/torch avoidance ──────────────────────────────────────────────────
 #
 # paddlex (a paddleocr dependency) unconditionally does `import modelscope` at

@@ -1,0 +1,10 @@
+# Install this into Terra High's CUDA-enabled Python environment.
+# PyTorch is intentionally not pinned here: use the CUDA build supplied by Terra High.
+transformers==4.57.6
+datasets>=4.7,<5
+trl==1.8.0
+peft==0.19.1
+accelerate==1.14.0
+safetensors>=0.5,<1
+pillow>=11,<12
+tensorboard>=2.18,<3
