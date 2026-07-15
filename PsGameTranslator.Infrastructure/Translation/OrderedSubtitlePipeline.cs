@@ -35,6 +35,7 @@ public sealed class OrderedSubtitlePipeline : IDisposable
 
     private readonly SemaphoreSlim _dispatchSignal = new(0);
     private readonly CancellationTokenSource _cts = new();
+    private int _disposed;
     private readonly Task _worker;
     private readonly Queue<CapturedSubtitleItem> _dispatchQueue = new();
     private readonly Dictionary<string, Task<TranslationResult>> _inFlight = new();
@@ -883,6 +884,11 @@ public sealed class OrderedSubtitlePipeline : IDisposable
 
     public void Dispose()
     {
+        // Idempotent: the DI container can dispose a singleton more than once on
+        // shutdown, and cancelling/disposing an already-disposed CTS throws
+        // ObjectDisposedException. Guard so the second call is a no-op.
+        if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+
         _cts.Cancel();
         try { _worker.Wait(2000); } catch { /* shutting down */ }
         _cts.Dispose();

@@ -1,35 +1,107 @@
-# PsGameTranslator
+<div align="center">
 
-A .NET 8 WPF app that captures game subtitles in real time (Windows.Graphics.Capture),
-recognizes them with OCR (PaddleOCR), translates them (local OPUS-MT model, or DeepL /
-Google / Gemini / Groq / Ollama), and displays the result as a transparent overlay on
-top of the game.
+# 🎮 PS Game Translator
 
-## Projects
+**Oyun altyazılarını gerçek zamanlı yakala, OCR ile oku, Türkçe'ye çevir ve oyunun üstünde şeffaf overlay olarak göster.**
 
-- `PsGameTranslator.App` — WPF entry point, dependency injection, MVVM shell.
-- `PsGameTranslator.Core` — Shared domain models, no project dependencies.
-- `PsGameTranslator.Capture` — Window capture (Windows.Graphics.Capture + GDI fallback).
-- `PsGameTranslator.Ocr` — OCR service contract and provider(s).
-- `PsGameTranslator.Overlay` — Transparent overlay window and settings.
-- `PsGameTranslator.Infrastructure` — Translation pipeline, glossary, settings, logging.
-- `PsGameTranslator.Tests` — Unit tests.
+.NET 8 · WPF · MVVM · Windows.Graphics.Capture · PaddleOCR · OPUS-MT
 
-## Requirements
+</div>
 
-- Visual Studio 2022, .NET 8 SDK, .NET Desktop Development workload
-- Python 3.11 (for the OCR and translation servers)
+---
 
-## Build & run
+## 📸 Ekran Görüntüleri
+
+> Görseller `docs/screenshots/` klasöründedir.
+
+<div align="center">
+
+### Ana Sayfa — canlı durum, hızlı ayarlar ve istatistikler
+![Ana Sayfa](docs/screenshots/home.png)
+
+### Ayarlar — pill sekmeli, kategorilere ayrılmış
+![Ayarlar](docs/screenshots/settings.png)
+
+### Yakalama & Overlay
+![Yakalama](docs/screenshots/capture.png)
+
+</div>
+
+---
+
+## ✨ Özellikler
+
+| | |
+|---|---|
+| 🖥️ **Gerçek zamanlı yakalama** | Windows.Graphics.Capture (GDI/PrintWindow yedeği ile) — düşük gecikmeli, JPEG boru hattı |
+| 🔤 **Çoklu OCR** | PaddleOCR (varsayılan), WindowsOCR, RapidOCR, EasyOCR, OneOCR — hızlı/dengeli/hibrit profilleri |
+| 🌍 **Çoklu çeviri motoru** | Yerel **OPUS-MT** (fine-tune edilebilir), DeepL, Google Translate, Gemini, Groq, Ollama, LM Studio |
+| ⚡ **Hızlandırılmış** | PaddleOCR `auto_growth` bellek + CTranslate2 (int8_float16) ile ~2.5-3× daha hızlı çeviri |
+| 🎯 **Oyun tanıma** | Yerel ONNX (EfficientNet-B0, ~500 IGDB oyunu) + vision LLM — **güven-eşikli hibrit** |
+| 📖 **Sözlük sistemi** | Oyuna özel terim sözlükleri (Elden Ring, RDR2, Witcher 3, FF, Hogwarts…) otomatik yüklenir |
+| 🪟 **Şeffaf overlay** | Ayarlanabilir yazı tipi/boyut/renk/opaklık, çok-monitör desteği, altyazı-değiştirme maskesi |
+| 🎨 **Tema & Dil** | Karanlık/Açık tema, Türkçe/İngilizce arayüz |
+| 🧪 **Model eğitimi** | Geliştirici modunda OPUS-MT fine-tuning + BLEU/karşılaştırma araçları |
+
+---
+
+## 🎯 Oyun Tanıma — Güven-Eşikli Hibrit
+
+Pencere başlığı gerçek oyun adını vermediğinde (PS5 Remote Play, YouTube yayını vb.) oyun **görüntüden** tanınır:
+
+```
+Ekran görüntüsü
+      │
+      ▼
+┌─────────────────────┐   güven ≥ eşik (0.45)
+│  ONNX EfficientNet  │ ─────────────────────────►  Sonucu kullan (hızlı, offline)
+│  (~500 IGDB oyunu)  │
+└─────────────────────┘   güven < eşik
+      │                          │
+      ▼                          ▼
+  düşük güven          ┌──────────────────────┐
+                       │  Vision LLM (gemma)  │ ──►  Kullanıcı onayına sun
+                       └──────────────────────┘
+```
+
+Yerel ONNX modeli önce çalışır (hızlı ve tamamen çevrimdışı). Top-1 softmax güveni eşiği geçerse doğrudan kullanılır; geçmezse — aynı-motor oyunların karıştığı belirsiz durumlar — vision modeline devredilir. Böylece model **emin olmadığında yanlış ismi güvenle göstermez**. Eşik `TranslationSettings.OnnxGameConfidenceThreshold` ile ayarlanır.
+
+---
+
+## 📥 İndirme (EXE)
+
+Hazır çalıştırılabilir sürüm için **[Releases](../../releases)** sayfasına bakın. Zip'i indirip açın ve `PsGameTranslator.App.exe`'yi çalıştırın.
+
+> **Not:** OCR ve yerel çeviri, Python sunucularını (PaddleOCR / OPUS-MT) kullanır. Tamamen çevrimdışı çeviri için Python ortamının kurulu olması gerekir (aşağıya bakın). Bulut sağlayıcılar (DeepL/Google/Gemini/Groq) için yalnızca kendi API anahtarınızı Ayarlar'a girmeniz yeterlidir — **anahtarlar yalnızca sizin cihazınızda saklanır, depoya veya EXE'ye dahil edilmez.**
+
+---
+
+## 🧱 Proje Yapısı
+
+| Proje | Sorumluluk |
+|---|---|
+| `PsGameTranslator.App` | WPF giriş noktası, DI, MVVM shell, tüm sayfalar |
+| `PsGameTranslator.Core` | Paylaşılan domain modelleri (bağımlılıksız) |
+| `PsGameTranslator.Capture` | Pencere yakalama (WGC + GDI yedeği) |
+| `PsGameTranslator.Ocr` | OCR servis sözleşmesi ve sağlayıcıları |
+| `PsGameTranslator.Overlay` | Şeffaf overlay penceresi ve ayarları |
+| `PsGameTranslator.Infrastructure` | Çeviri boru hattı, sözlük, oyun tanıma, ayarlar, loglama |
+| `PsGameTranslator.Tests` | Birim testleri |
+
+---
+
+## 🔧 Derleme & Çalıştırma
+
+**Gereksinimler:** Visual Studio 2022, .NET 8 SDK, .NET Desktop Development workload, Python 3.11
 
 ```powershell
 dotnet restore
 dotnet build PsGameTranslator.sln
 ```
 
-Set `PsGameTranslator.App` as the startup project and press `F5`.
+`PsGameTranslator.App`'i başlangıç projesi yapıp `F5`.
 
-## Python environment
+### Python ortamı (OCR + yerel çeviri)
 
 ```powershell
 py -3.11 -m venv .venv
@@ -38,11 +110,21 @@ pip install -r tools\ocr\requirements.txt
 pip install -r tools\translation\requirements.txt
 ```
 
-The app starts the OCR server (`tools/ocr/ocr_server.py`, port 8765) and the
-translation server (`tools/translation/translation_server.py`, port 8770)
-automatically; they can also be run manually for debugging.
+Uygulama OCR sunucusunu (`tools/ocr/ocr_server.py`, port 8765) ve çeviri sunucusunu
+(`tools/translation/translation_server.py`, port 8770) otomatik başlatır; hata ayıklama
+için elle de çalıştırılabilirler.
 
-## Docs
+---
 
-Technical guides (resource optimization, general performance theory, architecture
-patterns) live in [`docs/`](docs/).
+## 🔒 Gizlilik & Anahtarlar
+
+- API anahtarları (DeepL/Google/Gemini/Groq) yalnızca çalışma anında `config/user_settings.json` dosyasında, **sizin cihazınızda** saklanır.
+- Bu dosya `.gitignore` ile hariç tutulur — **depoya veya yayınlanan EXE'ye asla dahil edilmez.**
+- Kaynak ağacında hiçbir gerçek API anahtarı bulunmaz (yalnızca boş varsayılanlar).
+
+---
+
+## 📚 Dokümantasyon
+
+Teknik rehberler (kaynak optimizasyonu, performans teorisi, mimari desenler)
+[`docs/`](docs/) klasöründedir.

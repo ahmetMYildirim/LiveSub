@@ -78,6 +78,7 @@ public sealed class MonitoringViewModel : ObservableObject
     private readonly OcrEngineSettings _ocrEngineSettings;
     private readonly OcrEngineInstallService _ocrEngineInstallService;
     private readonly OcrProviderFactory _ocrProviderFactory;
+    private readonly Services.LocalizationService _languageService;
     private string _pipelineDoctorReportText = "Not run yet.";
 
     private readonly AsyncRelayCommand _startCommand;
@@ -234,8 +235,10 @@ public sealed class MonitoringViewModel : ObservableObject
         IOcrServerService ocrServerService,
         OcrEngineSettings ocrEngineSettings,
         OcrEngineInstallService ocrEngineInstallService,
-        OcrProviderFactory ocrProviderFactory)
+        OcrProviderFactory ocrProviderFactory,
+        Services.LocalizationService languageService)
     {
+        _languageService = languageService;
         _captureService = captureService;
         _cropService = cropService;
         _regionService = regionService;
@@ -272,6 +275,8 @@ public sealed class MonitoringViewModel : ObservableObject
         _uiContext = SynchronizationContext.Current
             ?? throw new InvalidOperationException("MonitoringViewModel must be created on the UI thread.");
 
+        _monitoringStatusText = _languageService.T("Stopped");
+        _targetWindowText = _languageService.T("NoWindowSelected");
 
         _startCommand = new AsyncRelayCommand(StartMonitoringAsync, () => !IsMonitoring);
         _stopCommand = new AsyncRelayCommand(StopMonitoringAsync, () => IsMonitoring);
@@ -863,7 +868,7 @@ public sealed class MonitoringViewModel : ObservableObject
         ResetState();
         ClearError();
         IsMonitoring = true;
-        MonitoringStatusText = "Running";
+        MonitoringStatusText = _languageService.T("Running");
         TargetWindowText = $"{window.Title} (PID {window.ProcessId})";
 
         var isReplacementMode =
@@ -939,7 +944,7 @@ public sealed class MonitoringViewModel : ObservableObject
         }
 
         IsMonitoring = false;
-        MonitoringStatusText = "Stopped";
+        MonitoringStatusText = _languageService.T("Stopped");
         RefreshDiagnostics();
     }
 
@@ -984,7 +989,7 @@ public sealed class MonitoringViewModel : ObservableObject
             Post(() =>
             {
                 IsMonitoring = false;
-                MonitoringStatusText = "Stopped";
+                MonitoringStatusText = _languageService.T("Stopped");
             });
         }
     }
@@ -1013,8 +1018,8 @@ public sealed class MonitoringViewModel : ObservableObject
         {
             _lastDecision = "error_capture_failed";
             Post(() => MonitoringStatusText = IsIconic(window.Handle)
-                ? "Running (window minimized)"
-                : "Error - window closed");
+                ? _languageService.T("RunningWindowMinimized")
+                : _languageService.T("ErrorWindowClosed"));
             RefreshDiagnostics();
             return;
         }
@@ -1022,7 +1027,7 @@ public sealed class MonitoringViewModel : ObservableObject
         if (_pauseWhenWindowNotActive && GetForegroundWindow() != window.Handle)
         {
             _lastDecision = "paused_window_not_active";
-            Post(() => MonitoringStatusText = "Duraklatıldı (pencere arka planda)");
+            Post(() => MonitoringStatusText = _languageService.T("PausedWindowBackground"));
             return;
         }
 
@@ -1040,7 +1045,7 @@ public sealed class MonitoringViewModel : ObservableObject
             Post(() =>
             {
                 LastCaptureTimeText = DateTimeOffset.Now.ToString("HH:mm:ss.fff");
-                MonitoringStatusText = "Running";
+                MonitoringStatusText = _languageService.T("Running");
                 ClearError();
             });
         }
@@ -1883,7 +1888,7 @@ public sealed class MonitoringViewModel : ObservableObject
             _overlayService.Open(await _overlayMonitorCoordinator.LoadAndValidateAsync());
 
         var previousStatus = MonitoringStatusText;
-        MonitoringStatusText = "Fast dialogue stress test";
+        MonitoringStatusText = _languageService.T("FastDialogueStressTest");
         try
         {
             foreach (var text in subtitles)

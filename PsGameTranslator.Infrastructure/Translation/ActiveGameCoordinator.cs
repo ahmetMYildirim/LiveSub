@@ -28,6 +28,7 @@ public sealed class ActiveGameCoordinator
     private readonly GlossaryDictionaryManager _glossaryManager;
     private readonly GameProfileRepository _gameProfileRepository;
     private readonly SubtitleFilterSettings _subtitleFilterSettings;
+    private readonly OnnxGameIdentifier _onnxIdentifier;
     private readonly OllamaVisionGameIdentifier _visionIdentifier;
     private readonly TranslationSettings _translationSettings;
     private readonly ILogger<ActiveGameCoordinator> _logger;
@@ -38,6 +39,7 @@ public sealed class ActiveGameCoordinator
         GlossaryDictionaryManager glossaryManager,
         GameProfileRepository gameProfileRepository,
         SubtitleFilterSettings subtitleFilterSettings,
+        OnnxGameIdentifier onnxIdentifier,
         OllamaVisionGameIdentifier visionIdentifier,
         TranslationSettings translationSettings,
         ILogger<ActiveGameCoordinator> logger)
@@ -45,6 +47,7 @@ public sealed class ActiveGameCoordinator
         _glossaryManager = glossaryManager;
         _gameProfileRepository = gameProfileRepository;
         _subtitleFilterSettings = subtitleFilterSettings;
+        _onnxIdentifier = onnxIdentifier;
         _visionIdentifier = visionIdentifier;
         _translationSettings = translationSettings;
         _logger = logger;
@@ -81,6 +84,33 @@ public sealed class ActiveGameCoordinator
     /// </summary>
     public async Task<ActiveGameMatchResult> TryIdentifyByScreenshotAsync(byte[] pngScreenshot)
     {
+        // Confidence-gated hybrid. The local ONNX classifier runs first — it is
+        // fast, fully offline, and actually trained on these games (it knows Jedi
+        // Survivor, Starfield, etc. as distinct classes). Its guess is only
+        // trusted when the top-1 probability clears the threshold; below it, the
+        // model is too unsure to surface a name (500 classes, ~54% top-1), so we
+        // hand off to the vision LLM instead of showing a likely-wrong guess.
+        if (_translationSettings.EnableOnnxGameDetection && _onnxIdentifier.IsAvailable)
+        {
+            var onnx = await _onnxIdentifier.IdentifyAsync(pngScreenshot);
+            if (onnx.Success && onnx.GameTitle is not null &&
+                onnx.Confidence >= _translationSettings.OnnxGameConfidenceThreshold)
+            {
+                _logger.LogInformation(
+                    "active_game_onnx_match - title={Title}, confidence={Confidence:F3}, margin={Margin:F3}",
+                    onnx.GameTitle, onnx.Confidence, onnx.Margin);
+
+                var catalogMatch = MatchCatalog(onnx.GameTitle);
+                return catalogMatch is not null
+                    ? new ActiveGameMatchResult(null, null, onnx.GameTitle, catalogMatch)
+                    : new ActiveGameMatchResult(null, null, onnx.GameTitle);
+            }
+
+            _logger.LogInformation(
+                "active_game_onnx_low_confidence - title={Title}, confidence={Confidence:F3}, threshold={Threshold:F3}",
+                onnx.GameTitle, onnx.Confidence, _translationSettings.OnnxGameConfidenceThreshold);
+        }
+
         if (!_translationSettings.EnableVisionGameDetection)
             return new ActiveGameMatchResult(null, null);
 
@@ -134,6 +164,23 @@ public sealed class ActiveGameCoordinator
             "active_game_glossary_matched - source={Source}, game={Game}, terms={Count}",
             sourceDescription, glossaryMatch.DisplayName, count);
         return glossaryMatch.DisplayName;
+    }
+
+    /// <summary>
+    /// Maps a recognized game title (from the ONNX classifier) onto a catalog
+    /// entry we actually ship a glossary for, so a confident match can be offered
+    /// to the user for confirmation. Keyword-based rather than substring-loose so
+    /// unrelated titles do not slip through.
+    /// </summary>
+    private static GameGlossaryInfo? MatchCatalog(string title)
+    {
+        var exact = GameGlossaryCatalog.Games.FirstOrDefault(g =>
+            g.DisplayName.Equals(title, StringComparison.OrdinalIgnoreCase));
+        if (exact is not null) return exact;
+
+        return GameGlossaryCatalog.Games.FirstOrDefault(g =>
+            g.MatchKeywords.Any(k => title.Contains(k, StringComparison.OrdinalIgnoreCase)) ||
+            title.Contains(g.DisplayName, StringComparison.OrdinalIgnoreCase));
     }
 
     private string? MatchGameProfile(string windowTitle)

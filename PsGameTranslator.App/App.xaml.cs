@@ -135,6 +135,7 @@ public partial class App : Application
                 services.AddSingleton<TranslationCache>();
                 services.AddSingleton<UserGlossaryRepository>();
                 services.AddSingleton<GlossaryDictionaryManager>();
+                services.AddSingleton<OnnxGameIdentifier>();
                 services.AddSingleton<OllamaVisionGameIdentifier>();
                 services.AddSingleton<ActiveGameCoordinator>();
                 services.AddSingleton<TranslationPostProcessor>();

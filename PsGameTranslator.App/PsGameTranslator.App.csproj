@@ -40,6 +40,12 @@
     <Content Include="..\tools\translation\train_opus_mt.py" Link="tools\translation\train_opus_mt.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\artifacts\game-recognition-igdb-steam-v2-20260715\game_recognition_efficientnet_b0.onnx" Link="models\game-recognition\game_recognition_efficientnet_b0.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\artifacts\game-recognition-igdb-steam-v2-20260715\labels.json" Link="models\game-recognition\labels.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

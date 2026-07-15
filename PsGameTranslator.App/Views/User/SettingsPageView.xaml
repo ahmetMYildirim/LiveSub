@@ -20,7 +20,8 @@
                     <TextBlock Text="{DynamicResource SettingsSubtitle}" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <CheckBox IsChecked="{Binding IsAdvancedMode}" Content="{DynamicResource AdvancedSettings}" Margin="0,0,12,0" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource AdvancedSettings}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <CheckBox Style="{DynamicResource ToggleSwitchStyle}" IsChecked="{Binding IsAdvancedMode}" VerticalAlignment="Center" Margin="0,0,16,0" />
                     <Button Content="{DynamicResource ImportSettings}" Command="{Binding ImportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,0" />
                     <Button Content="{DynamicResource ExportSettings}" Command="{Binding ExportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" />
                 </StackPanel>
@@ -31,14 +32,14 @@
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-                    <Setter Property="Background" Value="{DynamicResource CardBgBrush}" />
+                    <Setter Property="Background" Value="Transparent" />
                     <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
                     <Setter Property="Padding" Value="14,8" />
-                    <Setter Property="Margin" Value="0,0,6,0" />
+                    <Setter Property="Margin" Value="0,0,8,0" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
-                                <Border x:Name="Tab" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="7,7,0,0" Padding="{TemplateBinding Padding}">
+                                <Border x:Name="Tab" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="16" Padding="{TemplateBinding Padding}">
                                     <ContentPresenter ContentSource="Header" />
                                 </Border>
                                 <ControlTemplate.Triggers>
@@ -52,38 +53,38 @@
             </TabControl.Resources>
             <TabItem Header="{DynamicResource TabGeneral}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <WrapPanel Margin="0,12,0,0">
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12">
+                    <StackPanel Margin="0,12,0,0">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource Appearance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                                <TextBlock Text="{DynamicResource ThemeLiveHint}" Foreground="{DynamicResource TextMutedBrush}" Margin="0,5,0,12" />
+                                <TextBlock Text="{DynamicResource ThemeLiveHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,12" />
                                 <StackPanel Orientation="Horizontal">
                                     <RadioButton Content="{DynamicResource Dark}" GroupName="Theme" IsChecked="{Binding IsDarkThemeSelected, Mode=OneWay}" Command="{Binding SelectDarkThemeCommand}" Margin="0,0,24,0" />
                                     <RadioButton Content="{DynamicResource Light}" GroupName="Theme" IsChecked="{Binding IsLightThemeSelected, Mode=OneWay}" Command="{Binding SelectLightThemeCommand}" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource PresetProfile}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                                <TextBlock Text="{DynamicResource PresetProfileHint}" Foreground="{DynamicResource TextMutedBrush}" Margin="0,5,0,12" />
+                                <TextBlock Text="{DynamicResource PresetProfileHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,12" />
                                 <ComboBox SelectedIndex="{Binding SelectedPresetIndex}">
                                     <ComboBoxItem Content="{DynamicResource PresetFast}" />
                                     <ComboBoxItem Content="{DynamicResource PresetBalanced}" />
                                     <ComboBoxItem Content="{DynamicResource PresetQuality}" />
                                 </ComboBox>
-                                <Button Content="{DynamicResource ApplyPreset}" Command="{Binding ApplyPresetCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,10,0,0" />
+                                <Button Content="{DynamicResource ApplyPreset}" Command="{Binding ApplyPresetCommand}" Style="{DynamicResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
                                 <TextBlock Text="{Binding OperationStatus}" Foreground="{DynamicResource SuccessBrush}" Margin="0,8,0,0" TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
-                    </WrapPanel>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
             <TabItem Header="{DynamicResource TabTranslationApi}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <WrapPanel Margin="0,12,0,0">
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12">
+                    <StackPanel Margin="0,12,0,0">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource LanguageAndProvider}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
                                 <TextBlock Text="{DynamicResource SourceLanguage}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,12,0,4" />
@@ -96,29 +97,32 @@
                                 </ComboBox>
                             </StackPanel>
                         </Border>
-                        <Border Style="{DynamicResource CardStyle}" Width="560" Margin="0,0,12,12">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource CloudApiKeys}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                                <TextBlock Text="{DynamicResource ApiKeysHint}" Foreground="{DynamicResource TextMutedBrush}" Margin="0,5,0,12" TextWrapping="Wrap" />
+                                <TextBlock Text="{DynamicResource ApiKeysHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,12" TextWrapping="Wrap" />
                                 <TextBlock Text="{DynamicResource GoogleTranslateOptional}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                <controls:SecureApiKeyBox Value="{Binding Translation.GoogleTranslateApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <controls:SecureApiKeyBox Value="{Binding Translation.GoogleTranslateApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
                                 <TextBlock Text="DeepL" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                <controls:SecureApiKeyBox Value="{Binding Translation.DeepLApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <controls:SecureApiKeyBox Value="{Binding Translation.DeepLApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
                                 <TextBlock Text="Gemini" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                <controls:SecureApiKeyBox Value="{Binding Translation.GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <controls:SecureApiKeyBox Value="{Binding Translation.GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
                                 <TextBlock Text="Groq" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                <controls:SecureApiKeyBox Value="{Binding Translation.GroqApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                                <Button Content="{DynamicResource TestProviders}" Command="{Binding Translation.CheckAllProvidersCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Left" />
+                                <controls:SecureApiKeyBox Value="{Binding Translation.GroqApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                <Button Content="{DynamicResource TestProviders}" Command="{Binding Translation.CheckAllProvidersCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" />
                             </StackPanel>
                         </Border>
-                    </WrapPanel>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
             <TabItem Header="{DynamicResource TabOcrPerformance}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <WrapPanel Margin="0,12,0,0">
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12">
+                    <StackPanel Margin="0,12,0,0">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource Performance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
                                 <TextBlock Text="{DynamicResource CaptureIntervalMs}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,12,0,4" />
@@ -129,7 +133,7 @@
                                 <CheckBox Content="{DynamicResource PauseWhenBackground}" IsChecked="{Binding Monitoring.PauseWhenWindowNotActive}" />
                             </StackPanel>
                         </Border>
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12" Visibility="{Binding AdvancedVisibility}">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14" Visibility="{Binding AdvancedVisibility}">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource AdvancedOcr}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
                                 <CheckBox Content="{DynamicResource EnablePreprocessing}" IsChecked="{Binding Monitoring.EnableOcrPreprocessing}" Margin="0,12,0,5" />
@@ -140,14 +144,14 @@
                                 <TextBox Text="{Binding Ocr.OcrTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </Border>
-                    </WrapPanel>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
             <TabItem Header="Overlay">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <WrapPanel Margin="0,12,0,0">
-                        <Border Style="{DynamicResource CardStyle}" Width="470" Margin="0,0,12,12">
+                    <StackPanel Margin="0,12,0,0">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource OverlayAppearance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
                                 <CheckBox Content="{DynamicResource OverlayEnabled}" IsChecked="{Binding Overlay.IsEnabled}" Margin="0,12,0,8" />
@@ -155,21 +159,21 @@
                                 <Slider Value="{Binding Overlay.FontSize}" Minimum="12" Maximum="72" TickFrequency="2" />
                                 <TextBlock Text="{DynamicResource BackgroundOpacity}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,12,0,0" />
                                 <Slider Value="{Binding Overlay.BackgroundOpacity}" Minimum="0" Maximum="1" TickFrequency="0.05" />
-                                <Button Content="{DynamicResource TestOverlayButton}" Command="{Binding Overlay.TestReplacementOverlayCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="0,14,0,0" />
+                                <Button Content="{DynamicResource TestOverlayButton}" Command="{Binding Overlay.TestReplacementOverlayCommand}" Style="{DynamicResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,14,0,0" />
                             </StackPanel>
                         </Border>
-                        <Border Style="{DynamicResource CardStyle}" Width="520" Margin="0,0,12,12" Visibility="{Binding AdvancedVisibility}">
+                        <Border Style="{DynamicResource CardStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,14" Visibility="{Binding AdvancedVisibility}">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource MonitorAndPosition}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
                                 <TextBlock Text="{DynamicResource TargetMonitor}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,12,0,4" />
                                 <ComboBox SelectedIndex="{Binding Overlay.OverlayTargetMonitorModeIndex}">
                                     <ComboBoxItem Content="{DynamicResource MonitorPrimary}"/><ComboBoxItem Content="{DynamicResource MonitorSameAsGame}"/><ComboBoxItem Content="{DynamicResource MonitorManual}"/>
                                 </ComboBox>
-                                <Button Content="{DynamicResource CenterOnCurrentMonitor}" Command="{Binding Overlay.CenterOnCurrentMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,10,0,0" />
-                                <Button Content="{DynamicResource ResetPosition}" Command="{Binding Overlay.ResetOverlayPositionCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,8,0,0" />
+                                <Button Content="{DynamicResource CenterOnCurrentMonitor}" Command="{Binding Overlay.CenterOnCurrentMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
+                                <Button Content="{DynamicResource ResetPosition}" Command="{Binding Overlay.ResetOverlayPositionCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,8,0,0" />
                             </StackPanel>
                         </Border>
-                    </WrapPanel>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>

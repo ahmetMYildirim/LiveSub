@@ -45,17 +45,17 @@ public sealed class AppShellViewModel : ObservableObject
             RaisePropertyChanged(nameof(DeveloperModeButtonText));
         };
 
-        _learningNavItem = new("Learning", "\U0001F393", "#16A34A", _languageService.T("NavLearning"), learningViewModel);
-        _trainingNavItem = new("Training", "\U0001F9EA", "#DC2626", _languageService.T("NavTraining"), trainingViewModel);
+        _learningNavItem = new("Learning", "L", "#16A34A", _languageService.T("NavLearning"), learningViewModel);
+        _trainingNavItem = new("Training", "E", "#DC2626", _languageService.T("NavTraining"), trainingViewModel);
         UserNavigationItems =
         [
-            new("Home", "\U0001F3E0", "#7C5CFF", _languageService.T("NavHome"), homeViewModel),
-            new("Capture", "\U0001F3A5", "#2FB6C4", _languageService.T("NavCapture"), capturePageViewModel),
-            new("Translation", "\U0001F504", "#2F6BFF", _languageService.T("NavTranslation"), translationPageViewModel),
-            new("Settings", "\u2699", "#8B93A6", _languageService.T("NavSettings"), settingsPageViewModel),
-            new("Models", "\U0001F4E6", "#6366F1", _languageService.T("NavModels"), modelManagerPageViewModel),
-            new("Glossary", "\U0001F4D6", "#F0A020", _languageService.T("NavGlossary"), glossaryPageViewModel),
-            new("Shortcuts", "\u2328", "#E85D9E", _languageService.T("NavShortcuts"), shortcutsPageViewModel)
+            new("Home", "H", "#7C5CFF", _languageService.T("NavHome"), homeViewModel),
+            new("Capture", "C", "#2FB6C4", _languageService.T("NavCapture"), capturePageViewModel),
+            new("Translation", "T", "#2F6BFF", _languageService.T("NavTranslation"), translationPageViewModel),
+            new("Settings", "S", "#8B93A6", _languageService.T("NavSettings"), settingsPageViewModel),
+            new("Models", "M", "#6366F1", _languageService.T("NavModels"), modelManagerPageViewModel),
+            new("Glossary", "G", "#F0A020", _languageService.T("NavGlossary"), glossaryPageViewModel),
+            new("Shortcuts", "K", "#E85D9E", _languageService.T("NavShortcuts"), shortcutsPageViewModel)
         ];
 
         ToggleDeveloperModeCommand = new AsyncRelayCommand(ToggleDeveloperModeAsync);

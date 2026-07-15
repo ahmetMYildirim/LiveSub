@@ -101,108 +101,115 @@
                     </Border>
                 </Grid>
 
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="1.4*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="1.2*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="1.2*" />
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="1.2*" />
-                    </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#332FB6C4">
-                                    <TextBlock Text="&#128247;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <TextBlock Grid.Column="1" Text="{DynamicResource OcrStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
-                                <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsOcrOk, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                            </Grid>
-                            <TextBlock Text="{Binding OcrStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Text="{Binding OcrEngine}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="2" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#332F6BFF">
-                                    <TextBlock Text="&#128260;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <TextBlock Grid.Column="1" Text="{DynamicResource TranslationStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
-                                <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsTranslationOk, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                            </Grid>
-                            <TextBlock Text="{Binding TranslationStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Text="{Binding TranslationEngine}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="4" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#337C5CFF">
-                                    <TextBlock Text="&#127916;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <TextBlock Grid.Column="1" Text="{DynamicResource OverlayStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
-                                <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsOverlayOk, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                            </Grid>
-                            <TextBlock Text="{Binding OverlayStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Text="{Binding OverlayMode}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="6" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource Latency}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
-                            <TextBlock Text="{Binding AvgLatency}" Foreground="{DynamicResource WarningBrush}" FontSize="22" FontWeight="Bold" Margin="0,8,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="8" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="FPS" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
-                            <TextBlock Text="{Binding Fps}" Foreground="{DynamicResource SuccessBrush}" FontSize="22" FontWeight="Bold" Margin="0,8,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="10" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="CPU" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
-                            <TextBlock Text="{Binding SystemResources.CpuUsageText}" Foreground="{DynamicResource AccentBrush2}" FontSize="18" FontWeight="Bold" Margin="0,8,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="12" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="RAM" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
-                            <TextBlock Text="{Binding SystemResources.RamUsageText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="Bold" Margin="0,8,0,0" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                        <Border Grid.Column="0" Style="{DynamicResource CardStyle}" MinHeight="120">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#332FB6C4">
+                                        <TextBlock Text="&#128247;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{DynamicResource OcrStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                    <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsOcrOk, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding OcrStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" MaxHeight="28" TextTrimming="CharacterEllipsis" ToolTip="{Binding OcrStatus}" />
+                                <TextBlock Text="{Binding OcrEngine}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Style="{DynamicResource CardStyle}" MinHeight="120">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#332F6BFF">
+                                        <TextBlock Text="&#128260;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{DynamicResource TranslationStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                    <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsTranslationOk, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding TranslationStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" MaxHeight="28" TextTrimming="CharacterEllipsis" ToolTip="{Binding TranslationStatusDetail}" />
+                                <TextBlock Text="{Binding TranslationEngine}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" ToolTip="{Binding TranslationStatusDetail}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="4" Style="{DynamicResource CardStyle}" MinHeight="120">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="32" Height="32" CornerRadius="9" Background="#337C5CFF">
+                                        <TextBlock Text="&#127916;" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{DynamicResource OverlayStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                    <Border Grid.Column="2" Width="18" Height="18" CornerRadius="9" Background="{DynamicResource SuccessBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{Binding IsOverlayOk, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <TextBlock Text="&#10003;" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding OverlayStatus}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="20" FontWeight="SemiBold" MaxHeight="28" TextTrimming="CharacterEllipsis" ToolTip="{Binding OverlayStatus}" />
+                                <TextBlock Text="{Binding OverlayMode}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{DynamicResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Latency}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
+                                <TextBlock Text="{Binding AvgLatency}" Foreground="{DynamicResource WarningBrush}" FontSize="22" FontWeight="Bold" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Style="{DynamicResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="FPS" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
+                                <TextBlock Text="{Binding Fps}" Foreground="{DynamicResource SuccessBrush}" FontSize="22" FontWeight="Bold" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="4" Style="{DynamicResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="CPU" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
+                                <TextBlock Text="{Binding SystemResources.CpuUsageText}" Foreground="{DynamicResource AccentBrush2}" FontSize="18" FontWeight="Bold" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="6" Style="{DynamicResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="RAM" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
+                                <TextBlock Text="{Binding SystemResources.RamUsageText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="Bold" Margin="0,8,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
                 <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
@@ -214,7 +221,8 @@
                     </Grid.ColumnDefinitions>
 
                     <Border Grid.Column="0" Style="{DynamicResource CardStyle}">
-                        <StackPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,6,0">
                             <TextBlock Text="{DynamicResource QuickSettings}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16" />
 
                             <TextBlock Text="{DynamicResource TranslationEngine}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
@@ -277,6 +285,7 @@
 
                             <Button Content="{Binding StartStopButtonText}" Command="{Binding ToggleMonitoringCommand}" Style="{DynamicResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Height="48" />
                         </StackPanel>
+                        </ScrollViewer>
                     </Border>
 
                     <Border Grid.Column="2" Style="{DynamicResource CardStyle}">
@@ -284,23 +293,27 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <TextBlock Text="{DynamicResource SubtitleRegion}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            <Border Grid.Row="1" Background="#070A11" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,14,0,12">
+                            <Border Grid.Row="1" Background="#070A11" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,14,0,0">
                                 <Grid>
                                     <Image Source="{Binding Monitoring.CropPreview}" Stretch="Uniform" />
                                     <Rectangle Margin="42" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" RadiusX="4" RadiusY="4" />
                                     <TextBlock Text="{Binding Monitoring.TargetWindowText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" />
+
+                                    <!-- Overlaid rather than a sibling row so toggling developer mode
+                                         never reflows/shrinks the preview above. -->
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Bottom"
+                                                Margin="0,0,0,10"
+                                                Visibility="{Binding DataContext.IsDeveloperMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <Button Content="{DynamicResource RunOneFrame}" Command="{Binding Monitoring.RunSingleTickCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="10,4" />
+                                        <Button Content="{DynamicResource OcrTest}" Command="{Binding Monitoring.RunOcrOnCurrentPreviewCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="10,4" Margin="8,0,0,0" />
+                                        <Button Content="{DynamicResource OverlayTest}" Command="{Binding TestOverlayCommand}" Style="{DynamicResource PrimaryButtonStyle}" Padding="10,4" Margin="8,0,0,0" />
+                                    </StackPanel>
                                 </Grid>
                             </Border>
-                            <StackPanel Grid.Row="2"
-                                        Orientation="Horizontal"
-                                        Visibility="{Binding DataContext.IsDeveloperMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Button Content="{DynamicResource RunOneFrame}" Command="{Binding Monitoring.RunSingleTickCommand}" Style="{DynamicResource SecondaryButtonStyle}" />
-                                <Button Content="{DynamicResource OcrTest}" Command="{Binding Monitoring.RunOcrOnCurrentPreviewCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="10,0,0,0" />
-                                <Button Content="{DynamicResource OverlayTest}" Command="{Binding TestOverlayCommand}" Style="{DynamicResource PrimaryButtonStyle}" Margin="10,0,0,0" />
-                            </StackPanel>
                         </Grid>
                     </Border>
 
@@ -308,118 +321,105 @@
                         <StackPanel>
                             <TextBlock Text="{DynamicResource LiveStats}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16" />
 
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource OcrStarted}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.OcrStartedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource AccentBrush2}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource OcrCompleted}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.OcrCompletedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource SkippedNoChange}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.OcrSkippedNoChangeCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource ForcedOcr}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.OcrForcedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource DangerBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource TranslationQueued}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.TranslationPendingCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource CaptureFpsLabel}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.CaptureFps, StringFormat={}{0:F1}}" Foreground="{DynamicResource SuccessBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-
-                            <!-- Per-stage timing so a low Capture FPS above can be traced to
-                                 whichever stage is actually slow (capture vs crop vs frame-diff). -->
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource CaptureDuration}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.CaptureDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource CropDuration}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.CropDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource DifferenceDuration}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.DifferenceDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource OcrDurationLabel}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.OcrDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
-                            </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{DynamicResource TranslationDurationLabel}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" Margin="10,0,0,0" />
-                                <TextBlock Grid.Column="2" Text="{Binding Monitoring.TranslationDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource AccentBrush}" FontSize="14" FontWeight="SemiBold" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource OcrStarted}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.OcrStartedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentBrush2}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource OcrCompleted}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.OcrCompletedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource SkippedNoChange}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.OcrSkippedNoChangeCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource ForcedOcr}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.OcrForcedCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource DangerBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource TranslationQueued}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.TranslationPendingCount}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource CaptureFpsLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.CaptureFps, StringFormat={}{0:F1}}" Foreground="{DynamicResource SuccessBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+
+                                <!-- Per-stage timing so a low Capture FPS above can be traced to
+                                     whichever stage is actually slow (capture vs crop vs frame-diff). -->
+                                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource CaptureDuration}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.CaptureDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource CropDuration}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.CropDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource DifferenceDuration}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.DifferenceDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource OcrDurationLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.OcrDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="5" Grid.Column="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource TranslationDurationLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Monitoring.TranslationDurationMs, StringFormat={}{0} ms}" Foreground="{DynamicResource AccentBrush}" FontSize="16" FontWeight="SemiBold" Margin="16,2,0,0" />
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -805,346 +805,393 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type user:SettingsPageViewModel}">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="0,0,8,0">
+            <Grid Margin="0,0,8,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                <Grid Margin="0,0,0,14">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="14" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Style="{DynamicResource CardStyle}" Padding="14" VerticalAlignment="Top">
+                <Border Grid.Row="0" Style="{DynamicResource CardStyle}" Padding="14">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="{DynamicResource Theme}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="10" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <RadioButton Grid.Column="0"
-                                             Content="{DynamicResource Dark}"
-                                             GroupName="Theme"
-                                             IsChecked="{Binding IsDarkThemeSelected, Mode=OneWay}"
-                                             Command="{Binding SelectDarkThemeCommand}"
-                                             Foreground="{DynamicResource TextPrimaryBrush}" />
-                                <RadioButton Grid.Column="2"
-                                             Content="{DynamicResource Light}"
-                                             GroupName="Theme"
-                                             IsChecked="{Binding IsLightThemeSelected, Mode=OneWay}"
-                                             Command="{Binding SelectLightThemeCommand}"
-                                             Foreground="{DynamicResource TextPrimaryBrush}" />
-                            </Grid>
-                            <TextBlock Text="{DynamicResource ThemeRestartHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,10,0,10" />
-                            <Button Content="{DynamicResource RestartNow}" Command="{Binding RestartToApplyThemeCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Left" />
+                            <TextBlock Text="{DynamicResource NavSettings}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="24" FontWeight="Bold" />
+                            <TextBlock Text="{DynamicResource SettingsSubtitle}" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0" />
                         </StackPanel>
-                    </Border>
-
-                    <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="14" VerticalAlignment="Top">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource CloudApiKeysTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                            <TextBlock Text="{DynamicResource CloudApiKeysHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,10" />
-
-                            <TextBlock Text="{DynamicResource GoogleApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                            <TextBox Text="{Binding Translation.GoogleTranslateApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4" />
-                            <TextBlock Text="{Binding Translation.GoogleTranslateModeText}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" Margin="0,0,0,8" />
-
-                            <TextBlock Text="{DynamicResource DeepLApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                            <TextBox Text="{Binding Translation.DeepLApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-
-                            <TextBlock Text="{DynamicResource GeminiApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                            <TextBox Text="{Binding Translation.GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-
-                            <TextBlock Text="{DynamicResource GroqApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                            <TextBox Text="{Binding Translation.GroqApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource AdvancedSettings}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <CheckBox Style="{DynamicResource ToggleSwitchStyle}" IsChecked="{Binding IsAdvancedMode}" VerticalAlignment="Center" Margin="0,0,16,0" />
+                            <Button Content="{DynamicResource ImportSettings}" Command="{Binding ImportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,8,0" />
+                            <Button Content="{DynamicResource ExportSettings}" Command="{Binding ExportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" />
                         </StackPanel>
-                    </Border>
-                </Grid>
-
-                <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,0,0,14">
-                    <StackPanel>
-                        <DockPanel LastChildFill="False">
-                            <TextBlock Text="{DynamicResource MonitorTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" DockPanel.Dock="Left" />
-                            <Button Content="{DynamicResource RefreshMonitors}" Command="{Binding Overlay.RefreshMonitorsCommand}" Style="{DynamicResource SecondaryButtonStyle}" DockPanel.Dock="Right" />
-                        </DockPanel>
-
-                        <Grid Margin="0,12,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="14" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="14" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="{DynamicResource OverlayTargetMonitor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                                <ComboBox SelectedIndex="{Binding Overlay.OverlayTargetMonitorModeIndex}" Margin="0,4,0,8">
-                                    <ComboBoxItem Content="{DynamicResource PrimaryMonitor}" />
-                                    <ComboBoxItem Content="{DynamicResource SameAsCapturedWindow}" />
-                                    <ComboBoxItem Content="{DynamicResource ManualMonitor}" />
-                                </ComboBox>
-
-                                <TextBlock Text="{DynamicResource ManualMonitor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                                <ComboBox ItemsSource="{Binding Overlay.AvailableMonitorDeviceNames}"
-                                          SelectedItem="{Binding Overlay.SelectedOverlayMonitorDeviceName}"
-                                          Margin="0,4,0,4" />
-                                <TextBlock Text="{Binding Overlay.ManualMonitorWarningText}"
-                                           Foreground="{DynamicResource WarningBrush}" FontSize="10" TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="{DynamicResource ConnectedMonitors}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                                <ItemsControl ItemsSource="{Binding Overlay.ConnectedMonitorsDisplay}" Margin="0,4,0,8">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,0,0,3" TextWrapping="Wrap" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-
-                                <TextBlock Text="{DynamicResource PrimaryMonitor}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
-                                <TextBlock Text="{Binding Overlay.PrimaryMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,6" TextWrapping="Wrap" />
-                                <TextBlock Text="{DynamicResource CapturedWindowMonitor}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
-                                <TextBlock Text="{Binding Overlay.CaptureWindowMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,6" TextWrapping="Wrap" />
-                                <TextBlock Text="{DynamicResource OverlayCurrentLocation}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
-                                <TextBlock Text="{Binding Overlay.CurrentOverlayMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,0" TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="4">
-                                <TextBlock Text="{DynamicResource OverlayPosition}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6" />
-                                <Button Content="{DynamicResource MoveToPrimary}" Command="{Binding Overlay.MoveToPrimaryMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" />
-                                <Button Content="{DynamicResource MoveToGameMonitor}" Command="{Binding Overlay.MoveToCaptureWindowMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" />
-                                <Button Content="{DynamicResource CenterOnCurrent}" Command="{Binding Overlay.CenterOnCurrentMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" />
-                                <Button Content="{DynamicResource ResetPositionLabel}" Command="{Binding Overlay.ResetOverlayPositionCommand}" Style="{DynamicResource SecondaryButtonStyle}" />
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
-                <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,0,0,14">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource Performance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                            <TextBlock Text="{DynamicResource CaptureIntervalLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,10,0,4" />
-                            <TextBox Text="{Binding Monitoring.CaptureIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="{DynamicResource MinOcrIntervalLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,8,0,4" />
-                            <TextBox Text="{Binding Monitoring.MinOcrIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="{DynamicResource OcrRequestTimeout}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,8,0,4" />
-                            <TextBox Text="{Binding Ocr.OcrTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="{DynamicResource OcrTimeoutHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,4,0,0" />
-                            <TextBlock Text="{DynamicResource OcrDevice}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,10,0,4" />
-                            <ComboBox SelectedIndex="{Binding Ocr.OcrDeviceIndex}">
-                                <ComboBoxItem Content="{DynamicResource DeviceAuto}" />
-                                <ComboBoxItem Content="CPU" />
-                                <ComboBoxItem Content="{DynamicResource DeviceGpu}" />
-                            </ComboBox>
-                            <TextBlock Text="{DynamicResource GpuHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,4,0,0" />
-                            <CheckBox Content="{DynamicResource FastOcrMode}" IsChecked="{Binding Monitoring.EnableFastOcrMode}" Margin="0,10,0,0" />
-                            <CheckBox Content="{DynamicResource SaveDebugFrames}" IsChecked="{Binding Monitoring.SaveDebugFrames}" Margin="0,6,0,0" />
-                            <CheckBox Content="{DynamicResource PauseWhenInactive}" IsChecked="{Binding Monitoring.PauseWhenWindowNotActive}" Margin="0,6,0,0" />
-                            <TextBlock Text="{DynamicResource PauseHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,3,0,10" />
+                <TabControl Grid.Row="2" Background="Transparent" BorderThickness="0">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+                            <Setter Property="Padding" Value="14,8" />
+                            <Setter Property="Margin" Value="0,0,8,0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border x:Name="Tab" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="16" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter ContentSource="Header" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True"><Setter TargetName="Tab" Property="Background" Value="{DynamicResource AccentBrush}" /><Setter Property="Foreground" Value="White" /></Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Tab" Property="Background" Value="{DynamicResource SecondaryButtonBrush}" /></Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
 
-                            <TextBlock Text="{DynamicResource OcrPreprocessing}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4" />
-                            <CheckBox Content="{DynamicResource EnablePreprocessing}" IsChecked="{Binding Monitoring.EnableOcrPreprocessing}" Margin="0,0,0,4" />
-                            <CheckBox Content="{DynamicResource ConvertGrayscaleShort}" IsChecked="{Binding Monitoring.ConvertToGrayscale}" Margin="0,0,0,4" />
-                            <CheckBox Content="{DynamicResource IncreaseContrast}" IsChecked="{Binding Monitoring.IncreaseContrast}" Margin="0,0,0,4" />
-                            <CheckBox Content="{DynamicResource SharpenImage}" IsChecked="{Binding Monitoring.SharpenImage}" Margin="0,0,0,6" />
-                            <TextBlock Text="{DynamicResource ThresholdMode}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4" />
-                            <ComboBox SelectedIndex="{Binding Monitoring.ThresholdModeIndex}">
-                                <ComboBoxItem Content="{DynamicResource ThresholdNone}" />
-                                <ComboBoxItem Content="Otsu" />
-                                <ComboBoxItem Content="{DynamicResource ThresholdFixed}" />
-                            </ComboBox>
-                            <TextBlock Text="{DynamicResource ThresholdHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,3,0,10" />
+                    <TabItem Header="{DynamicResource Theme}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,12,0,0">
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Theme}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
+                                        <Grid Margin="0,10,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="10" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <RadioButton Grid.Column="0"
+                                                         Content="{DynamicResource Dark}"
+                                                         GroupName="Theme"
+                                                         IsChecked="{Binding IsDarkThemeSelected, Mode=OneWay}"
+                                                         Command="{Binding SelectDarkThemeCommand}"
+                                                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                                            <RadioButton Grid.Column="2"
+                                                         Content="{DynamicResource Light}"
+                                                         GroupName="Theme"
+                                                         IsChecked="{Binding IsLightThemeSelected, Mode=OneWay}"
+                                                         Command="{Binding SelectLightThemeCommand}"
+                                                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource ThemeRestartHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,10" />
+                                        <Button Content="{DynamicResource RestartNow}" Command="{Binding RestartToApplyThemeCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Border>
 
-                            <TextBlock Text="{DynamicResource CharacterFilter}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,4" />
-                            <CheckBox Content="{DynamicResource LatinOnly}" IsChecked="{Binding Monitoring.EnableCharWhitelist}" Margin="0,0,0,4" />
-                            <TextBlock Text="{DynamicResource LatinOnlyHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,3,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,0,0,14">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource OverlayAppearance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
-                            <CheckBox Content="{DynamicResource OverlayActive}" IsChecked="{Binding Overlay.IsEnabled}" Margin="0,10,0,6" />
-                            <CheckBox Content="{DynamicResource ReplacementMaskActive}" IsChecked="{Binding Overlay.ReplacementMaskEnabled}" Margin="0,0,0,6" />
-                            <CheckBox Content="{DynamicResource ManualReplacementRegion}" IsChecked="{Binding Overlay.UseManualReplacementRegion}" Margin="0,0,0,6" />
-                            <CheckBox Content="{DynamicResource ShowPendingMask}" IsChecked="{Binding Overlay.ShowMaskWhileTranslationPending}" Margin="0,0,0,10" />
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource SettingsManagement}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
 
-                            <TextBlock Text="{DynamicResource FontFamilyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
-                            <ComboBox SelectedValue="{Binding Overlay.FontFamily}" SelectedValuePath="Content" Margin="0,0,0,4">
-                                <ComboBoxItem Content="Segoe UI" />
-                                <ComboBoxItem Content="Arial" />
-                                <ComboBoxItem Content="Verdana" />
-                                <ComboBoxItem Content="Tahoma" />
-                                <ComboBoxItem Content="Calibri" />
-                                <ComboBoxItem Content="Consolas" />
-                                <ComboBoxItem Content="Times New Roman" />
-                            </ComboBox>
+                                        <TextBlock Text="{DynamicResource PresetProfile}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,12,0,4" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="10" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox Grid.Column="0" SelectedIndex="{Binding SelectedPresetIndex}">
+                                                <ComboBoxItem Content="{DynamicResource PresetFast}" />
+                                                <ComboBoxItem Content="{DynamicResource PresetBalanced}" />
+                                                <ComboBoxItem Content="{DynamicResource PresetQuality}" />
+                                            </ComboBox>
+                                            <Button Grid.Column="2" Content="{DynamicResource ApplyPreset}" Command="{Binding ApplyPresetCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="16,0" HorizontalAlignment="Stretch" />
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource PresetProfileHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0" />
 
-                            <TextBlock Text="{DynamicResource TextSizeLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
-                            <DockPanel>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.FontSize, StringFormat={}{0:F0} pt}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
-                                <Slider Value="{Binding Overlay.FontSize}" Minimum="12" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" />
-                            </DockPanel>
+                                        <TextBlock Text="{Binding OperationStatus}" Foreground="{DynamicResource AccentBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,10,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
 
-                            <TextBlock Text="{DynamicResource BackgroundOpacityLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
-                            <DockPanel>
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.BackgroundOpacity, StringFormat={}{0:P0}}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
-                                <Slider Value="{Binding Overlay.BackgroundOpacity}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" />
-                            </DockPanel>
+                    <TabItem Header="{DynamicResource CloudApiKeysTitle}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,12,0,0">
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource CloudApiKeysTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
+                                        <TextBlock Text="{DynamicResource CloudApiKeysHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,10" />
 
-                            <TextBlock Text="{DynamicResource TextColor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
-                            <ComboBox SelectedValue="{Binding Overlay.TextColor}" SelectedValuePath="Tag">
-                                <ComboBoxItem Content="{DynamicResource ColorWhite}" Tag="#FFFFFF" />
-                                <ComboBoxItem Content="{DynamicResource ColorYellow}" Tag="#FFFF00" />
-                                <ComboBoxItem Content="{DynamicResource ColorCyan}" Tag="#00FFFF" />
-                                <ComboBoxItem Content="{DynamicResource ColorGreen}" Tag="#00FF88" />
-                                <ComboBoxItem Content="{DynamicResource ColorOrange}" Tag="#FF8C00" />
-                                <ComboBoxItem Content="{DynamicResource ColorPink}" Tag="#FF69B4" />
-                            </ComboBox>
-                            <TextBlock Text="{DynamicResource OverlayPreviewHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,3,0,10" />
+                                        <TextBlock Text="{DynamicResource GoogleApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <TextBox Text="{Binding Translation.GoogleTranslateApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                        <TextBlock Text="{Binding Translation.GoogleTranslateModeText}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" Margin="0,0,0,8" />
+                                        <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
 
-                            <TextBlock Text="{DynamicResource SubtitleAdvancedTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" FontWeight="SemiBold" Margin="0,4,0,6" />
-                            <CheckBox Content="{DynamicResource ReplacementAutoFit}" IsChecked="{Binding Overlay.ReplacementAutoFitText}" Margin="0,0,0,8" />
-                            <TextBlock Text="{DynamicResource ReplacementMaxLinesLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,2" />
-                            <DockPanel Margin="0,0,0,6">
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.ReplacementMaxLines}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="30" TextAlignment="Right" VerticalAlignment="Center" />
-                                <Slider Value="{Binding Overlay.ReplacementMaxLines}" Minimum="1" Maximum="6" TickFrequency="1" IsSnapToTickEnabled="True" />
-                            </DockPanel>
-                            <TextBlock Text="{DynamicResource ReplacementMinFontSizeLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,2" />
-                            <DockPanel Margin="0,0,0,10">
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.ReplacementMinFontSize, StringFormat={}{0:F0} pt}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
-                                <Slider Value="{Binding Overlay.ReplacementMinFontSize}" Minimum="8" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" />
-                            </DockPanel>
+                                        <TextBlock Text="{DynamicResource DeepLApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <TextBox Text="{Binding Translation.DeepLApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                        <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
 
-                            <Button Content="{DynamicResource ReplacementMaskPreview}" Command="{Binding Overlay.PreviewReplacementMaskCommand}" Style="{DynamicResource PrimaryButtonStyle}" />
-                            <Button Content="{DynamicResource SaveSettings}" Command="{Binding Overlay.SaveSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
+                                        <TextBlock Text="{DynamicResource GeminiApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <TextBox Text="{Binding Translation.GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,8" />
+                                        <Border Height="1" Background="{DynamicResource CardBorderBrush}" Margin="0,0,0,8" />
 
-                <Grid Margin="0,0,0,14">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="14" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Style="{DynamicResource CardStyle}" Padding="14" VerticalAlignment="Top">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource AdvancedTranslation}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,12" />
-                            <CheckBox Content="{DynamicResource UseTranslationCache}" IsChecked="{Binding Translation.UseTranslationCache}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource DiscardOldTranslations}" IsChecked="{Binding Translation.DropStaleTranslations}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource ShowOcrWhenFailed}" IsChecked="{Binding Translation.ShowOcrFallbackWhenTranslationFails}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource EnableFallbackChain}" IsChecked="{Binding Translation.EnableTranslationProviderFallback}" Margin="0,0,0,4" />
-                            <TextBlock Text="{DynamicResource FallbackChainHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Column="2" Style="{DynamicResource CardStyle}" Padding="14" VerticalAlignment="Top">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource FallbackChainOrder}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,4" />
-                            <TextBlock Text="{DynamicResource FallbackChainOrderHint}"
-                                       Foreground="{DynamicResource TextMutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <ListBox Grid.Column="0" Height="130"
-                                         ItemsSource="{Binding Translation.FallbackChainItems}"
-                                         SelectedIndex="{Binding Translation.SelectedFallbackChainIndex}" />
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                    <Button Content="▲" Command="{Binding Translation.MoveFallbackItemUpCommand}" Style="{DynamicResource SecondaryButtonStyle}" Width="36" Padding="4" Margin="0,0,0,4" />
-                                    <Button Content="▼" Command="{Binding Translation.MoveFallbackItemDownCommand}" Style="{DynamicResource SecondaryButtonStyle}" Width="36" Padding="4" />
-                                </StackPanel>
-                            </Grid>
-                            <Button Content="{DynamicResource ResetToDefault}" Command="{Binding Translation.ResetFallbackOrderCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,8,0,0" HorizontalAlignment="Left" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                                        <TextBlock Text="{DynamicResource GroqApiKeyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <TextBox Text="{Binding Translation.GroqApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,0,0,14">
-                    <StackPanel>
-                        <DockPanel LastChildFill="False">
-                            <TextBlock Text="{DynamicResource SystemRequirements}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" DockPanel.Dock="Left" />
-                            <Button Content="{DynamicResource Refresh}" Command="{Binding Ocr.RefreshSystemRequirementsCommand}" Style="{DynamicResource SecondaryButtonStyle}" DockPanel.Dock="Right" Padding="12,4" Height="30" />
-                        </DockPanel>
-                        <TextBlock Text="{DynamicResource SystemRequirementsHint}"
-                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,6,0,10" />
-                        <ItemsControl ItemsSource="{Binding Ocr.SystemRequirements}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="22" />
-                                            <ColumnDefinition Width="170" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource AdvancedTranslation}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,12" />
+                                        <CheckBox Content="{DynamicResource UseTranslationCache}" IsChecked="{Binding Translation.UseTranslationCache}" Margin="0,0,0,8" />
+                                        <CheckBox Content="{DynamicResource DiscardOldTranslations}" IsChecked="{Binding Translation.DropStaleTranslations}" Margin="0,0,0,8" />
+                                        <CheckBox Content="{DynamicResource ShowOcrWhenFailed}" IsChecked="{Binding Translation.ShowOcrFallbackWhenTranslationFails}" Margin="0,0,0,8" />
+                                        <CheckBox Content="{DynamicResource EnableFallbackChain}" IsChecked="{Binding Translation.EnableTranslationProviderFallback}" Margin="0,0,0,4" />
+                                        <TextBlock Text="{DynamicResource FallbackChainHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
 
-                                        <TextBlock Grid.Column="0" Text="&#x2714;" Foreground="{DynamicResource SuccessBrush}" FontSize="13" FontWeight="Bold"
-                                                   Visibility="{Binding IsMet, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        <TextBlock Grid.Column="0" Text="&#x2716;" Foreground="{DynamicResource DangerBrush}" FontSize="13" FontWeight="Bold"
-                                                   Visibility="{Binding ShowUnmetRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        <TextBlock Grid.Column="0" Text="&#x2013;" Foreground="{DynamicResource TextMutedBrush}" FontSize="13" FontWeight="Bold"
-                                                   Visibility="{Binding ShowUnmetOptional, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource FallbackChainOrder}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,4" />
+                                        <TextBlock Text="{DynamicResource FallbackChainOrderHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,12" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ListBox Grid.Column="0" Height="130"
+                                                     ItemsSource="{Binding Translation.FallbackChainItems}"
+                                                     SelectedIndex="{Binding Translation.SelectedFallbackChainIndex}" />
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <Button Content="▲" Command="{Binding Translation.MoveFallbackItemUpCommand}" Style="{DynamicResource SecondaryButtonStyle}" Width="36" Padding="4" Margin="0,0,0,4" />
+                                                <Button Content="▼" Command="{Binding Translation.MoveFallbackItemDownCommand}" Style="{DynamicResource SecondaryButtonStyle}" Width="36" Padding="4" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <Button Content="{DynamicResource ResetToDefault}" Command="{Binding Translation.ResetFallbackOrderCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,8,0,0" HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
 
-                                        <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TabItem Header="{DynamicResource Performance}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,12,0,0">
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Performance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
+                                        <TextBlock Text="{DynamicResource CaptureIntervalLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,10,0,4" />
+                                        <TextBox Text="{Binding Monitoring.CaptureIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="{DynamicResource MinOcrIntervalLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,8,0,4" />
+                                        <TextBox Text="{Binding Monitoring.MinOcrIntervalMs, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="{DynamicResource OcrRequestTimeout}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,8,0,4" />
+                                        <TextBox Text="{Binding Ocr.OcrTimeoutMs, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="{DynamicResource OcrTimeoutHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                        <TextBlock Text="{DynamicResource OcrDevice}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,10,0,4" />
+                                        <ComboBox SelectedIndex="{Binding Ocr.OcrDeviceIndex}">
+                                            <ComboBoxItem Content="{DynamicResource DeviceAuto}" />
+                                            <ComboBoxItem Content="CPU" />
+                                            <ComboBoxItem Content="{DynamicResource DeviceGpu}" />
+                                        </ComboBox>
+                                        <TextBlock Text="{DynamicResource GpuHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                        <CheckBox Content="{DynamicResource FastOcrMode}" IsChecked="{Binding Monitoring.EnableFastOcrMode}" Margin="0,10,0,0" />
+                                        <CheckBox Content="{DynamicResource SaveDebugFrames}" IsChecked="{Binding Monitoring.SaveDebugFrames}" Margin="0,6,0,0" />
+                                        <CheckBox Content="{DynamicResource PauseWhenInactive}" IsChecked="{Binding Monitoring.PauseWhenWindowNotActive}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource PauseHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                                        <TextBlock Grid.Column="2" VerticalAlignment="Center" FontSize="11" TextWrapping="Wrap">
-                                            <Run Text="{DynamicResource RequiredLabel}" Foreground="{DynamicResource TextMutedBrush}" /><Run Text="{Binding RequiredText, Mode=OneWay}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                        </TextBlock>
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource OcrPreprocessing}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource EnablePreprocessing}" IsChecked="{Binding Monitoring.EnableOcrPreprocessing}" Margin="0,10,0,4" />
+                                        <CheckBox Content="{DynamicResource ConvertGrayscaleShort}" IsChecked="{Binding Monitoring.ConvertToGrayscale}" Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource IncreaseContrast}" IsChecked="{Binding Monitoring.IncreaseContrast}" Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource SharpenImage}" IsChecked="{Binding Monitoring.SharpenImage}" Margin="0,0,0,6" />
+                                        <TextBlock Text="{DynamicResource ThresholdMode}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4" />
+                                        <ComboBox SelectedIndex="{Binding Monitoring.ThresholdModeIndex}">
+                                            <ComboBoxItem Content="{DynamicResource ThresholdNone}" />
+                                            <ComboBoxItem Content="Otsu" />
+                                            <ComboBoxItem Content="{DynamicResource ThresholdFixed}" />
+                                        </ComboBox>
+                                        <TextBlock Text="{DynamicResource ThresholdHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                                        <TextBlock Grid.Column="3" VerticalAlignment="Center" FontSize="11" TextWrapping="Wrap">
-                                            <Run Text="{DynamicResource YouHaveLabel}" Foreground="{DynamicResource TextMutedBrush}" /><Run Text="{Binding ActualText, Mode=OneWay}" Foreground="{DynamicResource TextPrimaryBrush}" />
-                                        </TextBlock>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource CharacterFilter}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LatinOnly}" IsChecked="{Binding Monitoring.EnableCharWhitelist}" Margin="0,10,0,4" />
+                                        <TextBlock Text="{DynamicResource LatinOnlyHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                <Border Style="{DynamicResource CardStyle}" Padding="14" Margin="0,0,0,4">
-                    <StackPanel>
-                        <TextBlock Text="{DynamicResource SettingsManagement}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock Text="{DynamicResource SystemRequirements}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" DockPanel.Dock="Left" />
+                                            <Button Content="{DynamicResource Refresh}" Command="{Binding Ocr.RefreshSystemRequirementsCommand}" Style="{DynamicResource SecondaryButtonStyle}" DockPanel.Dock="Right" Padding="12,4" Height="30" />
+                                        </DockPanel>
+                                        <TextBlock Text="{DynamicResource SystemRequirementsHint}"
+                                                   Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,10" />
+                                        <ItemsControl ItemsSource="{Binding Ocr.SystemRequirements}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,0,0,8">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="22" />
+                                                            <ColumnDefinition Width="170" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{DynamicResource PresetProfile}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,12,0,4" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <ComboBox Grid.Column="0" SelectedIndex="{Binding SelectedPresetIndex}">
-                                <ComboBoxItem Content="{DynamicResource PresetFast}" />
-                                <ComboBoxItem Content="{DynamicResource PresetBalanced}" />
-                                <ComboBoxItem Content="{DynamicResource PresetQuality}" />
-                            </ComboBox>
-                            <Button Grid.Column="2" Content="{DynamicResource ApplyPreset}" Command="{Binding ApplyPresetCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="16,0" />
-                        </Grid>
-                        <TextBlock Text="{DynamicResource PresetProfileHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,4,0,12" />
+                                                        <TextBlock Grid.Column="0" Text="&#x2714;" Foreground="{DynamicResource SuccessBrush}" FontSize="13" FontWeight="Bold"
+                                                                   Visibility="{Binding IsMet, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                        <TextBlock Grid.Column="0" Text="&#x2716;" Foreground="{DynamicResource DangerBrush}" FontSize="13" FontWeight="Bold"
+                                                                   Visibility="{Binding ShowUnmetRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                        <TextBlock Grid.Column="0" Text="&#x2013;" Foreground="{DynamicResource TextMutedBrush}" FontSize="13" FontWeight="Bold"
+                                                                   Visibility="{Binding ShowUnmetOptional, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                        <TextBlock Text="{DynamicResource ExportImportHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,8" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="{DynamicResource ExportSettings}" Command="{Binding ExportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="18,0" />
-                            <Button Content="{DynamicResource ImportSettings}" Command="{Binding ImportSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Padding="18,0" Margin="8,0,0,0" />
-                        </StackPanel>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
 
-                        <CheckBox Content="{DynamicResource AdvancedSettings}" IsChecked="{Binding IsAdvancedMode}" Margin="0,12,0,0" />
-                        <TextBlock Text="{Binding OperationStatus}" Foreground="{DynamicResource AccentBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,10,0,0" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-            </ScrollViewer>
+                                                        <TextBlock Grid.Column="2" VerticalAlignment="Center" FontSize="11" TextWrapping="Wrap">
+                                                            <Run Text="{DynamicResource RequiredLabel}" Foreground="{DynamicResource TextMutedBrush}" /><Run Text="{Binding RequiredText, Mode=OneWay}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        </TextBlock>
+
+                                                        <TextBlock Grid.Column="3" VerticalAlignment="Center" FontSize="11" TextWrapping="Wrap">
+                                                            <Run Text="{DynamicResource YouHaveLabel}" Foreground="{DynamicResource TextMutedBrush}" /><Run Text="{Binding ActualText, Mode=OneWay}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem Header="Overlay">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,12,0,0">
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock Text="{DynamicResource MonitorTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" DockPanel.Dock="Left" />
+                                            <Button Content="{DynamicResource RefreshMonitors}" Command="{Binding Overlay.RefreshMonitorsCommand}" Style="{DynamicResource SecondaryButtonStyle}" DockPanel.Dock="Right" />
+                                        </DockPanel>
+
+                                        <TextBlock Text="{DynamicResource OverlayTargetMonitor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,12,0,0" />
+                                        <ComboBox SelectedIndex="{Binding Overlay.OverlayTargetMonitorModeIndex}" Margin="0,4,0,8">
+                                            <ComboBoxItem Content="{DynamicResource PrimaryMonitor}" />
+                                            <ComboBoxItem Content="{DynamicResource SameAsCapturedWindow}" />
+                                            <ComboBoxItem Content="{DynamicResource ManualMonitor}" />
+                                        </ComboBox>
+
+                                        <TextBlock Text="{DynamicResource ManualMonitor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <ComboBox ItemsSource="{Binding Overlay.AvailableMonitorDeviceNames}"
+                                                  SelectedItem="{Binding Overlay.SelectedOverlayMonitorDeviceName}"
+                                                  Margin="0,4,0,4" />
+                                        <TextBlock Text="{Binding Overlay.ManualMonitorWarningText}"
+                                                   Foreground="{DynamicResource WarningBrush}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+                                        <TextBlock Text="{DynamicResource ConnectedMonitors}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                                        <ItemsControl ItemsSource="{Binding Overlay.ConnectedMonitorsDisplay}" Margin="0,4,0,8">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,0,0,3" TextWrapping="Wrap" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <TextBlock Text="{DynamicResource PrimaryMonitor}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
+                                        <TextBlock Text="{Binding Overlay.PrimaryMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,6" TextWrapping="Wrap" />
+                                        <TextBlock Text="{DynamicResource CapturedWindowMonitor}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
+                                        <TextBlock Text="{Binding Overlay.CaptureWindowMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,6" TextWrapping="Wrap" />
+                                        <TextBlock Text="{DynamicResource OverlayCurrentLocation}" Foreground="{DynamicResource TextMutedBrush}" FontSize="10" />
+                                        <TextBlock Text="{Binding Overlay.CurrentOverlayMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,10" TextWrapping="Wrap" />
+
+                                        <TextBlock Text="{DynamicResource OverlayPosition}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6" />
+                                        <Button Content="{DynamicResource MoveToPrimary}" Command="{Binding Overlay.MoveToPrimaryMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
+                                        <Button Content="{DynamicResource MoveToGameMonitor}" Command="{Binding Overlay.MoveToCaptureWindowMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
+                                        <Button Content="{DynamicResource CenterOnCurrent}" Command="{Binding Overlay.CenterOnCurrentMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
+                                        <Button Content="{DynamicResource ResetPositionLabel}" Command="{Binding Overlay.ResetOverlayPositionCommand}" Style="{DynamicResource SecondaryButtonStyle}" HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{DynamicResource CardStyle}" Padding="14" HorizontalAlignment="Stretch" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource OverlayAppearance}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="17" FontWeight="Bold" />
+                                        <CheckBox Content="{DynamicResource OverlayActive}" IsChecked="{Binding Overlay.IsEnabled}" Margin="0,10,0,6" />
+                                        <CheckBox Content="{DynamicResource ReplacementMaskActive}" IsChecked="{Binding Overlay.ReplacementMaskEnabled}" Margin="0,0,0,6" />
+                                        <CheckBox Content="{DynamicResource ManualReplacementRegion}" IsChecked="{Binding Overlay.UseManualReplacementRegion}" Margin="0,0,0,6" />
+                                        <CheckBox Content="{DynamicResource ShowPendingMask}" IsChecked="{Binding Overlay.ShowMaskWhileTranslationPending}" Margin="0,0,0,10" />
+
+                                        <TextBlock Text="{DynamicResource FontFamilyLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
+                                        <ComboBox SelectedValue="{Binding Overlay.FontFamily}" SelectedValuePath="Content" Margin="0,0,0,4">
+                                            <ComboBoxItem Content="Segoe UI" />
+                                            <ComboBoxItem Content="Arial" />
+                                            <ComboBoxItem Content="Verdana" />
+                                            <ComboBoxItem Content="Tahoma" />
+                                            <ComboBoxItem Content="Calibri" />
+                                            <ComboBoxItem Content="Consolas" />
+                                            <ComboBoxItem Content="Times New Roman" />
+                                        </ComboBox>
+
+                                        <TextBlock Text="{DynamicResource TextSizeLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.FontSize, StringFormat={}{0:F0} pt}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+                                            <Slider Value="{Binding Overlay.FontSize}" Minimum="12" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" />
+                                        </DockPanel>
+
+                                        <TextBlock Text="{DynamicResource BackgroundOpacityLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.BackgroundOpacity, StringFormat={}{0:P0}}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+                                            <Slider Value="{Binding Overlay.BackgroundOpacity}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" />
+                                        </DockPanel>
+
+                                        <TextBlock Text="{DynamicResource TextColor}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,6,0,2" />
+                                        <ComboBox SelectedValue="{Binding Overlay.TextColor}" SelectedValuePath="Tag">
+                                            <ComboBoxItem Content="{DynamicResource ColorWhite}" Tag="#FFFFFF" />
+                                            <ComboBoxItem Content="{DynamicResource ColorYellow}" Tag="#FFFF00" />
+                                            <ComboBoxItem Content="{DynamicResource ColorCyan}" Tag="#00FFFF" />
+                                            <ComboBoxItem Content="{DynamicResource ColorGreen}" Tag="#00FF88" />
+                                            <ComboBoxItem Content="{DynamicResource ColorOrange}" Tag="#FF8C00" />
+                                            <ComboBoxItem Content="{DynamicResource ColorPink}" Tag="#FF69B4" />
+                                        </ComboBox>
+                                        <TextBlock Text="{DynamicResource OverlayPreviewHint}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,3,0,10" />
+
+                                        <TextBlock Text="{DynamicResource SubtitleAdvancedTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" FontWeight="SemiBold" Margin="0,4,0,6" />
+                                        <CheckBox Content="{DynamicResource ReplacementAutoFit}" IsChecked="{Binding Overlay.ReplacementAutoFitText}" Margin="0,0,0,8" />
+                                        <TextBlock Text="{DynamicResource ReplacementMaxLinesLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,2" />
+                                        <DockPanel Margin="0,0,0,6">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.ReplacementMaxLines}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="30" TextAlignment="Right" VerticalAlignment="Center" />
+                                            <Slider Value="{Binding Overlay.ReplacementMaxLines}" Minimum="1" Maximum="6" TickFrequency="1" IsSnapToTickEnabled="True" />
+                                        </DockPanel>
+                                        <TextBlock Text="{DynamicResource ReplacementMinFontSizeLabel}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,2" />
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Overlay.ReplacementMinFontSize, StringFormat={}{0:F0} pt}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+                                            <Slider Value="{Binding Overlay.ReplacementMinFontSize}" Minimum="8" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" />
+                                        </DockPanel>
+
+                                        <Button Content="{DynamicResource ReplacementMaskPreview}" Command="{Binding Overlay.PreviewReplacementMaskCommand}" Style="{DynamicResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" />
+                                        <Button Content="{DynamicResource SaveSettings}" Command="{Binding Overlay.SaveSettingsCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,6,0,0" HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </Grid>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type user:ModelManagerPageViewModel}">
@@ -1811,7 +1858,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Border Width="30" Height="30" CornerRadius="8" Background="{Binding AccentHex}" Margin="0,0,12,0">
-                                        <TextBlock Text="{Binding Icon}" FontSize="15" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Icon}" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
                                     <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" Visibility="{Binding DataContext.SidebarTextVisibility, RelativeSource={RelativeSource AncestorType=Window}}" />
                                 </StackPanel>
@@ -1892,9 +1939,15 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{Binding Home.SystemResources.CpuUsageText}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" />
                     <TextBlock Grid.Column="1" Text="{Binding Home.SystemResources.RamUsageText}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="2" Text="{Binding Home.Overlay.CurrentOverlayRectText}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="13" />
-                    <TextBlock Grid.Column="3" Text="{Binding Home.AvgLatency}" Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" FontSize="13" />
-                    <TextBlock Grid.Column="4" Text="{Binding Home.Fps}" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" FontSize="13" />
+                    <TextBlock Grid.Column="2" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="13">
+                        <Run Text="{DynamicResource RegionLabel}" /><Run Text=" " /><Run Text="{Binding Home.Overlay.CurrentOverlayRectText, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Grid.Column="3" Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" FontSize="13">
+                        <Run Text="{DynamicResource Latency}" /><Run Text=": " /><Run Text="{Binding Home.AvgLatency, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Grid.Column="4" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" FontSize="13">
+                        <Run Text="FPS " /><Run Text="{Binding Home.Fps, Mode=OneWay}" />
+                    </TextBlock>
                     <TextBlock Grid.Column="5" Text="{DynamicResource Version}" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" FontSize="13" />
                 </Grid>
             </Border>

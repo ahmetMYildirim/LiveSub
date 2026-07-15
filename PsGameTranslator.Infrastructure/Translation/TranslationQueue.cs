@@ -16,6 +16,7 @@ public sealed class TranslationQueue : IDisposable
     private readonly object _gate = new();
     private readonly SemaphoreSlim _signal = new(0);
     private readonly CancellationTokenSource _cts = new();
+    private int _disposed;
     private readonly Task _worker;
     private TranslationRequest? _pending;
     private string _activeText = string.Empty;
@@ -252,6 +253,10 @@ public sealed class TranslationQueue : IDisposable
 
     public void Dispose()
     {
+        // Idempotent: a singleton can be disposed more than once on shutdown,
+        // and cancelling/disposing an already-disposed CTS throws.
+        if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+
         _cts.Cancel();
         try { _worker.Wait(2000); } catch { }
         _cts.Dispose();

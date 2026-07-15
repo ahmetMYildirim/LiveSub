@@ -193,6 +193,15 @@ namespace PsGameTranslator.Core.Translation
         // where the captured window title is not a real game title).
         public bool EnableVisionGameDetection { get; set; } = true;
         public string OllamaVisionModel { get; set; } = "gemma3:4b";
+
+        // Local ONNX game classifier gating. The classifier runs first (fast,
+        // fully offline); its top-1 softmax probability is only trusted when it
+        // clears this threshold. Below it, we fall back to the vision LLM — this
+        // is the confidence-gated hybrid the offline benchmarks were built around.
+        // ~0.45 keeps the frequent same-studio/same-engine confusions (e.g. Jedi
+        // Survivor vs Starfield) from being surfaced as confident guesses.
+        public bool EnableOnnxGameDetection { get; set; } = true;
+        public double OnnxGameConfidenceThreshold { get; set; } = 0.45;
         // First call after Ollama starts (or switches models) pays a cold-load
         // cost of 30-60s; subsequent calls with the model already resident in
         // memory are much faster. Timeout must cover the worst case, not the

@@ -26,6 +26,7 @@ public sealed class TranslationPlaybackQueue : IDisposable
     private readonly object _gate = new();
     private readonly SemaphoreSlim _signal = new(0);
     private readonly CancellationTokenSource _cts = new();
+    private int _disposed;
     private readonly Task _pump;
     private readonly List<TranslatedSubtitleDisplayItem> _queue = [];
 
@@ -573,6 +574,10 @@ public sealed class TranslationPlaybackQueue : IDisposable
 
     public void Dispose()
     {
+        // Idempotent: a singleton can be disposed more than once on shutdown,
+        // and cancelling/disposing an already-disposed CTS throws.
+        if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+
         _cts.Cancel();
         try { _pump.Wait(2000); } catch { }
         _cts.Dispose();

@@ -1,4 +1,5 @@
-.venv/
+# Python virtual environments (all variants, e.g. .venv, .venv-game-onnx-py312)
+.venv*/
 .vs/
 **/bin/
 **/obj/
@@ -13,3 +14,9 @@ tmp-logo-nodeps/
 .nuget-packages/
 artifacts/
 tmp/
+
+# Runtime user config holds personal API keys — never commit it. It normally
+# lives under **/bin/ (already ignored) but guard the pattern explicitly too.
+**/config/user_settings.json
+publish/
+*.zip

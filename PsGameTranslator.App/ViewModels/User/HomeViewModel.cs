@@ -72,9 +72,34 @@ public sealed class HomeViewModel : ObservableObject
     public string RunStatus => Monitoring.IsMonitoringRunning ? Language.T("Running") : Language.T("Stopped");
     public string OcrStatus => Monitoring.IsOcrBusy ? Language.T("OcrRunning") : Monitoring.MonitoringStatusText;
     public string OcrEngine => $"Crop {Monitoring.FinalOcrCropWidth}x{Monitoring.FinalOcrCropHeight}";
-    public string TranslationStatus => Translation.StatusText;
+
+    // Short, single-word status for the "Çeviri Durumu" card title. Translation's
+    // own StatusText is a general-purpose operation message (it holds things like
+    // "Models: Ollama 5 · LM Studio 0…" after a model refresh), which is far too
+    // noisy for a status card — the model/provider detail lives on the subline
+    // (TranslationEngine) and the full message is available via tooltip instead.
+    public string TranslationStatus
+    {
+        get
+        {
+            if (!Translation.EnableTranslation)
+                return Language.T("TranslationDisabled");
+            if (Monitoring.TranslationPendingCount > 0)
+                return Language.T("Translating");
+            return Language.T("Ready");
+        }
+    }
+
+    // Full operation message, surfaced only as the card tooltip so the detailed
+    // provider/model text is still reachable without cluttering the card.
+    public string TranslationStatusDetail => Translation.StatusText;
     public string TranslationEngine => Translation.ActualProviderUsedText;
-    public string OverlayStatus => Overlay.StatusText;
+
+    // Overlay's StatusText starts empty until the user first interacts with the
+    // overlay, which left the card value blank. Fall back to a clear "not started".
+    public string OverlayStatus => string.IsNullOrWhiteSpace(Overlay.StatusText)
+        ? Language.T("OverlayNotStarted")
+        : Overlay.StatusText;
     public string OverlayMode => Overlay.DisplayModeIndex == 1 ? "Replacement" : "Classic";
 
     // Checkmark badges on the Home status cards Ã¢â‚¬â€ hidden only when the status

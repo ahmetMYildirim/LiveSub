@@ -18,6 +18,7 @@
     <sys:String x:Key="TranslationStatus">Çeviri Durumu</sys:String>
     <sys:String x:Key="OverlayStatus">Overlay Durumu</sys:String>
     <sys:String x:Key="Latency">Gecikme</sys:String>
+    <sys:String x:Key="RegionLabel">Bölge</sys:String>
     <sys:String x:Key="QuickSettings">HIZLI AYARLAR</sys:String>
     <sys:String x:Key="TranslationEngine">Çeviri Motoru</sys:String>
     <sys:String x:Key="OcrEngine">OCR Motoru</sys:String>
