@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="PS Game Translator"
+        Title="LiveSub"
         Width="960"
         Height="700"
         MinWidth="720"
@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock Text="PS Game Translator"
+            <TextBlock Text="LiveSub"
                        FontSize="28"
                        FontWeight="SemiBold" />
             <TextBlock Margin="0,6,0,0"

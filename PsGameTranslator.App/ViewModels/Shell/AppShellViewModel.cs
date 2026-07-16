@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using PsGameTranslator.App.Commands;
 using PsGameTranslator.App.Services;
@@ -114,6 +115,23 @@ public sealed class AppShellViewModel : ObservableObject
         ? _languageService.T("DeveloperModeOn")
         : _languageService.T("DeveloperModeOff");
 
+    /// <summary>
+    /// Developer mode ships only in local Debug builds. The released, published
+    /// EXE is built in Release, so the toggle, its Ctrl+Shift+D shortcut and
+    /// everything gated behind IsDeveloperMode (Learning/Training pages, the
+    /// one-frame/OCR/overlay test buttons) are absent for end users, while the
+    /// full tooling stays available when running the app from source.
+    /// </summary>
+    public static bool IsDeveloperModeAvailable =>
+#if DEBUG
+        true;
+#else
+        false;
+#endif
+
+    public Visibility DeveloperModeVisibility =>
+        IsDeveloperModeAvailable ? Visibility.Visible : Visibility.Collapsed;
+
     // 0 = Dark, 1 = Light. Theme resources are DynamicResource-based, so this switches live.
     public int ThemeIndex
     {
@@ -147,6 +165,10 @@ public sealed class AppShellViewModel : ObservableObject
 
     private Task ToggleDeveloperModeAsync()
     {
+        // Hard gate, not just a hidden button: keeps Ctrl+Shift+D from unlocking
+        // developer surfaces in the released EXE.
+        if (!IsDeveloperModeAvailable) return Task.CompletedTask;
+
         IsDeveloperMode = !IsDeveloperMode;
 
         if (IsDeveloperMode)

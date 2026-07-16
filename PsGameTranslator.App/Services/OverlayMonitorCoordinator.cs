@@ -156,6 +156,55 @@ public sealed class OverlayMonitorCoordinator : IDisposable
         return ApplyPositionAsync(current, monitor, OverlayResetKind.Default, "overlay_position_reset", forceDefaultSize: true);
     }
 
+    /// <summary>
+    /// Snaps the overlay to one of nine preset spots on the mode-resolved target
+    /// monitor, keeping its current size. Positions are computed against the
+    /// working area (not raw bounds) so an anchored overlay never lands under the
+    /// taskbar.
+    /// </summary>
+    public async Task<OverlaySettings> AnchorOnTargetMonitorAsync(OverlaySettings current, OverlayAnchor anchor)
+    {
+        const double margin = 24;
+        var monitor = ResolveTargetMonitor(current);
+
+        var width = current.Width;
+        var height = current.Height;
+        var maxX = monitor.WorkingAreaX + monitor.WorkingAreaWidth - width;
+        var maxY = monitor.WorkingAreaY + monitor.WorkingAreaHeight - height;
+
+        var x = anchor switch
+        {
+            OverlayAnchor.TopLeft or OverlayAnchor.MiddleLeft or OverlayAnchor.BottomLeft
+                => monitor.WorkingAreaX + margin,
+            OverlayAnchor.TopRight or OverlayAnchor.MiddleRight or OverlayAnchor.BottomRight
+                => maxX - margin,
+            _ => monitor.WorkingAreaX + (monitor.WorkingAreaWidth - width) / 2,
+        };
+
+        var y = anchor switch
+        {
+            OverlayAnchor.TopLeft or OverlayAnchor.TopCenter or OverlayAnchor.TopRight
+                => monitor.WorkingAreaY + margin,
+            OverlayAnchor.BottomLeft or OverlayAnchor.BottomCenter or OverlayAnchor.BottomRight
+                => maxY - margin,
+            _ => monitor.WorkingAreaY + (monitor.WorkingAreaHeight - height) / 2,
+        };
+
+        // An overlay wider/taller than the working area would make maxX/maxY fall
+        // behind the left/top edge; clamping keeps it on-screen either way.
+        current.X = Math.Clamp(x, monitor.WorkingAreaX, Math.Max(monitor.WorkingAreaX, maxX));
+        current.Y = Math.Clamp(y, monitor.WorkingAreaY, Math.Max(monitor.WorkingAreaY, maxY));
+        current.LastKnownMonitorDeviceName = monitor.DeviceName;
+        LastRecoveryReason = $"overlay_anchored_{anchor}";
+
+        _logger.LogInformation(
+            "overlay_anchored - anchor={Anchor}, monitor={Monitor}, rect=({X},{Y}) {W}x{H}",
+            anchor, monitor.DeviceName, current.X, current.Y, width, height);
+
+        await _settingsService.SaveAsync(current);
+        return current;
+    }
+
     /// <summary>"Recover Overlay Now" — forces recovery to the mode-resolved target
     /// monitor regardless of current visibility.</summary>
     public Task<OverlaySettings> RecoverNowAsync(OverlaySettings current)

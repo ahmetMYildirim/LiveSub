@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
+using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
@@ -88,10 +89,19 @@ internal static class WgcFrameCapture
         // a second caller's capture overlapped the polling loop's. Serializing
         // access here costs nothing when there's no contention.
         private readonly object _captureLock = new();
+        // The size the frame pool's buffers were allocated at. The pool does NOT
+        // follow the window: once the captured window resizes (Remote Play going
+        // fullscreen, a resolution/scale change), a pool still sized for the old
+        // window keeps handing back old-sized buffers and the new, larger content
+        // arrives cropped to its top-left corner — which is why capture "only
+        // grabbed the top-left" and the subtitle region fell outside the frame.
+        // Tracked here so CaptureFrameJpeg can recreate the pool on a size change.
+        private SizeInt32 _poolSize;
 
         private CaptureSession(
             GraphicsCaptureItem item, ID3D11Device d3dDevice, IDXGIDevice dxgiDevice,
-            IDirect3DDevice winrtDevice, Direct3D11CaptureFramePool framePool, GraphicsCaptureSession session)
+            IDirect3DDevice winrtDevice, Direct3D11CaptureFramePool framePool, GraphicsCaptureSession session,
+            SizeInt32 poolSize)
         {
             _item = item;
             _d3dDevice = d3dDevice;
@@ -99,6 +109,7 @@ internal static class WgcFrameCapture
             _winrtDevice = winrtDevice;
             _framePool = framePool;
             _session = session;
+            _poolSize = poolSize;
             _context = d3dDevice.ImmediateContext;
             _item.Closed += (_, _) => _closed = true;
         }
@@ -113,12 +124,13 @@ internal static class WgcFrameCapture
             // reading the previous one's texture can recycle it out from under
             // us, surfacing as an intermittent NullReferenceException/
             // AccessViolationException deep in the D3D11 copy call.
+            var poolSize = item.Size;
             var framePool = Direct3D11CaptureFramePool.CreateFreeThreaded(
-                winrtDevice, DirectXPixelFormat.B8G8R8A8UIntNormalized, 4, item.Size);
+                winrtDevice, DirectXPixelFormat.B8G8R8A8UIntNormalized, 4, poolSize);
             var session = framePool.CreateCaptureSession(item);
             try { session.IsCursorCaptureEnabled = false; } catch { /* not supported on older builds */ }
             session.StartCapture();
-            return new CaptureSession(item, d3dDevice, dxgiDevice, winrtDevice, framePool, session);
+            return new CaptureSession(item, d3dDevice, dxgiDevice, winrtDevice, framePool, session, poolSize);
         }
 
         public byte[] CaptureFrameJpeg()
@@ -127,23 +139,42 @@ internal static class WgcFrameCapture
             {
                 if (_closed) throw new InvalidOperationException("WGC: the captured window has closed.");
 
-                Direct3D11CaptureFrame? frame = null;
-                var deadline = DateTime.UtcNow.AddSeconds(2);
-                while (frame is null && DateTime.UtcNow < deadline)
+                // Two passes at most: if the first frame shows the window has
+                // resized since the pool was built, recreate the pool at the new
+                // content size and take a second, correctly-sized frame.
+                for (var attempt = 0; ; attempt++)
                 {
-                    frame = _framePool.TryGetNextFrame();
-                    if (frame is null) Thread.Sleep(15);
-                }
+                    using var frame = WaitForFrame();
+                    var contentSize = frame.ContentSize;
 
-                if (frame is null)
-                    throw new InvalidOperationException("WGC: no frame arrived from the capture session in time.");
+                    if (attempt == 0 &&
+                        (contentSize.Width != _poolSize.Width || contentSize.Height != _poolSize.Height) &&
+                        contentSize.Width > 0 && contentSize.Height > 0)
+                    {
+                        _poolSize = contentSize;
+                        _framePool.Recreate(
+                            _winrtDevice, DirectXPixelFormat.B8G8R8A8UIntNormalized, 4, contentSize);
+                        continue;
+                    }
 
-                using (frame)
-                {
                     using var sourceTexture = WgcFrameCapture.GetTextureForSurface(frame.Surface);
-                    return TextureToJpeg(_d3dDevice, _context, sourceTexture);
+                    return TextureToJpeg(_d3dDevice, _context, sourceTexture, contentSize);
                 }
             }
+        }
+
+        private Direct3D11CaptureFrame WaitForFrame()
+        {
+            Direct3D11CaptureFrame? frame = null;
+            var deadline = DateTime.UtcNow.AddSeconds(2);
+            while (frame is null && DateTime.UtcNow < deadline)
+            {
+                frame = _framePool.TryGetNextFrame();
+                if (frame is null) Thread.Sleep(15);
+            }
+
+            return frame ?? throw new InvalidOperationException(
+                "WGC: no frame arrived from the capture session in time.");
         }
 
         public void Dispose()
@@ -270,7 +301,8 @@ internal static class WgcFrameCapture
         }
     }
 
-    private static byte[] TextureToJpeg(ID3D11Device device, ID3D11DeviceContext context, ID3D11Texture2D sourceTexture)
+    private static byte[] TextureToJpeg(
+        ID3D11Device device, ID3D11DeviceContext context, ID3D11Texture2D sourceTexture, SizeInt32 contentSize)
     {
         var description = sourceTexture.Description;
         var stagingDescription = description;
@@ -282,10 +314,16 @@ internal static class WgcFrameCapture
         using var staging = device.CreateTexture2D(stagingDescription);
         context.CopyResource(staging, sourceTexture);
 
+        // The pool's buffers can be larger than the live content (the window
+        // shrank since the pool was sized). Emit only the content region so the
+        // frame never carries stale padding along the right/bottom edges.
+        var width = Math.Max(1, Math.Min((int)description.Width, contentSize.Width));
+        var height = Math.Max(1, Math.Min((int)description.Height, contentSize.Height));
+
         var mapped = context.Map(staging, 0, MapMode.Read, Vortice.Direct3D11.MapFlags.None);
         try
         {
-            using var bitmap = new Bitmap((int)description.Width, (int)description.Height, PixelFormat.Format32bppArgb);
+            using var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             var bitmapData = bitmap.LockBits(
                 new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 ImageLockMode.WriteOnly,

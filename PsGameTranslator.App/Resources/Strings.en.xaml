@@ -19,6 +19,15 @@
     <sys:String x:Key="OverlayStatus">Overlay Status</sys:String>
     <sys:String x:Key="Latency">Latency</sys:String>
     <sys:String x:Key="RegionLabel">Region</sys:String>
+    <sys:String x:Key="AnchorTopLeft">Top left</sys:String>
+    <sys:String x:Key="AnchorTopCenter">Top center</sys:String>
+    <sys:String x:Key="AnchorTopRight">Top right</sys:String>
+    <sys:String x:Key="AnchorMiddleLeft">Middle left</sys:String>
+    <sys:String x:Key="AnchorCenter">Center</sys:String>
+    <sys:String x:Key="AnchorMiddleRight">Middle right</sys:String>
+    <sys:String x:Key="AnchorBottomLeft">Bottom left</sys:String>
+    <sys:String x:Key="AnchorBottomCenter">Bottom center (recommended for subtitles)</sys:String>
+    <sys:String x:Key="AnchorBottomRight">Bottom right</sys:String>
     <sys:String x:Key="QuickSettings">QUICK SETTINGS</sys:String>
     <sys:String x:Key="TranslationEngine">Translation Engine</sys:String>
     <sys:String x:Key="OcrEngine">OCR Engine</sys:String>

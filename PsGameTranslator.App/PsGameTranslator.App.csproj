@@ -9,6 +9,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
+    <!-- User-facing branding. The assembly/namespace names stay PsGameTranslator.*
+         (renaming them buys nothing and would touch every file); everything a user
+         actually sees — window title, EXE properties, installer — says LiveSub. -->
+    <AssemblyName>LiveSub</AssemblyName>
+    <Product>LiveSub</Product>
+    <AssemblyTitle>LiveSub</AssemblyTitle>
+    <Description>Real-time game subtitle capture, OCR and translation overlay.</Description>
+    <Version>0.7.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

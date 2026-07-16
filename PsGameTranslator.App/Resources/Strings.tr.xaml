@@ -19,6 +19,15 @@
     <sys:String x:Key="OverlayStatus">Overlay Durumu</sys:String>
     <sys:String x:Key="Latency">Gecikme</sys:String>
     <sys:String x:Key="RegionLabel">Bölge</sys:String>
+    <sys:String x:Key="AnchorTopLeft">Üst sol</sys:String>
+    <sys:String x:Key="AnchorTopCenter">Üst orta</sys:String>
+    <sys:String x:Key="AnchorTopRight">Üst sağ</sys:String>
+    <sys:String x:Key="AnchorMiddleLeft">Orta sol</sys:String>
+    <sys:String x:Key="AnchorCenter">Merkez</sys:String>
+    <sys:String x:Key="AnchorMiddleRight">Orta sağ</sys:String>
+    <sys:String x:Key="AnchorBottomLeft">Alt sol</sys:String>
+    <sys:String x:Key="AnchorBottomCenter">Alt orta (altyazı için önerilen)</sys:String>
+    <sys:String x:Key="AnchorBottomRight">Alt sağ</sys:String>
     <sys:String x:Key="QuickSettings">HIZLI AYARLAR</sys:String>
     <sys:String x:Key="TranslationEngine">Çeviri Motoru</sys:String>
     <sys:String x:Key="OcrEngine">OCR Motoru</sys:String>

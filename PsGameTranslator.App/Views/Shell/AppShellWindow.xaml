@@ -8,7 +8,7 @@
         xmlns:vm="clr-namespace:PsGameTranslator.App.ViewModels"
         xmlns:conv="clr-namespace:PsGameTranslator.App.Converters"
         mc:Ignorable="d"
-        Title="PS Game Translator"
+        Title="LiveSub"
         Width="1560"
         Height="980"
         MinWidth="1180"
@@ -1121,6 +1121,24 @@
                                         <TextBlock Text="{Binding Overlay.CurrentOverlayMonitorText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" Margin="0,1,0,10" TextWrapping="Wrap" />
 
                                         <TextBlock Text="{DynamicResource OverlayPosition}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6" />
+
+                                        <!-- Nine one-click anchors on the target monitor's working
+                                             area. Dragging the overlay still works; this is the
+                                             fast path for "put it bottom-centre and be done". -->
+                                        <Border Background="{DynamicResource CardBgBrush}" BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,10">
+                                            <UniformGrid Rows="3" Columns="3">
+                                                <Button Content="◤" CommandParameter="TopLeft" ToolTip="{DynamicResource AnchorTopLeft}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="▲" CommandParameter="TopCenter" ToolTip="{DynamicResource AnchorTopCenter}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="◥" CommandParameter="TopRight" ToolTip="{DynamicResource AnchorTopRight}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="◀" CommandParameter="MiddleLeft" ToolTip="{DynamicResource AnchorMiddleLeft}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="■" CommandParameter="Center" ToolTip="{DynamicResource AnchorCenter}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="▶" CommandParameter="MiddleRight" ToolTip="{DynamicResource AnchorMiddleRight}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="◣" CommandParameter="BottomLeft" ToolTip="{DynamicResource AnchorBottomLeft}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="▼" CommandParameter="BottomCenter" ToolTip="{DynamicResource AnchorBottomCenter}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                                <Button Content="◢" CommandParameter="BottomRight" ToolTip="{DynamicResource AnchorBottomRight}" Command="{Binding Overlay.SetOverlayAnchorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Height="30" Margin="2" FontSize="13" />
+                                            </UniformGrid>
+                                        </Border>
+
                                         <Button Content="{DynamicResource MoveToPrimary}" Command="{Binding Overlay.MoveToPrimaryMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
                                         <Button Content="{DynamicResource MoveToGameMonitor}" Command="{Binding Overlay.MoveToCaptureWindowMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
                                         <Button Content="{DynamicResource CenterOnCurrent}" Command="{Binding Overlay.CenterOnCurrentMonitorCommand}" Style="{DynamicResource SecondaryButtonStyle}" Margin="0,0,0,6" HorizontalAlignment="Stretch" />
@@ -1824,7 +1842,7 @@
                             </Border>
                             <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="PS Game Translator"
+                                    <TextBlock Text="LiveSub"
                                                Foreground="{DynamicResource TextPrimaryBrush}"
                                                FontSize="17"
                                                FontWeight="Bold"
@@ -1865,7 +1883,10 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Border Grid.Row="2" Style="{DynamicResource CardStyle}" Margin="0,16,0,14" Padding="16">
+                    <!-- Debug-only: absent from the released EXE (see
+                         AppShellViewModel.IsDeveloperModeAvailable). -->
+                    <Border Grid.Row="2" Style="{DynamicResource CardStyle}" Margin="0,16,0,14" Padding="16"
+                            Visibility="{Binding DeveloperModeVisibility}">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource DeveloperMode}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="15" FontWeight="SemiBold" />
                             <TextBlock Text="Ctrl + Shift + D" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,4,0,12" />

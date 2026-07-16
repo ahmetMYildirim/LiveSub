@@ -134,6 +134,7 @@ public sealed class OverlayViewModel : ObservableObject
         MoveToPrimaryMonitorCommand = new AsyncRelayCommand(MoveToPrimaryMonitorAsync);
         MoveToCaptureWindowMonitorCommand = new AsyncRelayCommand(MoveToCaptureWindowMonitorAsync);
         CenterOnCurrentMonitorCommand = new AsyncRelayCommand(CenterOnCurrentMonitorAsync);
+        SetOverlayAnchorCommand = new Commands.ParameterizedAsyncRelayCommand(SetOverlayAnchorAsync);
         ResetOverlayPositionCommand = new AsyncRelayCommand(ResetOverlayPositionAsync);
         RecoverOverlayNowCommand = new AsyncRelayCommand(RecoverOverlayNowAsync);
         RefreshMonitorsCommand = new AsyncRelayCommand(RefreshMonitorsAsync);
@@ -544,6 +545,8 @@ public sealed class OverlayViewModel : ObservableObject
     public ICommand MoveToPrimaryMonitorCommand { get; }
     public ICommand MoveToCaptureWindowMonitorCommand { get; }
     public ICommand CenterOnCurrentMonitorCommand { get; }
+    /// <summary>Takes the anchor name (e.g. "BottomCenter") as its parameter.</summary>
+    public ICommand SetOverlayAnchorCommand { get; }
     public ICommand ResetOverlayPositionCommand { get; }
     public ICommand RecoverOverlayNowCommand { get; }
     public ICommand RefreshMonitorsCommand { get; }
@@ -965,6 +968,18 @@ public sealed class OverlayViewModel : ObservableObject
         RaiseAllProperties();
         if (_overlayService.IsOpen) _overlayService.ApplySettings(settings);
         StatusText = "Overlay centered on current monitor.";
+    }
+
+    private async Task SetOverlayAnchorAsync(object? parameter)
+    {
+        if (parameter is not string name || !Enum.TryParse<OverlayAnchor>(name, out var anchor))
+            return;
+
+        var settings = await _monitorCoordinator.AnchorOnTargetMonitorAsync(BuildSettings(), anchor);
+        ApplyLoadedSettings(settings);
+        RaiseAllProperties();
+        if (_overlayService.IsOpen) _overlayService.ApplySettings(settings);
+        StatusText = $"Overlay anchored: {anchor}.";
     }
 
     private async Task ResetOverlayPositionAsync()

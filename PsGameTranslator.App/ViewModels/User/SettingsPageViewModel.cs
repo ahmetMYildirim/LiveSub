@@ -81,7 +81,7 @@ public sealed class SettingsPageViewModel : ObservableObject
 
     private Task ExportSettingsAsync()
     {
-        var dialog = new SaveFileDialog { Filter = "PS Game Translator ayarları (*.json)|*.json", FileName = "psgt-settings.json" };
+        var dialog = new SaveFileDialog { Filter = "LiveSub ayarları (*.json)|*.json", FileName = "livesub-settings.json" };
         if (dialog.ShowDialog() == true)
         {
             _persistence.ExportSafe(dialog.FileName);
@@ -92,7 +92,7 @@ public sealed class SettingsPageViewModel : ObservableObject
 
     private Task ImportSettingsAsync()
     {
-        var dialog = new OpenFileDialog { Filter = "PS Game Translator ayarları (*.json)|*.json" };
+        var dialog = new OpenFileDialog { Filter = "LiveSub ayarları (*.json)|*.json" };
         if (dialog.ShowDialog() == true)
         {
             try

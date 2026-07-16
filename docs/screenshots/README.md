@@ -1,12 +1,12 @@
-# Ekran Görüntüleri
+# Screenshots
 
-Ana `README.md` bu klasördeki şu dosyalara referans verir. Kendi ekran
-görüntülerinizi bu adlarla buraya kaydedin (PNG önerilir):
+The main `README.md` references the files below. Save your own screenshots here
+using these exact names (PNG recommended):
 
-| Dosya | İçerik |
+| File | Content |
 |---|---|
-| `home.png` | Ana Sayfa — canlı durum kartları, hızlı ayarlar, istatistikler |
-| `settings.png` | Ayarlar — pill sekmeli görünüm |
-| `capture.png` | Yakalama sayfası ve/veya overlay örneği |
+| `home.png` | Home — live status cards, quick settings, pipeline stats |
+| `settings.png` | Settings — pill-tab layout |
+| `capture.png` | Capture page and/or an overlay example |
 
-Görüntüler eklendiğinde README'deki resimler otomatik görünür.
+Once the images are added they show up automatically in the README.
