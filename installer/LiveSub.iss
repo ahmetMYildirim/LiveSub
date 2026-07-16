@@ -29,7 +29,8 @@ AppUpdatesURL={#AppUrl}/releases
 DefaultDirName={localappdata}\Programs\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
-LicenseFile=
+; Proprietary licence — shown and accepted before install.
+LicenseFile=..\LICENSE
 OutputDir=..\publish
 OutputBaseFilename=LiveSub-Setup
 SetupIconFile=..\PsGameTranslator.App\Assets\app.ico
@@ -54,6 +55,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; (config/user_settings.json) is never part of that output, so no API key can
 ; ever ride along into the installer.
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; The bundled MIT/Apache/BSD/CC-BY components require their notices to travel
+; with any redistributed build — these two files satisfy that obligation.
+Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
+Source: "..\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"

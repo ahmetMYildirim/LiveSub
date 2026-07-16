@@ -1,0 +1,82 @@
+LiveSub — Proprietary Software License
+Copyright (c) 2026 Ahmet Yildirim. All rights reserved.
+
+This software is proprietary and closed source. It is NOT open source, and no
+open source license is granted.
+
+
+1. OWNERSHIP
+
+   LiveSub, including its source code, build scripts, trained models, assets and
+   documentation (the "Software"), is the exclusive property of the copyright
+   holder and is protected by copyright law and international treaties.
+
+
+2. LIMITED PERMISSION FOR OFFICIAL BINARIES
+
+   You are permitted to download, install and run the official, unmodified
+   LiveSub binaries published by the copyright holder, for your own personal,
+   non-commercial use only.
+
+   This permission covers running the application. It grants no rights to the
+   source code and no rights beyond those stated in this section.
+
+
+3. RESTRICTIONS
+
+   Except where a right cannot be lawfully restricted, you may NOT:
+
+   a) use, copy, reproduce or incorporate the source code, in whole or in part,
+      in any other work, product or project;
+   b) modify, adapt, translate or create derivative works of the Software;
+   c) redistribute, sublicense, sell, rent, lease, lend or host the Software or
+      any part of it, including the binaries, models and assets;
+   d) reverse engineer, decompile or disassemble the Software, or attempt to
+      derive its source code;
+   e) remove, alter or obscure any copyright, trademark or other proprietary
+      notice;
+   f) use the Software or any part of it to train, fine-tune or evaluate machine
+      learning models;
+   g) use the Software for any commercial purpose.
+
+   No permission is granted to use this software for any purpose not expressly
+   allowed in Section 2. All rights not expressly granted are reserved.
+
+
+4. THIRD-PARTY COMPONENTS
+
+   The Software includes third-party components that are licensed separately by
+   their respective owners and are NOT covered by this license. Those components
+   remain subject to their own terms, which this license does not and cannot
+   override. See THIRD-PARTY-NOTICES.md.
+
+   Nothing in this license restricts any right you have in a third-party
+   component under that component's own license.
+
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+6. TERMINATION
+
+   The permission in Section 2 terminates automatically and immediately if you
+   breach any term of this license. On termination you must stop using the
+   Software and destroy all copies in your possession.
+
+
+7. NOT AFFILIATED
+
+   LiveSub is an independent project. It is not affiliated with, endorsed by or
+   sponsored by Sony Interactive Entertainment, or any game publisher, developer
+   or platform holder. All trademarks are the property of their respective
+   owners.
+
+
+For licensing enquiries, contact the copyright holder.

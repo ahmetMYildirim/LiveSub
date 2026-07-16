@@ -136,3 +136,20 @@ Release build, so those surfaces are absent for end users.
 
 Technical guides (resource optimization, performance theory, architecture
 patterns) live in [`docs/`](docs/).
+
+---
+
+## ⚖️ License
+
+**LiveSub is proprietary and closed source. It is not open source.**
+
+Copyright © 2026 Ahmet Yildirim. All rights reserved.
+
+You may download, install and run the official binaries for personal,
+non-commercial use. You may **not** use, copy, modify, redistribute or
+incorporate the source code, models or assets into any other project. See
+[LICENSE](LICENSE) for the full terms.
+
+Third-party components bundled with or required by LiveSub are licensed
+separately by their owners and are not covered by that license — see
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
