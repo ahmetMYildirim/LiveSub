@@ -46,7 +46,25 @@
     <Content Include="..\tools\ocr\ocr_server.py" Link="tools\ocr\ocr_server.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\tools\translation\train_opus_mt.py" Link="tools\translation\train_opus_mt.py">
+    <!-- The local translation server. Without this the app has no local OPUS-MT
+         backend at all and every request to 127.0.0.1:8770 is refused — it was
+         missing from the packaged build while the dev-only training script below
+         was being shipped instead. -->
+    <Content Include="..\tools\translation\translation_server.py" Link="tools\translation\translation_server.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Ship the requirements files: the sidecar servers run on the user's own
+         Python, so this is the only way an installed user can know what to
+         pip install. A missing python-multipart silently killed the OCR server. -->
+    <Content Include="..\tools\ocr\requirements.txt" Link="tools\ocr\requirements.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\tools\translation\requirements.txt" Link="tools\translation\requirements.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Training is a developer-mode feature, which is Debug-only — no reason to
+         ship the training script to end users. -->
+    <Content Include="..\tools\translation\train_opus_mt.py" Link="tools\translation\train_opus_mt.py" Condition="'$(Configuration)' == 'Debug'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\artifacts\game-recognition-igdb-steam-v2-20260715\game_recognition_efficientnet_b0.onnx" Link="models\game-recognition\game_recognition_efficientnet_b0.onnx">
