@@ -49,6 +49,11 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+; PaddleOCR runs as a Python sidecar. Without a provisioned environment the app
+; falls back to whatever system Python exists — which is how an install ends up
+; with a silently broken OCR server and no subtitles. Creating <app>\.venv makes
+; PythonResolver find a dedicated environment, exactly like a source checkout.
+Name: "pythonenv"; Description: "Set up the PaddleOCR engine (needs Python 3.11 and ~1.5 GB of downloads)"; GroupDescription: "OCR engine:"
 
 [Files]
 ; Everything from the self-contained publish output. The runtime settings file
@@ -59,6 +64,8 @@ Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 ; with any redistributed build — these two files satisfy that obligation.
 Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
+; Kept on disk so the user can re-run the OCR setup later without reinstalling.
+Source: "setup_python_env.ps1"; DestDir: "{app}\installer"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
@@ -66,9 +73,18 @@ Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 
 [Run]
+; Runs in a visible console: the PaddleOCR download takes many minutes and the
+; user needs to see progress (and any Python-missing message) rather than stare
+; at a frozen wizard.
+Filename: "powershell.exe"; \
+  Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\installer\setup_python_env.ps1"" -AppDir ""{app}"""; \
+  StatusMsg: "Setting up the PaddleOCR engine (this can take several minutes)..."; \
+  Flags: waituntilterminated; Tasks: pythonenv
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
+; The provisioned Python environment is ours — remove it on uninstall.
+Type: filesandordirs; Name: "{app}\.venv"
 ; Logs, debug frames and the user's own settings are created at runtime next to
 ; the app; remove them so an uninstall leaves nothing behind.
 Type: filesandordirs; Name: "{app}\logs"
