@@ -46,10 +46,17 @@ public sealed class HttpOcrService : IOcrService
     {
         var url = $"{_server.ServerBaseUrl}/ocr?engine={Uri.EscapeDataString(engine)}";
 
+        // The crop pipeline emits PNG, so label the upload honestly. It used to
+        // claim image/jpeg with an "image.jpg" name while sending PNG bytes; the
+        // OCR server derived its temp-file extension from that name, handed
+        // PaddleX a .jpg file full of PNG data, and got an empty read every time
+        // (the server now also sniffs the real format as a backstop).
+        var bytes          = imageData.ToArray();
+        var (mediaType, fileName) = DetectImageUpload(bytes);
         using var content  = new MultipartFormDataContent();
-        var imageContent   = new ByteArrayContent(imageData.ToArray());
-        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-        content.Add(imageContent, "file", "image.jpg");
+        var imageContent   = new ByteArrayContent(bytes);
+        imageContent.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
+        content.Add(imageContent, "file", fileName);
 
         _logger.LogInformation("HTTP OCR request → {Url}", url);
 
@@ -127,6 +134,19 @@ public sealed class HttpOcrService : IOcrService
     }
 
     // ── JSON parsing ────────────────────────────────────────────────────────────
+
+    /// <summary>Picks the content type and filename from the image's magic bytes
+    /// so the upload is labelled to match its real format.</summary>
+    private static (string MediaType, string FileName) DetectImageUpload(byte[] data)
+    {
+        if (data.Length >= 8 &&
+            data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47)
+            return ("image/png", "image.png");
+        if (data.Length >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
+            return ("image/jpeg", "image.jpg");
+        // Unknown — send as octet-stream; the server sniffs the real format.
+        return ("application/octet-stream", "image.bin");
+    }
 
     private OcrResult ParseResponse(string json)
     {

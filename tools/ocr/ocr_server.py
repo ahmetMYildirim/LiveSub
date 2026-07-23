@@ -333,6 +333,25 @@ async def health() -> dict:
     }
 
 
+def _sniff_image_suffix(data: bytes) -> str | None:
+    """Return a file suffix based on the image's magic bytes, or None if unknown.
+
+    Trusting the uploaded filename here is unsafe: a PNG payload named "image.jpg"
+    made PaddleX read an empty result. The real format is unambiguous from the
+    first few bytes."""
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return ".png"
+    if data[:3] == b"\xff\xd8\xff":
+        return ".jpg"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return ".gif"
+    if data[:2] == b"BM":
+        return ".bmp"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+
 @app.post("/ocr")
 def ocr_endpoint(
     file: UploadFile = File(...),
@@ -363,8 +382,15 @@ def ocr_endpoint(
 
     image_bytes = file.file.read()
 
-    # Engines accept a file path, so write to a temp file.
-    suffix = os.path.splitext(file.filename or ".png")[1] or ".png"
+    # Engines accept a file path, so write to a temp file. Derive the suffix from
+    # the actual image content (magic bytes), NOT the uploaded filename: the app
+    # historically sent PNG bytes under an "image.jpg" name, and giving PaddleX a
+    # .jpg temp file holding PNG data made it read nothing at all — every frame
+    # came back empty even though the image was perfectly legible. Sniffing the
+    # real format makes the server immune to a mislabeled upload.
+    suffix = _sniff_image_suffix(image_bytes) or (
+        os.path.splitext(file.filename or ".png")[1] or ".png"
+    )
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(image_bytes)
         tmp_path = tmp.name
