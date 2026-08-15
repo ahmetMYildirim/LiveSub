@@ -14,18 +14,20 @@
 
 > Images live in `docs/screenshots/`.
 
-<div align="center">
-
-### Home — live status, quick settings and pipeline stats
+### Home — live status, pipeline stats and quick settings
 ![Home](docs/screenshots/home.png)
 
-### Settings — pill-tab layout, grouped by category
-![Settings](docs/screenshots/settings.png)
-
-### Capture & overlay
+### Capture — window picker, live preview and subtitle region selection
 ![Capture](docs/screenshots/capture.png)
 
-</div>
+### Translation — engine configuration plus a test & diagnostics panel
+![Translation](docs/screenshots/translation.png)
+
+### Settings — pill tabs grouped by category (Performance shown)
+![Settings](docs/screenshots/settings.png)
+
+### Glossary — per-game term dictionary with single and bulk entry
+![Glossary](docs/screenshots/glossary.png)
 
 ---
 
@@ -129,13 +131,6 @@ Release build, so those surfaces are absent for end users.
 - API keys (DeepL/Google/Gemini/Groq) are stored at runtime in `config/user_settings.json` **on your machine only**.
 - That file is excluded via `.gitignore` — it is **never committed or shipped in the installer**.
 - No real API key exists anywhere in the source tree (only empty defaults).
-
----
-
-## 📚 Documentation
-
-Technical guides (resource optimization, performance theory, architecture
-patterns) live in [`docs/`](docs/).
 
 ---
 
